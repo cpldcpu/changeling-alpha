@@ -8,6 +8,7 @@ fw1 loaded through the host link:                                               
 fw2 (two images) loaded through the host link:                                   HOST load ok HOST read in reset ok EXIT 0 (core 0) cycles 2927 
 host link: status, mailbox, halt, memory and register access, step, inject, break: HOST PASS EXIT 0 (core 0) cycles 48497 
 the same with the core clock enabled every third cycle:                          HOST PASS EXIT 0 (core 0) cycles 48529 
+the same with the core clock enabled every second cycle (reset value):           HOST PASS EXIT 0 (core 0) cycles 48532 
 -- cores at half the clock rate (+cdiv=2), peripherals at the full rate
 fw1: EXIT 0 (core 0) cycles 2192 
 fw2: EXIT 0 (core 0) cycles 4104 

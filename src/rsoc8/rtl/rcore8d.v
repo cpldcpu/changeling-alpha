@@ -77,10 +77,12 @@ module rcore8d #(
     localparam TW = PC_W - 8;
 
     // ---------------------------------------------------------------- state
-    reg [3:0]       state;
+    // state and ir change only in cycles with cen = 1 or start = 1, both of which occur only in cycles with
+    // the core clock enable. The keep attribute preserves their names for the timing constraints.
+    (* keep, fsm_encoding = "none" *) reg [3:0] state;
     reg [PC_W-1:0]  pc;          // address being fetched in this cycle
     reg [SP_W-1:0]  sp;
-    reg [15:0]      ir;          // instruction copy for the states after S_EXEC
+    (* keep *) reg [15:0] ir;        // instruction copy for the states after S_EXEC
     reg [TW-1:0]    tmp;         // high byte of a return address
     reg             is_reti;
     reg             i_delay;     // one instruction of interrupt inhibit after I was set
@@ -111,7 +113,8 @@ module rcore8d #(
         else begin
             rd_first <= cen & dm_re;
             if (cen | start)    dq_v <= 1'b0;
-            else if (rd_first)  begin dq_v <= 1'b1; dq <= dm_rdata; end
+            else if (rd_first)  dq_v <= 1'b1;
+            if (rd_first)       dq <= dm_rdata;     // independent of cen: no path from the code memory to dq
         end
     end
 

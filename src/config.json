@@ -18,8 +18,8 @@
   "PL_TARGET_DENSITY_PCT": 40,
   "RUN_POST_GRT_DESIGN_REPAIR": true,
   "RUN_POST_GRT_RESIZER_TIMING": true,
-  "PL_RESIZER_SETUP_SLACK_MARGIN": 3.0,
-  "GRT_RESIZER_SETUP_SLACK_MARGIN": 3.0,
+  "PL_RESIZER_SETUP_SLACK_MARGIN": 1.0,
+  "GRT_RESIZER_SETUP_SLACK_MARGIN": 1.0,
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz. Changeling-alpha is specified for 60 MHz.",

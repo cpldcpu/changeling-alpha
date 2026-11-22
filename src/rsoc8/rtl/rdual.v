@@ -5,8 +5,9 @@
 // registers that act on the cores directly:
 //   CORECTL 0x00E   LOCK 0x005   WAITL 0x020   WAITH 0x021 (per core)   ARB 0x150 (protected)
 //
-// All state of this module and of the cores advances only in cycles with cke = 1; the memories and
-// the peripherals are clocked in every cycle.
+// The state of this module and of the cores advances only in cycles with cke = 1, with these exceptions:
+// the host access state (hk, hb, hio, dirty), the holding registers bclr and jreq, and in the cores
+// rd_first, dq_v and dq. The memories and the peripherals are clocked in every cycle.
 // Follows the rules U1-U8, M5, H1-H10 and C5-C10 of the architecture specification.
 
 module rdual #(
@@ -120,15 +121,20 @@ module rdual #(
     wire [8:0] h_ioa = (&h_addr[13:8]) ? {1'b1, h_addr[7:0]} : {3'b000, h_addr[5:0]};
     reg  [1:0] dirty;                   // the output of a code memory was changed by the host
     reg  [9:0] lastr0, lastr1;          // address of the last read by a core on each code memory
-    wire [1:0] rest = dirty & ~{h_cm1, h_cm0};          // read that word again
+    wire [1:0] rest = dirty & ~{h_cm1, h_cm0} & {2{cke}};   // read that word again, in an enabled cycle: the
+                                                        // next enabled cycle is then a full core period later
     wire       hhold = h_acc | (|dirty);
 
     // ---------------------------------------------------------------- injection and single step
     localparam J_IDLE = 3'd0, J_ALIGN = 3'd1, J_X = 3'd2, J_X2 = 3'd3, J_R = 3'd4, J_R2 = 3'd5;
-    reg  [2:0] jst;
-    reg  [1:0] jmode;
-    reg        jcore;
-    reg [15:0] jword;
+    // jst, jmode, jcore and jword change only in cycles with cke = 1 (two-cycle timing exception of the
+    // implementation flow; the keep attribute preserves their names for the constraints file).
+    (* keep, fsm_encoding = "none" *) reg  [2:0] jst;
+    (* keep *) reg  [1:0] jmode;
+    (* keep *) reg        jcore;
+    (* keep *) reg [15:0] jword;
+    reg  [1:0] jreq;                    // inj_cmd is one cycle long; kept until the next enabled cycle
+    wire [1:0] jcmd  = inj_cmd | jreq;
     reg  [1:0] bclr;                    // brk_clr is one cycle long; kept until the next enabled cycle
     reg  [5:0] jto;                     // cycles in which the core should advance and does not
     wire [1:0] at;                      // core is at the start of an instruction
@@ -139,8 +145,9 @@ module rdual #(
     wire [1:0] hrun  = {jrun & jcore, jrun & ~jcore};
     wire [1:0] hsub  = {jsub & jcore, jsub & ~jcore};
     wire [1:0] jmask = {(jst != J_IDLE) & (jmode != 2'd3) & jcore, (jst != J_IDLE) & (jmode != 2'd3) & ~jcore};
-    assign inj_busy = (jst != J_IDLE);
-    assign inj_fail = inj_busy & (jto == 6'd63);
+    wire       jact  = (jst != J_IDLE);
+    assign inj_busy = jact | (|jreq);
+    assign inj_fail = jact & (jto == 6'd63) & cke;
     assign h_quiet  = (&(~en | brkf | halt_req)) & ~inj_busy;
 
     wire [1:0] base    = en & ~wt & ((~brkf & ~halt_req) | hrun) & {2{cke}} & {2{~hhold}};
@@ -263,15 +270,16 @@ module rdual #(
         else if (h_acc) begin hk <= {h_io, h_dm, h_cm1}; hb <= h_addr[0]; hio <= rb; end
     end
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin dirty <= 2'b00; lastr0 <= 10'd0; lastr1 <= 10'd0; jst <= J_IDLE; jmode <= 2'd0; jcore <= 1'b0; jword <= 16'd0; jto <= 6'd0; bclr <= 2'b00; end
+        if (!rst_n) begin dirty <= 2'b00; lastr0 <= 10'd0; lastr1 <= 10'd0; jst <= J_IDLE; jmode <= 2'd0; jcore <= 1'b0; jword <= 16'd0; jto <= 6'd0; bclr <= 2'b00; jreq <= 2'd0; end
         else begin
             dirty <= (dirty & ~rest) | {h_cm1, h_cm0};
             bclr  <= cke ? 2'b00 : (bclr | brk_clr);
             if (cr0 & ~hhold) lastr0 <= ca0;
             if (cr1 & ~hhold) lastr1 <= ca1;
-            case (jst)
-                J_IDLE:  if (inj_cmd != 2'd0 && en[inj_core] && !wt[inj_core]) begin
-                             jst <= J_ALIGN; jmode <= inj_cmd; jcore <= inj_core; jword <= inj_word;
+            jreq  <= cke ? 2'd0 : jcmd;
+            if (cke) case (jst)
+                J_IDLE:  if (jcmd != 2'd0 && en[inj_core] && !wt[inj_core]) begin
+                             jst <= J_ALIGN; jmode <= jcmd; jcore <= inj_core; jword <= inj_word;
                          end
                 J_ALIGN: if (jat) jst <= J_X;
                 J_X:     if (cen[jcore] & jat) jst <= J_X2;
@@ -280,7 +288,7 @@ module rdual #(
                 default: if (jat) jst <= J_IDLE;
             endcase
             if (!jrun | cen[jcore]) jto <= 6'd0; else if (cke) jto <= jto + 6'd1;
-            if (inj_fail) jst <= J_IDLE;
+            if (inj_fail) jst <= J_IDLE;        // inj_fail contains cke
         end
     end
 

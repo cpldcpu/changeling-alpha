@@ -23,6 +23,7 @@ printf "fw2 (two images) loaded through the host link:                          
 BRK=$(( 0x$(avr-nm build/fwh.elf | awk '$3=="tick"{print $1}') / 2 ))
 printf "host link: status, mailbox, halt, memory and register access, step, inject, break: "; r +hex=build/fwh.hex +htest=1 +brk=$BRK +maxcyc=3000000
 printf "the same with the core clock enabled every third cycle:                          "; r +hex=build/fwh.hex +htest=1 +brk=$BRK +maxcyc=3000000 +cdiv=3
+printf "the same with the core clock enabled every second cycle (reset value):           "; r +hex=build/fwh.hex +htest=1 +brk=$BRK +maxcyc=3000000 +cdiv=2
 echo "-- cores at half the clock rate (+cdiv=2), peripherals at the full rate"
 printf "fw1: "; r +hex=build/fw1.hex +cdiv=2
 printf "fw2: "; r +hex0=build/fw2_c0.hex +hex1=build/fw2_c1.hex +cdiv=2
