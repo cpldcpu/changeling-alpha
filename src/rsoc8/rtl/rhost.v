@@ -61,7 +61,8 @@ module rhost (
     wire cs_fall = ~s_cs[1] & s_cs[2];
 
     // ---------------------------------------------------------------- shift registers
-    reg [7:0] rx, tx, tx_next;
+    reg [7:0] rx, tx;
+    (* keep *) reg [7:0] tx_next;    // see tx_hold
     reg [2:0] bitn;
     reg [3:0] slot;                  // number of the byte being received: 0 code, then 1.. (stops at 15)
     reg [7:0] cmd;
@@ -173,7 +174,9 @@ module rhost (
             end
         end
     end
-    reg [7:0] tx_hold;               // last register value, repeated in a read command on the register bus
+    // tx_hold and tx_next take the data of a host read one clock cycle after the access. The keep attributes
+    // preserve their names: the timing constraints exclude them from the two-cycle exception of the code memories.
+    (* keep *) reg [7:0] tx_hold;    // last register value, repeated in a read command on the register bus
     always @(posedge clk or negedge rst_n)
         if (!rst_n) tx_hold <= 8'd0; else if (rd_ref) tx_hold <= 8'd0; else if (rd_pend) tx_hold <= h_rdata;      // a refused read leaves zero to repeat
 endmodule

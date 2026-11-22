@@ -245,13 +245,10 @@ module rdual #(
     assign cm1_wdata  = h_cm1 ? h_wdata : c0_in1 ? pwd0 : pwd1;
     assign cm1_wother = c0_in1;
 
-    // Instruction inputs of the two cores. The keep attribute preserves the net names for the timing
-    // constraints (two clock cycles from the code memories through these nets, see the constraints file of
-    // the implementation flow). Everything behind them is taken over only in cycles with cke = 1.
-    (* keep *) wire [15:0] prd0;
-    (* keep *) wire [15:0] prd1;
-    assign prd0 = hsub[0] ? jins : src[0] ? cm1_rdata : cm0_rdata;
-    assign prd1 = hsub[1] ? jins : src[1] ? cm0_rdata : cm1_rdata;
+    // Instruction inputs of the two cores. Everything behind them is taken over only in cycles with cke = 1;
+    // the timing constraints of the implementation flow use this (two clock cycles from the code memories).
+    wire [15:0] prd0 = hsub[0] ? jins : src[0] ? cm1_rdata : cm0_rdata;
+    wire [15:0] prd1 = hsub[1] ? jins : src[1] ? cm0_rdata : cm1_rdata;
 
     // ---------------------------------------------------------------- host access state
     // These flip-flops are not reset by the core reset, so that the host can load the memories
