@@ -21,6 +21,10 @@
   "//": "The value is in nanoseconds, so 20ns == 50MHz. Changeling-alpha is specified for 60 MHz.",
   "CLOCK_PERIOD": 16.67,
 
+  "//": "Experiment: synthesis for delay instead of area. With the default the paths from the code memories",
+  "//": "(access time 7.7 ns at the slow corner, then 50 cells) reach 27 ns at the slow corner (run 45021839569).",
+  "SYNTH_STRATEGY": "DELAY 4",
+
   "//": "IHP_CELLS: rsoc8/rtl/rlinecells.v instantiates the library clock gate sg13cmos5l_lgcp_1.",
   "VERILOG_DEFINES": ["IHP_CELLS"],
 
