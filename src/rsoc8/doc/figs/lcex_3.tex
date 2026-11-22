@@ -1,0 +1,16 @@
+\begin{tabularx}{\linewidth}{@{}l l L l L@{}}
+\toprule
+ & \multicolumn{2}{l}{Transmit cell} & \multicolumn{2}{l}{Receive cell} \\
+\midrule
+\texttt{LCCTRL} & \texttt{0xA0} & enabled; transmitter on &  &  \\
+\texttt{LCPIN} & \texttt{0x01} & pins always driven &  &  \\
+\texttt{LCOUT} & \texttt{0x10} & true output on pin 0 &  &  \\
+\texttt{LCTIM} & \texttt{0x00} & next bit from the timer &  &  \\
+\texttt{LCA} & \texttt{12} & high time for a one: 12 &  &  \\
+\texttt{LCB} & \texttt{20} & 20 time units per bit &  &  \\
+\texttt{LCC} & \texttt{5} & high time for a zero: 5 &  &  \\
+\texttt{LCENC} & \texttt{0xF0} & not used &  &  \\
+\texttt{LCSH} & \texttt{0xE4} & 8 bits; MSB first; compare mode &  &  \\
+\texttt{LCEVM} & \texttt{0x40} & event flag on \texttt{TXE} &  &  \\
+\bottomrule
+\end{tabularx}

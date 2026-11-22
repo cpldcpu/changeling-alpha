@@ -1,0 +1,18 @@
+\begin{tabularx}{\linewidth}{@{}l l L l L@{}}
+\toprule
+ & \multicolumn{2}{l}{Transmit cell} & \multicolumn{2}{l}{Receive cell} \\
+\midrule
+\texttt{LCCTRL} & \texttt{0xA0} & enabled; transmitter on & \texttt{0xC0} & enabled; receiver on \\
+\texttt{LCPIN} & \texttt{0x01} & pins always driven & \texttt{0x00} & input pin 0 \\
+\texttt{LCOUT} & \texttt{0x13} & true output on pin 0; second output on pin 1 &  &  \\
+\texttt{LCCLK} & \texttt{0x08} & second output is the bit clock &  &  \\
+\texttt{LCTIM} & \texttt{0x04} & next bit from the timer; two periods per bit & \texttt{0x02} & sample in the middle of each bit of the transmit cell \\
+\texttt{LCA} & \texttt{1} & not used & \texttt{1} & not used \\
+\texttt{LCB} & \texttt{4} & 4 time units per period & \texttt{1} & not used \\
+\texttt{LCC} & \texttt{1} & not used &  &  \\
+\texttt{LCDEC} &  &  & \texttt{0xF0} & level \\
+\texttt{LCENC} & \texttt{0xF0} & NRZ &  &  \\
+\texttt{LCSH} & \texttt{0xE0} & 8 bits; MSB first & \texttt{0xE0} & 8 bits; MSB first \\
+\texttt{LCEVM} &  &  & \texttt{0x80} & event flag on \texttt{RXF} \\
+\bottomrule
+\end{tabularx}

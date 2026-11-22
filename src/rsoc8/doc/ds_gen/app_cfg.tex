@@ -1,0 +1,112 @@
+\begin{longtable}{@{}llllp{0.47\linewidth}@{}}
+\caption{Configuration page, all registers.}\\
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\endfirsthead
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\texttt{0x3F00} & \texttt{LCCTRL} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F01} & \texttt{LCPIN} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F03} & \texttt{LCCLK} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F04} & \texttt{LCTIM} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F05} & \texttt{LCA} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F06} & \texttt{LCB} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F07} & \texttt{LCEC} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F08} & \texttt{LCDEC} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0A} & \texttt{LCSH} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0B} & \texttt{LCMATCH} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0C} & \texttt{LCRUN} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0D} & \texttt{LCEVM} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0E} & \texttt{LCCS} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F0F} & \texttt{LCX} & R/W & \texttt{0x00} & Receive cell 0, section~\ref{sec:lcregs} \\
+\midrule
+\texttt{0x3F10} & \texttt{LCCTRL} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F11} & \texttt{LCPIN} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F12} & \texttt{LCOUT} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F13} & \texttt{LCCLK} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F14} & \texttt{LCTIM} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F15} & \texttt{LCA} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F16} & \texttt{LCB} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F17} & \texttt{LCC} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F19} & \texttt{LCENC} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F1A} & \texttt{LCSH} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F1C} & \texttt{LCRUN} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F1D} & \texttt{LCEVM} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F1E} & \texttt{LCCS} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\texttt{0x3F1F} & \texttt{LCX} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
+\midrule
+\texttt{0x3F20} & \texttt{CLKCTL} & R/W, protected & strap & Source request, oscillator enable, loop, reference selection \\
+\texttt{0x3F21} & \texttt{OSCTRIM} & R/W & \texttt{0x80} & Trim value of the oscillator \\
+\texttt{0x3F22} & \texttt{CLKCDIV} & R/W, protected & \texttt{0x00} & Core clock divider minus one \\
+\texttt{0x3F23} & \texttt{CLKPDIV} & R/W & \texttt{0x00} & Peripheral clock divider minus one \\
+\texttt{0x3F24} & \texttt{TRINT} & R/W & \texttt{0x00} & Start of a measurement, reference periods per measurement \\
+\texttt{0x3F25} & \texttt{TRCNTL} & R & \texttt{0x00} & Count of the last measurement, low byte \\
+\texttt{0x3F26} & \texttt{TRCNTH} & R & \texttt{0x00} & Count of the last measurement, high byte \\
+\texttt{0x3F27} & \texttt{TRTGTL} & R/W & \texttt{0x00} & Target count, low byte \\
+\texttt{0x3F28} & \texttt{TRTGTH} & R/W & \texttt{0x00} & Target count, high byte \\
+\texttt{0x3F29} & \texttt{TRWIN} & R/W & \texttt{0x00} & Window for a valid measurement, in units of 64 counts \\
+\texttt{0x3F2A} & \texttt{CLKOUT} & R/W & \texttt{0x00} & Clock output enable and divider \\
+\midrule
+\texttt{0x3F30} & \texttt{TCR} & R/W & \texttt{0x00} & Run, restart at compare A, prescaler \\
+\texttt{0x3F31} & \texttt{TCAP} & R/W & \texttt{0x00} & Capture source and edge \\
+\texttt{0x3F32} & \texttt{OCRAL} & R/W & \texttt{0x00} & Compare value A, low byte \\
+\texttt{0x3F33} & \texttt{OCRAH} & R/W & \texttt{0x00} & Compare value A, high byte \\
+\texttt{0x3F34} & \texttt{OCRBL} & R/W & \texttt{0x00} & Compare value B, low byte \\
+\texttt{0x3F35} & \texttt{OCRBH} & R/W & \texttt{0x00} & Compare value B, high byte \\
+\midrule
+\texttt{0x3F38} & \texttt{PWMC} & R/W & \texttt{0x00} & Channel enables and prescaler \\
+\texttt{0x3F39} & \texttt{PWMTOP} & R/W & \texttt{0x00} & Period minus one \\
+\texttt{0x3F3A} & \texttt{PWM0} & R/W & \texttt{0x00} & High time of channel 0 \\
+\texttt{0x3F3B} & \texttt{PWM1} & R/W & \texttt{0x00} & High time of channel 1 \\
+\texttt{0x3F3C} & \texttt{PWM2} & R/W & \texttt{0x00} & High time of channel 2 \\
+\midrule
+\texttt{0x3F40} & \texttt{CRCCTL} & R/W & \texttt{0x00} & Enable, shift direction, bit source, owner \\
+\texttt{0x3F41} & \texttt{CRCLEN} & R/W & \texttt{0x00} & Width of the CRC minus one \\
+\texttt{0x3F42--45} & \texttt{CRCPOLY0..3} & R/W & \texttt{0x00} & Polynomial, low byte first \\
+\texttt{0x3F46--49} & \texttt{CRCVAL0..3} & R/W & \texttt{0x00} & CRC value, low byte first \\
+\texttt{0x3F4A--4D} & \texttt{CRCREF0..3} & R/W & \texttt{0x00} & Reference value, low byte first \\
+\midrule
+\texttt{0x3F50} & \texttt{ARB} & R/W, protected & \texttt{0x00} & Arbiter mode \\
+\texttt{0x3F51} & \texttt{LCOWN} & R/W, protected & \texttt{0x02} & Owner core of each pair of line cells \\
+\texttt{0x3F52} & \texttt{DBGSEL} & R/W & \texttt{0x00} & Debug pin enable and signal selection \\
+\texttt{0x3F53} & \texttt{ODE} & R/W & \texttt{0x00} & Open-drain enable per pin of the bidirectional port \\
+\texttt{0x3F54} & \texttt{PCMSK} & R/W & \texttt{0x00} & Pin-change mask per pin of the bidirectional port \\
+\midrule
+\texttt{0x3F58} & \texttt{PMCR} & R/W, protected & \texttt{0x00} & Write enables and lock of the code memories \\
+\texttt{0x3F59} & \texttt{PMLIM} & R/W, protected & \texttt{0x00} & Write-protected part of the code memories \\
+\midrule
+\texttt{0x3F60} & \texttt{LCCTRL} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F61} & \texttt{LCPIN} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F63} & \texttt{LCCLK} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F64} & \texttt{LCTIM} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F65} & \texttt{LCA} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F66} & \texttt{LCB} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F67} & \texttt{LCEC} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F68} & \texttt{LCDEC} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6A} & \texttt{LCSH} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6B} & \texttt{LCMATCH} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6C} & \texttt{LCRUN} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6D} & \texttt{LCEVM} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6E} & \texttt{LCCS} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F6F} & \texttt{LCX} & R/W & \texttt{0x00} & Receive cell 1, section~\ref{sec:lcregs} \\
+\midrule
+\texttt{0x3F70} & \texttt{LCCTRL} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F71} & \texttt{LCPIN} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F72} & \texttt{LCOUT} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F73} & \texttt{LCCLK} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F74} & \texttt{LCTIM} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F75} & \texttt{LCA} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F76} & \texttt{LCB} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F77} & \texttt{LCC} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F79} & \texttt{LCENC} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F7A} & \texttt{LCSH} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F7C} & \texttt{LCRUN} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F7D} & \texttt{LCEVM} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F7E} & \texttt{LCCS} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\texttt{0x3F7F} & \texttt{LCX} & R/W & \texttt{0x00} & Transmit cell 1, section~\ref{sec:lcregs} \\
+\end{longtable}

@@ -1,0 +1,62 @@
+\begin{tikzpicture}[x=1mm,y=1mm,
+  bk/.style={blk,font=\scriptsize,inner sep=2pt,align=center}]
+  % host and protection
+  \node[bk,fill=fillC,minimum width=26mm,minimum height=15mm] (host) at (17,94) {\textbf{Host link}\\ SPI slave: loader,\\ halt, debug, mailbox};
+  \node[bk,fill=fillC,minimum width=26mm,minimum height=13mm] (prot) at (17,62) {\textbf{Program}\\ \textbf{protection}\\ locks writes};
+  % memories and cores
+  \node[bk,fill=fillB,minimum width=28mm,minimum height=10mm] (pm0) at (52,112) {Code SRAM 0\\ 1024 x 16};
+  \node[bk,fill=fillB,minimum width=28mm,minimum height=10mm] (pm1) at (86,112) {Code SRAM 1\\ 1024 x 16};
+  \node[bk,fill=fillA,minimum width=28mm,minimum height=14mm] (c0) at (52,94) {\textbf{Core 0}\\ rcore8d};
+  \node[bk,fill=fillA,minimum width=28mm,minimum height=14mm] (c1) at (86,94) {\textbf{Core 1}\\ rcore8d};
+  \node[bk,fill=fillC,minimum width=62mm,minimum height=9mm] (arb) at (69,72) {\textbf{Register bus arbiter}\\ one core per cycle, \reg{ARB} selects};
+  \node[bk,fill=fillB,minimum width=40mm,minimum height=10mm] (dm) at (69,54) {Data SRAM, 2 KB\\ shared, byte write};
+  \draw[dar] (pm0) -- (c0) node[midway,left,lbl]{fetch};
+  \draw[dar] (pm1) -- (c1) node[midway,right,lbl]{fetch};
+  \draw[dar] (c0.south) -- (c0.south |- arb.north);
+  \draw[dar] (c1.south) -- (c1.south |- arb.north);
+  \draw[dar] (arb) -- (dm) node[midway,right,lbl]{data};
+  \draw[ar] (host.east) -- (c0.west) node[midway,above,lbl,inner sep=1pt]{reset};
+  \draw[ar] (host.north) |- (pm0.west) node[pos=0.8,above,lbl]{load};
+  \draw[ar,dashed] (prot.east) -- (104,62) node[pos=0.22,above,lbl]{write protect};
+  % register bus
+  \draw[line width=1.2pt,accent] (104,18) -- (104,124);
+  \node[lbl,text=accent,anchor=west] at (105.5,122) {register bus};
+  \draw[dar] (arb.east) -- (104,72);
+  \draw[dar] (host.north west) ++(4,0) -- ++(0,26) -| (104,124);
+  \node[lbl,anchor=south west] at (30,124.5) {host access};
+  % right column
+  \node[bk,fill=fillD,minimum width=44mm,minimum height=10mm] (ev) at (136,112) {Event flags, wait masks,\\ locks, time base};
+  \node[bk,fill=fillD,minimum width=44mm,minimum height=11mm] (tm) at (136,95) {16-bit timer with capture,\\ 3 PWM channels, CRC unit};
+  \draw[dar] (104,112) -- (ev.west);
+  \draw[dar] (104,95) -- (tm.west);
+  \draw[ar,dashed] (tm.north) -- (ev.south);
+  % line cells
+  \draw[blk,fill=fillA!40,rounded corners=2pt] (114,40) rectangle (158,83);
+  \node[lbl,anchor=north west] at (115,82.8) {\textbf{Line cells} (two pairs)};
+  \node[bk,fill=white,minimum width=40mm,minimum height=7mm] (sy) at (136,73) {pin synchronisers};
+  \node[bk,fill=fillA,minimum width=19mm,minimum height=9mm] (p0) at (125,61) {Pair 0\\ R, T};
+  \node[bk,fill=fillA,minimum width=19mm,minimum height=9mm] (p1) at (147,61) {Pair 1\\ R, T};
+  \node[bk,fill=white,minimum width=40mm,minimum height=7mm] (pmx) at (136,47) {pin multiplexer};
+  \draw[ar] (sy.south -| p0) -- (p0.north);
+  \draw[ar] (sy.south -| p1) -- (p1.north);
+  \draw[ar] (p0.south) -- (p0.south |- pmx.north);
+  \draw[ar] (p1.south) -- (p1.south |- pmx.north);
+  \draw[dar] (104,61) -- (114,61);
+  \draw[ar,dashed] (125,83) -- (125,89.5);
+  \node[lbl,anchor=west,align=left] at (127,86.2) {events, strobes};
+  % pins
+  \node[bk,fill=white,minimum width=44mm,minimum height=11mm] (pins) at (136,24) {\textbf{8 pins} \reg{uio[7:0]}\\ outputs 3 to 7 shared with PWM};
+  \draw[dar] (pmx.south) -- (pins.north) node[midway,right,lbl]{pin function};
+  \draw[ar] (pins.west) -- (111,24) -- (111,73) -- (sy.west);
+  \node[lbl,anchor=south,rotate=90] at (110.3,48) {pins in};
+  \draw[ar] (tm.east) -- (160,95) -- (160,24) -- (pins.east);
+  \node[lbl,anchor=east,rotate=90] at (162.5,60) {PWM, port outputs};
+  % clocking
+  \node[bk,fill=fillC,minimum width=40mm,minimum height=20mm] (clk) at (69,20) {\textbf{Clocking}\\ source select, switch,\\ trim, two dividers};
+  \node[bk,fill=fillC,minimum width=26mm,minimum height=9mm] (osc) at (17,27) {Oscillator\\ enable, trim};
+  \node[bk,fill=fillC,minimum width=26mm,minimum height=9mm] (ext) at (17,13) {External clock\\ pin, strap};
+  \draw[ar] (osc.east) -- (clk.west |- osc.east) node[midway,above,lbl,inner sep=1pt]{clock};
+  \draw[ar] (ext.east) -- (clk.west |- ext.east) node[midway,above,lbl,inner sep=1pt]{clock};
+  \draw[dar] (clk.east) -- (104,20);
+  \draw[ar] (clk.south) -- ++(0,-6) node[below,lbl]{clock output, debug pin};
+\end{tikzpicture}

@@ -1,0 +1,27 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x3F58} & \reg{PMCR} & R/W, protected & \texttt{0x00} & Write enables and lock of the code memories \\
+\texttt{0x3F59} & \reg{PMLIM} & R/W, protected & \texttt{0x00} & Write-protected part of the code memories \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{PMCR} & \texttt{0x3F58} & \texttt{LOCK} & \multicolumn{5}{c|}{\textcolor{black!45}{--}} & \texttt{XWE} & \texttt{PWE} \\ \hline
+\texttt{PMLIM} & \texttt{0x3F59} & \multicolumn{8}{c|}{\texttt{limit}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Register & Reset & Meaning \\
+\midrule
+\reg{PMCR} & \texttt{0x00} & \reg{PWE}: a core's stores to its own code memory are accepted. \reg{XWE}: stores to the other core's code memory are accepted. \reg{LOCK}: no program write until reset; can be set but not cleared \\
+\reg{PMLIM} & \texttt{0x00} & Stores to word addresses below four times this value, in either code memory, are ignored \\
+\bottomrule
+\end{tabularx}\par}

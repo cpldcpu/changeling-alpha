@@ -1,0 +1,30 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x3F38} & \reg{PWMC} & R/W & \texttt{0x00} & Channel enables and prescaler \\
+\texttt{0x3F39} & \reg{PWMTOP} & R/W & \texttt{0x00} & Period minus one \\
+\texttt{0x3F3A} & \reg{PWM0} & R/W & \texttt{0x00} & High time of channel 0 \\
+\texttt{0x3F3B} & \reg{PWM1} & R/W & \texttt{0x00} & High time of channel 1 \\
+\texttt{0x3F3C} & \reg{PWM2} & R/W & \texttt{0x00} & High time of channel 2 \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{PWMC} & \texttt{0x3F38} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PPS}} & \textcolor{black!45}{--} & \texttt{PEN2} & \texttt{PEN1} & \texttt{PEN0} \\ \hline
+\texttt{PWMTOP} & \texttt{0x3F39} & \multicolumn{8}{c|}{\texttt{period minus one}} \\ \hline
+\texttt{PWM0..2} & \texttt{0x3F3A-3C} & \multicolumn{8}{c|}{\texttt{duty}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Field & Meaning \\
+\midrule
+\reg{PEN0} to \reg{PEN2}, \reg{PPS} & PWM channel enables; prescaler $2^{\mathtt{PPS}}$ on the peripheral clock \\
+\bottomrule
+\end{tabularx}\par}

@@ -1,0 +1,52 @@
+ok   UART transmit: waveform equal, delay 2 cycles
+ok   UART receive, clock offset +0 %: equal (5 frames, 40 sample points)
+ok   UART receive, clock offset -3 %: equal (5 frames, 40 sample points)
+ok   UART receive, clock offset +4 %: equal (5 frames, 40 sample points)
+ok   UART transmit, 8 data bits, even parity: waveform equal, delay 2 cycles
+ok   UART transmit, even parity: 40 strobes of data bits for 5 frames (rule N4: none for the additional bit)
+ok   UART receive, even parity, clock offset +0 %: equal (5 frames, 45 sample points)
+ok   UART receive, even parity, clock offset -3 %: equal (5 frames, 45 sample points)
+ok   UART receive, even parity, clock offset +4 %: equal (5 frames, 45 sample points)
+ok   UART receive, even parity: 40 bit strobes for 5 frames (rule N4)
+ok   UART receive, even parity, parity bit of character 2 inverted: equal (5 frames, 45 sample points); FERR set
+ok   UART transmit, 8 data bits, odd parity: waveform equal, delay 2 cycles
+ok   UART transmit, odd parity: 40 strobes of data bits for 5 frames (rule N4: none for the additional bit)
+ok   UART receive, odd parity, clock offset +0 %: equal (5 frames, 45 sample points)
+ok   UART receive, odd parity, clock offset -3 %: equal (5 frames, 45 sample points)
+ok   UART receive, odd parity, clock offset +4 %: equal (5 frames, 45 sample points)
+ok   UART receive, odd parity: 40 bit strobes for 5 frames (rule N4)
+ok   UART receive, odd parity, parity bit of character 2 inverted: equal (5 frames, 45 sample points); FERR set
+ok   UART transmit, 8 data bits, ninth data bit: waveform equal, delay 2 cycles
+ok   UART transmit, ninth data bit: 40 strobes of data bits for 5 frames (rule N4: none for the additional bit)
+ok   UART receive, ninth data bit, clock offset +0 %: equal (5 frames, 45 sample points)
+ok   UART receive, ninth data bit, clock offset -3 %: equal (5 frames, 45 sample points)
+ok   UART receive, ninth data bit, clock offset +4 %: equal (5 frames, 45 sample points)
+ok   UART receive, ninth data bit: 40 bit strobes for 5 frames (rule N4)
+ok   USB transmit, 10 units per bit: waveform equal, delay 2 cycles
+ok   USB receive, 10 units per bit, clock offset +0 %: equal (8 frames, 76 sample points)
+ok   USB receive, 10 units per bit, clock offset -4 %: equal (8 frames, 76 sample points)
+ok   USB receive, 10 units per bit, clock offset +5 %: equal (8 frames, 76 sample points)
+ok   USB transmit, 40 units per bit: waveform equal, delay 2 cycles
+ok   USB receive, 40 units per bit, clock offset +0 %: equal (8 frames, 76 sample points)
+ok   USB receive, 40 units per bit, clock offset -4 %: equal (8 frames, 76 sample points)
+ok   USB receive, 40 units per bit, clock offset +5 %: equal (8 frames, 76 sample points)
+ok   USB keep-alive as reference event: equal (0 frames, 0 sample points)
+ok   10BASE-T transmit, 12 units per bit: waveform equal, delay 2 cycles
+ok   10BASE-T receive, 12 units per bit, clock offset +0 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive on both clock edges, clock offset +0 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive, 12 units per bit, clock offset -10 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive on both clock edges, clock offset -10 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive, 12 units per bit, clock offset +10 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive on both clock edges, clock offset +10 %: equal (8 frames, 128 sample points)
+ok   10BASE-T transmit, 6 units per bit: waveform equal, delay 2 cycles
+ok   10BASE-T receive, 6 units per bit, clock offset +0 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive, 6 units per bit, clock offset -10 %: equal (8 frames, 128 sample points)
+ok   10BASE-T receive, 6 units per bit, clock offset +10 %: equal (8 frames, 128 sample points)
+ok   WS2812 transmit: waveform equal, delay 2 cycles
+ok   WS2812 receive, clock offset +0 %: equal (4 frames, 32 sample points)
+ok   WS2812 receive, clock offset -15 %: equal (4 frames, 32 sample points)
+ok   WS2812 receive, clock offset +20 %: equal (4 frames, 32 sample points)
+random configurations: 200 receive cases, 0 differ; 200 transmit cases, 0 differ
+C9 directed: 0 errors
+C8 directed: 0 errors
+PASS: all directed line cell tests

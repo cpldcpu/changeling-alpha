@@ -1,0 +1,37 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x26} & \reg{TCNTL} & R/W & \texttt{0x00} & 16-bit timer count, low byte \\
+\texttt{0x27} & \reg{TCNTH} & R/W & \texttt{0x00} & 16-bit timer count, high byte \\
+\texttt{0x28} & \reg{ICRL} & R & \texttt{0x00} & Capture value, low byte \\
+\texttt{0x29} & \reg{ICRH} & R & \texttt{0x00} & Capture value, high byte \\
+\texttt{0x3F30} & \reg{TCR} & R/W & \texttt{0x00} & Run, restart at compare A, prescaler \\
+\texttt{0x3F31} & \reg{TCAP} & R/W & \texttt{0x00} & Capture source and edge \\
+\texttt{0x3F32} & \reg{OCRAL} & R/W & \texttt{0x00} & Compare value A, low byte \\
+\texttt{0x3F33} & \reg{OCRAH} & R/W & \texttt{0x00} & Compare value A, high byte \\
+\texttt{0x3F34} & \reg{OCRBL} & R/W & \texttt{0x00} & Compare value B, low byte \\
+\texttt{0x3F35} & \reg{OCRBH} & R/W & \texttt{0x00} & Compare value B, high byte \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{TCR} & \texttt{0x3F30} & \texttt{RUN} & \texttt{CTC} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{PS}} \\ \hline
+\texttt{TCAP} & \texttt{0x3F31} & \texttt{CEDGE} & \multicolumn{2}{c|}{\texttt{CSRC}} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{CPIN}} \\ \hline
+\texttt{OCRAL/H} & \texttt{0x3F32/33} & \multicolumn{8}{c|}{\texttt{compare A, 16 bits}} \\ \hline
+\texttt{OCRBL/H} & \texttt{0x3F34/35} & \multicolumn{8}{c|}{\texttt{compare B, 16 bits}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Field & Meaning \\
+\midrule
+\reg{RUN}, \reg{CTC}, \reg{PS} & Timer runs; count is cleared on compare A; prescaler $2^{\mathtt{PS}}$ on the peripheral clock \\
+\reg{TCAP.CSRC}, \reg{CPIN}, \reg{CEDGE} & Capture source: 0 pin \reg{CPIN} of the bidirectional port, 1 accepted edge of receive cell \reg{CPIN} (0 or 1), 2 reference event of that cell, 3 off. Edge on the pin: 0 rising, 1 falling \\
+\bottomrule
+\end{tabularx}\par}

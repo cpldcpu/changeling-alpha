@@ -1,0 +1,1347 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=24mm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[section]{placeins}
+\usepackage{float}
+\usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{accent}{HTML}{1D5C8A}
+\definecolor{fillA}{HTML}{E6EEF5}
+\definecolor{fillB}{HTML}{F3EDE2}
+\definecolor{fillC}{HTML}{E8F1E6}
+\definecolor{fillD}{HTML}{F0F0F0}
+\color{ink}
+
+\setlist{itemsep=1pt,topsep=3pt,leftmargin=1.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{14pt}{4pt}
+\titlespacing*{\subsection}{0pt}{9pt}{2pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\small rcore8 protocol emulator: datasheet}
+\fancyhead[R]{\small Preliminary, revision 0.3}
+\fancyfoot[C]{\small\thepage}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\est}{\textsuperscript{e}}
+\newcommand{\reg}[1]{\texttt{#1}}
+
+\tikzset{
+  blk/.style={draw=ink,line width=0.5pt,rounded corners=1.5pt,align=center,font=\small,inner sep=4pt,minimum height=8mm},
+  ar/.style={-{Stealth[length=2mm]},line width=0.5pt},
+  dar/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]},line width=0.5pt},
+  lbl/.style={font=\scriptsize,align=center}
+}
+
+\usepackage{longtable}
+\usepackage{multicol}
+\usepackage{colortbl}
+\usepackage{listings}
+\lstset{language=C,basicstyle=\ttfamily\footnotesize,keywordstyle=\color{accent}\bfseries,commentstyle=\color{black!55},
+  columns=fullflexible,keepspaces=true,frame=single,rulecolor=\color{black!30},backgroundcolor=\color{black!3},
+  breaklines=true,showstringspaces=false,xleftmargin=2pt,xrightmargin=2pt,aboveskip=6pt,belowskip=6pt,
+  morekeywords={uint8_t,uint16_t,uint32_t}}
+\newcommand{\tbd}{\textcolor{black!50}{\textit{TBD}}}
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{accent} rcore8 protocol emulator}\\[4pt]
+{\large Two-core 8-bit RISC microcontroller with programmable line cells for serial protocols}\\[6pt]
+{\large Preliminary datasheet}\\[8pt]
+Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
+{\small Revision 0.3, 21 November 2026. Based on specification draft 0.36. Drafted with Claude (Anthropic).}
+\end{center}
+
+\noindent\fcolorbox{accent}{fillA}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+\textbf{Status of this document.} The device does not exist in silicon. All functional data are from RTL
+simulation; rates and limits are given in clock cycles and converted with a 60\,MHz clock. Electrical data,
+timing against real pins, the internal oscillator, package and ordering information are not available yet and
+are marked \tbd. Values marked with a superscript e are estimates.}}
+
+{\small\setcounter{tocdepth}{2}\begin{multicols}{2}\tableofcontents\end{multicols}}
+
+\section{Features}
+
+\begin{itemize}
+\item \textbf{Two 8-bit RISC cores} with 16 registers and 70 instructions of 16 bit; most instructions take one
+clock cycle. Programmed in C with GCC (section~\ref{sec:tools}).
+\item \textbf{Memory:} 2\,KB of code memory per core (1\,024 words of 16 bit, SRAM), 2\,KB of shared data memory.
+A program for one core can use both code memories (4\,KB).
+\item \textbf{Program loaded by a host} through an SPI host link after reset; no non-volatile memory on the chip.
+The host link also gives halt, single step, instruction injection, memory and register access, and a mailbox.
+\item \textbf{Two pairs of line cells.} Each pair has a receive cell and a transmit cell that handle the bit level
+of a serial protocol: timing, line code, bit stuffing, framing with parity or a ninth bit, start and stop conditions of a two-wire bus, clocked or self-timed operation. Configurations
+exist for UART, SPI master and slave, I2C slave, WS2812 controller and LED, USB low-speed, 10BASE-T.
+\item \textbf{8 bidirectional pins} for the line cells or as port pins, 8 input pins, 7 output pins.
+\item \textbf{16-bit timer} with two compare values and capture from a pin or a line cell event; \textbf{three PWM
+channels}; \textbf{CRC unit} with programmable polynomial up to 32 bit, fed by software or by a line cell.
+\item \textbf{Event system:} 16 event flags per core, wait for a set of flags without polling, 16 interrupt
+vectors, a shared time base with a wake-up time per core, four locks between the cores.
+\item \textbf{Clocking:} external clock up to 60\,MHz\,(\tbd) or internal oscillator with 8-bit trim; trim counter
+and loop against a reference pin, the host clock or a line event (USB keep-alive); separate dividers for
+cores and peripherals.
+\item \textbf{Program protection:} write enables and a lock for the code memories.
+\item Technology: IHP 130\,nm CMOS with five metal layers, through Tiny Tapeout. Supply voltage, temperature range, package: \tbd.
+\end{itemize}
+
+\section{Description}
+
+The device is a host-loaded microcontroller for emulating and bridging serial protocols. The bit-level work of a
+protocol is done by the line cells, which are configured by registers and need no program. The cores move
+bytes, keep protocol state and answer within the deadlines of the protocol. With two cores, one core can serve
+a protocol with tight deadlines, for instance USB, while the other runs a second protocol or the application.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.92\textwidth}{!}{\input{figs/fig_block.tex}}
+\caption{Block diagram.}
+\end{figure}
+
+\section{Pins}\label{sec:pins}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lllL@{}}
+\toprule
+Pin & Name & Direction & Function \\
+\midrule
+\texttt{clk} & CLK & in & external clock \\
+\texttt{rst\_n} & RESET & in & reset, active low, asynchronous \\
+\texttt{ui\_in[0]} & HCK & in & host link clock \\
+\texttt{ui\_in[1]} & HCS & in & host link chip select, active low \\
+\texttt{ui\_in[2]} & HDI & in & host link data in \\
+\texttt{ui\_in[3]} & STRAP & in & clock source after reset: 0 external clock, 1 internal oscillator \\
+\texttt{ui\_in[4]} & REF & in & reference input for the trim counter; input pin \\
+\texttt{ui\_in[7:5]} & IN5 to IN7 & in & input pins \\
+\texttt{uo\_out[0]} & HDO & out & host link data out \\
+\texttt{uo\_out[1]} & CKO & out & clock output, or output pin \\
+\texttt{uo\_out[2]} & DBG & out & debug signal, or output pin \\
+\texttt{uo\_out[4:3]} & OUT3, OUT4 & out & output pins \\
+\texttt{uo\_out[7:5]} & PWM0 to PWM2 & out & PWM outputs, or output pins \\
+\texttt{uio[7:0]} & P0 to P7 & in/out & bidirectional port; inputs and outputs of the line cells; pin change event \\
+\bottomrule
+\end{tabularx}
+\caption{Pins of the competition chip (names of the Tiny Tapeout template in the first column). Positions on the
+package or board: \tbd.}
+\end{table}
+
+All eight input pins can be read in \reg{PINB}. Any of P0 to P7 can be the data input, clock input or chip
+select of a receive cell and the output of a transmit cell. A pin whose output is claimed by a transmit cell
+does not follow the port register. Open-drain operation is selected per pin (\reg{ODE}) or done through the
+direction register.
+
+\section{Electrical characteristics}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}Llllll@{}}
+\toprule
+Parameter & Symbol & Min & Typ & Max & Unit \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Absolute maximum ratings}} \\
+Supply voltage, core & $V_{DD}$ & \tbd & & \tbd & V \\
+Supply voltage, pins & $V_{DDIO}$ & \tbd & & \tbd & V \\
+Voltage on any pin & & \tbd & & \tbd & V \\
+Storage temperature & & \tbd & & \tbd & $^\circ$C \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Operating conditions}} \\
+Supply voltage, core & $V_{DD}$ & \tbd & 1.2 & \tbd & V \\
+Supply voltage, pins & $V_{DDIO}$ & \tbd & \tbd & \tbd & V \\
+Ambient temperature & $T_A$ & \tbd & & \tbd & $^\circ$C \\
+External clock frequency & $f_{CLK}$ & & 60 & \tbd & MHz \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Supply current}} \\
+Both cores running, 60\,MHz & $I_{DD}$ & & \tbd & & mA \\
+Both cores waiting, 60\,MHz & & & \tbd & & mA \\
+Internal oscillator, cores waiting & & & \tbd & & mA \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Pins}} \\
+Input low / high level & $V_{IL}$, $V_{IH}$ & \tbd & & \tbd & V \\
+Output low / high level at \tbd\,mA & $V_{OL}$, $V_{OH}$ & \tbd & & \tbd & V \\
+Input sampling: delay to the first synchroniser stage & & & \tbd & & ns \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Internal oscillator}} \\
+Frequency after trimming & $f_{OSC}$ & & 15 & & MHz \\
+Frequency before trimming & & \tbd & & \tbd & MHz \\
+Trim step & & & \tbd & & \% \\
+Drift over temperature and supply after trimming & & & \tbd & & \% \\
+\midrule
+\multicolumn{6}{@{}l}{\textit{Host link}} \\
+Host clock frequency & $f_{HCK}$ & & & $f_{SYS}/8$ & \\
+Set-up and hold of HDI and HCS to HCK & & \tbd & & & ns \\
+\bottomrule
+\end{tabularx}
+\caption{Electrical characteristics. The core supply of 1.2\,V is the nominal value of the technology. The limit
+of the host clock follows from the design: the host link pins are sampled with the system clock.}
+\end{table}
+
+\section{Memory}\label{sec:mem}
+
+\subsection{Memory map}
+
+Both cores use the same data address space.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Data addresses & Size & Content \\
+\midrule
+\texttt{0x0000} to \texttt{0x003F} & 64 & fast I/O registers \\
+\texttt{0x0040} to \texttt{0x083F} & 2\,048 & data memory, shared by both cores \\
+\texttt{0x3F00} to \texttt{0x3FFF} & 256 & configuration page \\
+\texttt{0x4000} to \texttt{0x47FF} & 2\,048 & code memory 0, as bytes, low byte of a word first \\
+\texttt{0x4800} to \texttt{0x4FFF} & 2\,048 & code memory 1 \\
+\bottomrule
+\end{tabularx}
+\caption{Data address space. Other addresses are reserved.}
+\end{table}
+
+\subsection{Code memories}
+
+Each core has a code memory of 1\,024 words (2\,048 bytes) in SRAM. It is empty after power-up and is written by
+the host (section~\ref{sec:host}). Core 0 executes from code memory 0 at word addresses 0 to 1\,023 and from code
+memory 1 at 1\,024 to 2\,047, so a program for core 0 alone can have 4\,096 bytes while core 1 is stopped.
+
+A core reads constants from its own code memory through the data addresses above; such a load takes 3 cycles.
+A core can also read and write the code memory of the other core. This takes the memory from its owner for
+two cycles per access; if the owner has fixed priority and does not wait, the access is delayed until it
+waits. Tables for one core can be placed in the unused part of the other core's code memory.
+
+\subsection{Data memory}
+
+2\,048 bytes at \texttt{0x0040} to \texttt{0x083F}, not initialised after power-up. Variables of the two images are
+placed in separate parts by the linker options of section~\ref{sec:tools}; variables that both cores use are placed
+at fixed addresses in a common header file. The start-up code clears the variables of an image, which takes
+about 4 clock cycles per byte; large buffers are placed in the section \texttt{.noinit}.
+
+\subsection{Program protection}
+
+Stores by a core to a code memory are ignored unless they are enabled: \reg{PWE} for the core's own code memory,
+\reg{XWE} for the other one. \reg{PMLIM} protects the lower part of both code memories in steps of four words.
+\reg{LOCK} blocks all program writes until the next reset. Writes by the host link are not affected.
+
+\input{ds_gen/mem.tex}
+
+\section{Clocking and reset}\label{sec:clk}
+
+\subsection{Reset}
+
+The reset pin is active low and asynchronous. After reset both cores are held, the peripherals are in their
+reset state, and the system clock is the source selected by the strap pin. The host loads the program and
+releases the core reset with a control command (section~\ref{sec:host}). Time from the release of the reset pin
+to the first host access, and brown-out behaviour: \tbd.
+
+\subsection{Clock sources and switching}
+
+\begin{itemize}
+\item \textbf{External clock}, up to 60\,MHz\,(\tbd).
+\item \textbf{Internal oscillator}, 15\,MHz nominal, with an 8-bit trim value (\reg{OSCTRIM}); a higher value gives a
+higher frequency. Range and step: \tbd.
+\end{itemize}
+
+After reset the strap pin selects the source (low: external clock). Firmware or the host requests the other
+source with \reg{SRC}. A request enables the oscillator; the switch is carried out when the requested clock is
+seen running, and it produces one long low phase and no short pulse. A request for a clock that is not present
+leaves the chip running on the present one. \reg{CLKSTAT} shows the active source. The oscillator cannot be
+switched off while it is the active or the requested source.
+
+\subsection{Dividers}
+
+The core divider (\reg{CLKCDIV}) and the peripheral divider (\reg{CLKPDIV}) each enable their part in one of
+$n+1$ cycles of the source clock, $n$ = 0 to 255. They are independent: changing the core divider does not
+change a bit rate. The peripheral divider applies to the line cells, the timer, the PWM and the time base;
+each line cell has its own prescaler behind it. The clock output pin gives the source clock divided by 2 to 256
+(\reg{CLKOUT}).
+
+\subsection{Trimming the oscillator}
+
+The trim counter counts cycles of the source clock over an interval given by a reference:
+
+\begin{itemize}
+\item a number of periods (\reg{INT}+1) of the host link clock or of the reference pin, started with \reg{MEAS}; or
+\item the time between two reference events of a receive cell, for instance the keep-alive signal of USB.
+\end{itemize}
+
+The count is in \reg{TRCNT}. A measurement is valid if it differs from \reg{TRTGT} by less than 64 times
+\reg{TRWIN}; with \reg{TRWIN} = 0 every measurement is valid. With a receive cell as reference and a window, an
+event that comes not later than target minus window after the last used event is left out, so a periodic event
+is measured although other events lie in between. Each valid measurement sets the event flag \reg{TRIM}. With
+\reg{LOOP} set, each valid measurement also moves \reg{OSCTRIM} by one step towards the target. The host can do
+the same through the host link before any firmware runs.
+
+\lstinputlisting{examples/ex_clock.c}
+
+The example was compiled (192 bytes); the same sequence with other values is part of a simulated test.
+
+\input{ds_gen/clock.tex}
+
+\section{CPU core}\label{sec:core}
+
+\subsection{Overview}
+
+The chip has two identical 8-bit RISC cores. Each core has 16 general registers, a status register, a stack
+pointer of 12 bit and a program counter. Instructions are one word of 16 bit. An instruction is fetched in one
+cycle and executed in the next while the following one is fetched, so most instructions take one clock cycle
+and a taken jump takes two. Code and data are in separate memories; the code memory can also be read as data.
+The cores differ only in the width of the program counter: 11 bit for core 0, which can execute from both code
+memories, and 10 bit for core 1.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Item & Description \\
+\midrule
+Registers & r16 to r31, 8 bit each. Three pairs are 16-bit pointers for indirect addressing: X = r27:r26, Y = r29:r28, Z = r31:r30 \\
+Status register \reg{SREG} & flags I (interrupt enable), T (bit copy), S (sign, N xor V), V (overflow), N (negative), Z (zero), C (carry). Bit 5 reads as zero \\
+Stack pointer \reg{SP} & 12 bit, in the data memory, grows downwards. PUSH stores at SP and then decrements it. A call or an interrupt stores the return address in two bytes. Zero after reset; the start-up code sets it \\
+Program counter & in words. Core 0: 11 bit, 2\,048 words in two code memories. Core 1: 10 bit, 1\,024 words \\
+Reset & execution starts at word 0 of the core's code memory, with all flags cleared \\
+\bottomrule
+\end{tabularx}
+\caption{Programming model of a core.}
+\end{table}
+
+\input{ds_gen/core.tex}
+
+\subsection{Instruction set}
+
+There is no multiply instruction and no instruction with a displacement in the address. Codes that are not in
+the table execute as no operation.
+
+\input{ds_gen/instr.tex}
+
+\noindent\textsuperscript{a} Load through a pointer: 2 cycles from the data memory, 1 cycle from a register (fast I/O or
+configuration page), 3 cycles from the core's own code memory.\\
+\textsuperscript{b} Store through a pointer: 1 cycle; 3 cycles to the core's own code memory.
+
+\paragraph{Flags.} Z is set when the result is zero; for \texttt{SBC}, \texttt{SBCI} and \texttt{CPC} it stays set only
+if it was set before, so a multi-byte comparison gives the right result. N is bit 7 of the result. V is the
+overflow of the two's complement operation; logic instructions clear it. C is the carry or, for subtraction
+and comparison, the borrow; \texttt{COM} sets it. S is not stored and reads as N xor V.
+
+\paragraph{Branch conditions.} \texttt{BRBS} and \texttt{BRBC} test one flag of \reg{SREG}: 0 C, 1 Z, 2 N, 3 V, 4 S, 6 T,
+7 I. The usual names are accepted by the assembler, for instance \texttt{BREQ} = \texttt{BRBS 1}, \texttt{BRNE} =
+\texttt{BRBC 1}, \texttt{BRCS}/\texttt{BRLO} = \texttt{BRBS 0}, \texttt{BRCC}/\texttt{BRSH} = \texttt{BRBC 0}, \texttt{BRLT} =
+\texttt{BRBS 4}, \texttt{BRGE} = \texttt{BRBC 4}. Also \texttt{LSL Rd} = \texttt{ADD Rd, Rd}, \texttt{ROL Rd} =
+\texttt{ADC Rd, Rd}, \texttt{TST Rd} = \texttt{AND Rd, Rd}, \texttt{CLR Rd} = \texttt{EOR Rd, Rd}, \texttt{SER Rd} =
+\texttt{LDI Rd, 0xFF}.
+
+\subsection{Instruction timing}
+
+The cycle counts of table~\ref{tab:instr} are clock cycles in which the core is enabled. Two things add to them:
+
+\begin{itemize}
+\item \textbf{Core divider.} With \reg{CLKCDIV} = $n$ the core is enabled in one of $n+1$ clock cycles.
+\item \textbf{Held cycles.} When both cores need the data memory or the register bus in the same cycle, one of them
+is held for that cycle (section~\ref{sec:twocore}). A core with priority, and a core whose partner waits, is
+never held.
+\end{itemize}
+
+An interrupt entry takes 2 cycles and \texttt{RETI} 3. At 60\,MHz with divider 1 a core executes up to 60 million
+one-cycle instructions per second.
+
+\subsection{Data addressing}
+
+All loads and stores use the data address space of section~\ref{sec:mem}. \texttt{IN}, \texttt{OUT} reach the fast
+I/O registers at addresses 0 to 63; \texttt{SBI}, \texttt{CBI}, \texttt{SBIC} and \texttt{SBIS} reach addresses 0 to 31 and
+change or test one bit without reading the other bits. \texttt{LDS} and \texttt{STS} have a 7-bit address and reach
+the data memory from \texttt{0x40} to \texttt{0xBF}. Everything else, including the configuration page and the code
+memories, is reached through the pointers X, Y and Z, with optional increment after or decrement before the
+access.
+
+\subsection{Interrupts}
+
+Each core has 16 interrupt sources, which are the 16 event flags of section~\ref{sec:events}. Flag $n$ uses vector
+$n+1$, which is word address $n+1$ of the core's code memory; word 0 is the reset vector. An interrupt is taken
+at the start of an instruction when I is set, the flag is set and its bit in \reg{IER} is set. The lowest
+pending vector is taken first. The entry stores the return address, clears I and takes 2 cycles. \texttt{RETI}
+returns and sets I. After an instruction that sets I, one more instruction is executed before an interrupt is
+taken.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}llll@{}}
+\toprule
+Vector & Source & Vector & Source \\
+\midrule
+0 & reset & 9 & receive cell 0 \\
+1 & pin change & 10 & transmit cell 0 \\
+2 & timer capture & 11 & receive cell 1 \\
+3 & timer compare A & 12 & transmit cell 1 \\
+4 & timer compare B & 13 & software flag 0 \\
+5 & timer overflow & 14 & software flag 1 \\
+6 & mailbox & 15 & software flag 2 \\
+7 & trim counter & 16 & software flag 3 \\
+8 & wake-up time & & \\
+\bottomrule
+\end{tabular}
+\caption{Interrupt vectors. The five flags of vectors 1 to 5 are cleared by the entry; the others are cleared by
+their source or by firmware.}
+\end{table}
+
+\subsection{Waiting, SLEEP and BREAK}
+
+A core can stop until an event arrives, without an interrupt routine: writing the wait mask (\reg{WAITH}, then
+\reg{WAITL}) stops the core until one of the selected event flags is set; it then continues with the next
+instruction. \texttt{SLEEP} does the same with the mask written last. An enabled pending interrupt also ends a wait.
+A waiting core does not use the bus, so the other core is not held. \texttt{BREAK} halts the core until the host
+link releases it (section~\ref{sec:host}).
+
+\subsection{Protected registers}
+
+Six registers accept a write only if the same core has written the value \texttt{0xD8} to \reg{CCP} within the
+preceding four instructions: \reg{CLKCTL}, \reg{CLKCDIV}, \reg{ARB}, \reg{LCOWN}, \reg{PMCR} and \reg{PMLIM}. The
+macro \texttt{PROT\_WRITE(reg, value)} of the header file produces the sequence.
+
+\subsection{Compilers}\label{sec:compiler}
+
+The instruction set, the register set and the calling convention are those of an existing reduced 8-bit core
+that open-source compilers support. No compiler change is needed.
+
+\begin{itemize}
+\item \textbf{GCC} with binutils and the C library for this target family: architecture \texttt{avrtiny}, selected
+with the machine option \texttt{-mmcu=attiny40} (the member of the family with the largest memory). All firmware
+of this project was built this way, with GCC 7.3.0; the commands are in section~\ref{sec:tools}.
+\item \textbf{LLVM/clang} lists the same device family for its target \texttt{avr}. This was not tried with
+this chip.
+\end{itemize}
+
+The machine option selects the instruction subset and the libraries only. The memory layout is set by two
+linker symbols, and the peripheral registers of that device do not exist here: programs include \texttt{rpe.h}
+and not the device header of the compiler. Three properties of the generated code matter for timing-critical
+routines: function arguments are passed in r25 down to r20 and further arguments on the stack; there is no
+load or store with displacement, so access to structure members and stack variables costs extra instructions;
+\texttt{LDS} and \texttt{STS} reach only the first 128 bytes of the data memory.
+
+\section{Two cores}\label{sec:twocore}
+
+\subsection{Start and stop}
+
+After the host has released the core reset, core 0 runs and core 1 is stopped. Setting \reg{EN1} in \reg{CORECTL}
+starts core 1 at word 0 of its code memory; clearing an enable bit stops that core. Each core has its own
+registers, flags, stack pointer, interrupt enables, wait mask and wake-up time. The stacks are in the shared
+data memory, so each image sets its own stack pointer (section~\ref{sec:tools}).
+
+\subsection{Shared bus and arbiter}
+
+The data memory, the fast I/O registers and the configuration page are shared and are reached through one bus.
+A core requests the bus only in the cycles in which its instruction accesses data or a register. If both
+request it in the same cycle, the arbiter grants one and holds the other for one cycle. \reg{ARB} selects
+alternating grants or a fixed priority.
+
+\begin{itemize}
+\item A core with fixed priority runs with exactly the timing it has alone, whatever the other core does.
+\item In the alternating setting the first collision goes to core 0 and then the cores take turns.
+\item A read with a side effect and a write are carried out exactly once.
+\item Firmware rule: a core waits for events and does not poll registers in a loop while the other core has
+deadlines; fixed priority is given to the core with deadlines.
+\end{itemize}
+
+In simulation the bus holds added at most 0.5 clock cycles to the mean service time of a UART at 1\,Mbaud on one
+core while the other core ran an SPI master.
+
+\subsection{Locks and software flags}
+
+Four locks give mutual exclusion. A core takes lock $n$ by setting bit $n$ of \reg{LOCK} and then reads the bit:
+it is one if the core holds the lock. Clearing the bit releases it. The header file has \texttt{lock\_try},
+\texttt{lock\_take} and \texttt{lock\_release}. The four software flags \reg{SW0} to \reg{SW3} are event flags that
+either core sets and clears with a single-bit instruction; the other core can wait for them or take an
+interrupt. Section~\ref{sec:ex2c} has an example.
+
+\input{ds_gen/twocore.tex}
+
+\section{I/O ports}\label{sec:ports}
+
+The chip has three groups of pins. The bidirectional port P0 to P7 has a direction register, an output
+register and a pin register. A pin is an output if its bit in \reg{DDR} is set. With its bit in \reg{ODE} set, a pin
+is only driven low: this gives open-drain outputs, and an open-drain line can also be made by keeping the
+output bit at zero and switching the direction bit. The input pins are read in \reg{PINB}; three of them are the
+host link and two are the strap and the reference input. The output pins are written in \reg{PORTC}; five of
+them have a second function (clock output, debug signal, three PWM channels) when that function is enabled.
+
+All inputs pass a two-stage synchroniser; a level is visible in the pin registers two clock cycles after it is
+at the pin. A change of a pin of the bidirectional port whose bit is set in \reg{PCMSK} sets the event flag
+\reg{PC}. A line cell can use any pin of the bidirectional port as input; a pin whose output is claimed by a
+transmit cell does not follow \reg{PORT}.
+
+\input{ds_gen/ports.tex}
+
+\noindent Pin positions in \reg{PINB} and \reg{PORTC} are provisional (section~\ref{sec:pins}).
+
+\section{Events, wait and time base}\label{sec:events}
+
+\subsection{Event flags}
+
+Each core sees 16 event flags in \reg{IFRL} and \reg{IFRH}. A flag can end a wait (section~\ref{sec:core}), raise an
+interrupt if its bit in \reg{IERL}/\reg{IERH} is set, or be read and cleared by firmware. The flags of the timer,
+the pin change, the trim counter and the mailbox are shared by both cores. The four line cell flags are seen
+only by the owner core of the pair. \reg{DLY} exists once per core.
+
+\input{ds_gen/events.tex}
+
+\subsection{Waiting for events}
+
+\begin{lstlisting}
+IFRL = EV_OCA;                     /* clear a stored flag before waiting for it */
+wait_for(EV_LR0 | EV_OCA);         /* stop until a frame has arrived or compare A has occurred */
+if (IFRH & (EV_LR0 >> 8)) { ... }  /* find out which one */
+\end{lstlisting}
+
+\texttt{wait\_for(mask)} writes \reg{WAITH} and \reg{WAITL}. The wait ends in the first enabled cycle of the core in
+which a selected flag is set; if one is set already, the core does not stop. An event that happens in the cycle
+in which firmware clears its flag keeps the flag set.
+
+\subsection{Time base and wake-up time}
+
+A 16-bit counter counts the cycles of the peripheral clock and is shared by both cores; it is read in
+\reg{DLYL}/\reg{DLYH}. Each core has a wake-up time: writing \reg{DLYH} and then \reg{DLYL} sets it and clears the
+core's \reg{DLY} flag, and the flag is set when the time base reaches that value. \texttt{delay\_after(n)} sets the
+wake-up time $n$ cycles ahead, at most 32\,767. The time base repeats after 65\,536 cycles (1.09\,ms at
+60\,MHz with \reg{CLKPDIV} = 0); longer times are counted in firmware or with the timer. After reset the wake-up
+time is zero, so \reg{DLY} is set at the first wrap of the time base; firmware sets a wake-up time before it
+uses the flag.
+
+\section{Line cells}\label{sec:lc}
+
+This section contains everything about the line cells: how they work, configuration examples with timing
+diagrams and register settings, and the registers.
+
+\subsection{How a line cell works}
+
+A line cell is a fixed circuit with a timer, a lookup table for the line code and a shift register. It has no
+program: firmware writes its configuration registers once and then only moves frames and reads status. A
+\emph{receive cell} turns the signal on a pin into frames of 1 to 8 bits. A \emph{transmit cell} turns frames
+into a signal on one or two pins. A \emph{pair} is one receive cell and one transmit cell with two links between
+them. The chip has two pairs. One protocol port normally uses one pair: a UART uses the receive cell for the
+receive line and the transmit cell for the transmit line; an SPI master uses the transmit cell for clock and
+data out and the receive cell for data in.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.84\textwidth}{!}{\input{figs/fig_pair.tex}}
+\caption{A pair of line cells and its connections.}
+\end{figure}
+
+\paragraph{Time unit and timer values.} All times in a cell are counted in its time unit: $2^{\mathtt{PRE}}$
+clock cycles of the peripheral clock, or half a clock cycle for a receive cell with \reg{UNIT} = 1. Each cell has
+an 8-bit timer. Its reload values A, B and C are registers; the value 0 means 256.
+
+\begin{itemize}
+\item Receive cell: A is the time from an accepted edge to the first sample. B is the time from one sample to
+the next, and the timeout that sets \reg{IDLE} while the cell waits for an edge.
+\item Transmit cell: B is the bit time, or one of two periods per bit with \reg{TWOPH}. In compare mode A is the
+high time for a one and C the high time for a zero.
+\end{itemize}
+
+\paragraph{Receive cell.}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{figs/fig_rx.tex}}
+\caption{Receive cell. Left: input path and timing. Right: decoding and data path.}
+\end{figure}
+
+\begin{enumerate}
+\item \textbf{Input.} One of the eight bidirectional pins (\reg{INSEL}), optionally inverted (\reg{INV}) and filtered
+(\reg{FILT}: two equal samples or majority of three). The level reaches the cell two clock cycles after it is at
+the pin.
+\item \textbf{Edge detector.} It watches the input pin, or a separate clock pin (\reg{CSEL}, \reg{CEN}). \reg{EDGE}
+selects rising, falling or both. An edge is accepted always, or only while the cell waits (\reg{ACC}).
+\item \textbf{Sample point.} \reg{TRIG} selects where it comes from:
+  \begin{itemize}
+  \item the timer: an accepted edge loads A, each expiry is a sample point and loads B. \reg{STOP} selects whether
+  the timer keeps running, or the cell waits for the next edge after each sample or after each frame;
+  \item an accepted edge of the clock pin: one sample per clock edge (clocked reception);
+  \item the middle of each bit that the transmit cell of the pair sends.
+  \end{itemize}
+\item \textbf{Decoding.} At a sample point the 8-entry decode table gives the bit from the pin level, the
+previous sample and the phase. One table value selects level, inverted level or NRZI.
+\item \textbf{Bit stuffing.} With \reg{LIM} not 0 a run-length counter drops the bit that follows \reg{LIM} ones (or
+equal bits, \reg{RMODE}). If that bit does not have the expected value, \reg{STUFF} is set.
+\item \textbf{Match pattern.} With \reg{MEN} the cell delivers no frame after it was enabled or reset until the last
+eight bits equal \reg{LCMATCH}. Then \reg{MATCH} is set and the next bit starts the first frame. This aligns the
+frames on a sync pattern or a start-of-frame delimiter.
+\item \textbf{Frames.} After \reg{LEN}+1 bits the frame moves to the holding register, which holds two frames, and
+\reg{RXF} is set. Reading \reg{LRnDATA} returns the oldest frame. A frame that completes while two are waiting is
+lost and sets \reg{OVR}.
+\item \textbf{Idle and receiver reset.} While the cell waits for an edge, B runs as a timeout; when it expires, the
+line is idle. If the timer keeps running (\reg{STOP} = 0), the line is idle at the eighth expiry in a row without an
+accepted edge. \reg{IDLE} is then set and the receiver is reset: an incomplete frame is discarded and the search
+for the match pattern starts again, so the next packet is aligned anew. Frames in the holding register are
+kept. The receiver is also reset by the start of both pins low, by an inactive chip select and by clearing
+\reg{RXEN}.
+\item \textbf{Both pins low.} With \reg{BLEN} the cell reports when the input pin and the pin \reg{CSEL} are both
+low (\reg{BOTHL} as a level, \reg{EOP} stored). This is the end of packet of USB.
+\item \textbf{Events to other blocks.} Each kept bit goes to the transmit cell of the pair and, after the match
+pattern, to the CRC unit. A selected event (\reg{REF}) goes to the trim counter and the timer capture.
+\end{enumerate}
+
+\paragraph{Transmit cell.}
+
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{\input{figs/fig_tx.tex}}
+\caption{Transmit cell.}
+\end{figure}
+
+\begin{enumerate}
+\item \textbf{Frame buffer.} Writing \reg{LTnDATA} stores one frame and clears \reg{TXE}. When the shift register
+is free the frame moves there, \reg{TXE} is set again and \reg{BUSY} is set. A frame written before the last bit
+of the current frame ends follows without a gap.
+\item \textbf{Bit sequence.} \reg{LEN}+1 bits in the selected order; with \reg{SS} a start bit before and a stop bit
+after them; with \reg{LIM} not 0 a stuffed bit after \reg{LIM} ones.
+\item \textbf{Advance.} \reg{TRIG} selects what moves the cell to the next bit: the timer (B per bit, or two
+periods of B with \reg{TWOPH}), an edge on a clock pin (clocked transmission as a slave), or each bit that the
+receive cell of the pair delivers. With \reg{SRC} the bit value also comes from the receive cell; the pair then
+forwards a bit stream with new timing and a new line code.
+\item \textbf{Line code.} The 8-entry encode table gives the output level from the data bit, the phase and the
+previous output: NRZ, NRZI, Manchester. In compare mode (\reg{CMP}) the output is high for A or C time units at
+the start of each bit of B time units.
+\item \textbf{Outputs.} The true output goes to pin \reg{OUTSEL}. The second output (pin \reg{NSEL}) is the complement
+of the true output or, with \reg{NFN}, a bit clock with polarity \reg{CPOL} and phase \reg{CPHA}. \reg{OEM} selects
+whether the pins are driven as the direction register says, always, or only while the cell is busy.
+\item \textbf{End of a transmission.} When the last bit ends and the buffer is empty, the outputs take the idle
+level (\reg{IDLE}) and \reg{BUSY} is cleared. With \reg{EOP} both outputs are low for two bit times first.
+\end{enumerate}
+
+\paragraph{Additional frame bit.} With \reg{PAR} in \reg{LCX} not 0 every frame has one more bit after its data
+bits; in the transmit cell it comes before the stop bit. The transmit cell computes an odd or even parity bit,
+or sends the bit \reg{X9} that was in \reg{LCX} when the frame was written (ninth data bit). The receive cell
+completes the frame with the additional bit, stores it with the frame and shows the bit of the oldest frame in
+\reg{X9}; \reg{X9} is read before \reg{LRnDATA}. A wrong parity sets \reg{FERR} in the status register. The
+additional bit is timed, encoded and counted for stuffing like a data bit. It is not shifted into the match
+window and gives no strobe to the other cell of the pair or to the CRC unit. A transmit cell with a ninth data
+bit that is always 1 sends two stop bits.
+
+\paragraph{Start at the shift edge.} A transmit cell that is clocked by a pin puts out the first bit of a frame
+when the frame is written. With \reg{ESTR} = 1 it waits and puts out the first bit at the first shift edge after
+the write, so its output changes only at shift edges. This is the setting for the data line of an I2C slave,
+where a change while the clock is high is a start or stop condition. \reg{CPHA} has no effect with \reg{ESTR} = 1.
+
+\paragraph{Bus conditions.} With \reg{BCD} = 1 a receive cell with a clock pin watches its two inputs in every
+clock cycle. A falling edge of the data input while the clock input is high sets the flag \reg{STA}, a rising
+edge sets \reg{STP}. Both reset the bit count of the receiver, so the next frame starts with the next clock
+edge; frames in the holding register are kept. A data edge in the same clock cycle as a clock edge is not a
+condition. With \reg{EC} in \reg{LCEC} not 0 the cell counts falling edges of the data input while the clock
+input is low; a clock edge clears the count and the flag \reg{ECF} is set when the count reaches \reg{EC}. The
+three flags are in \reg{LCX}. They are cleared by writing a one, which also writes the configuration bits of
+\reg{LCX}, and they set the event flag of the cell with \reg{BEV} = 1.
+
+\paragraph{Chip select, pins and events.} A cell with \reg{SSEN} is held in reset and does not drive its pins
+while its chip select pin is inactive. A pin whose output is claimed by a transmit cell does not follow the
+port register. Each pair belongs to one core (\reg{LCOWN}); only that core can access its registers and sees its
+event flags. A status bit selected in \reg{LCEVM} sets the event flag of the cell, on which the core can wait.
+
+\paragraph{Fixed delays.} A pin level reaches the receive cell two clock cycles after it is at the pin. A frame
+written to \reg{LTnDATA} appears at the pin three clock cycles after the write when the transmitter is idle.
+
+\subsection{Configuration examples}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLL@{}}
+\toprule
+Protocol & Role and rate in simulation & Remarks \\
+\midrule
+UART & 8 data bits, optional parity (odd, even) or ninth bit, 1 stop bit, or 2 stop bits on transmit without parity; 2 clock cycles per bit and slower; bit time tolerance of the receiver $\pm 5.3\,\%$ at 16 cycles per bit and above & stop bit and start bit are not checked by one cell\\
+SPI & master in modes 0 to 3 at 8 cycles per bit and slower (7.5\,MHz); slave with data out down to 12 cycles per bit (5\,MHz) & no underrun indication as slave \\
+I2C & slave with line cells at 100 and 400\,kHz, start and stop from the bus condition flags; master in firmware with clock stretching, arbitration and bus recovery & acknowledge by firmware; no clock stretching by hardware as slave \\
+WS2812 & controller at 800\,kbit/s; LED with forwarding & forwarding keeps the bit period of the input \\
+USB low-speed & device (HID with enumeration) from the 60\,MHz clock or from the internal oscillator trimmed by the bus & core clock of 15\,MHz or more for the device stack \\
+10BASE-T & frames up to 1\,518 bytes, frame check with the CRC unit, ARP and ping endpoint & idle pulse single-ended by firmware; no link pulses; line driver and transformer external \\
+\bottomrule
+\end{tabularx}
+\caption{Protocols with tested configurations. Rates are from RTL simulation with ideal signals; rates on
+real pins: \tbd.}
+\end{table}
+
+The following examples give the register settings and a timing diagram for the main ways of using a cell. The
+diagrams are drawn from RTL simulation of the complete chip, one column per clock cycle, and the settings are
+read from the same simulation. The rates are low so that single clock cycles are visible; for other rates only
+A, B, C and \reg{PRE} change. An arrow on a row marks the clock cycle of an event. The rows ``pin sampled'' and
+``edge accepted'' show the time at the pin; the status bits follow two cycles later. Registers that are not
+listed are zero.
+
+\paragraph{Example 1: start-stop framing (UART).} 8 clock cycles per bit, one frame \texttt{0x53}; the receive cell
+listens on the pin of the transmit cell. For another rate: B = bit time, A = 1.5 bit times, with \reg{PRE} so that
+both fit into 8 bit (115\,200 baud at 60\,MHz: \reg{PRE} = 2, B = 130, A = 195).
+
+{\small\input{figs/lcex_1.tex}}
+
+\begin{figure}[H]
+\centering
+\input{figs/wave_1.tex}
+\caption{Example 1. \reg{TXE} is set again as soon as the frame has moved to the shift register. The first sample
+is A = 12 cycles after the start edge, the others follow every B = 8 cycles. \reg{RXF} is set with the eighth
+sample; the stop bit is not sampled.}
+\end{figure}
+
+\paragraph{Variants of example 1 with \texttt{LCX}.} The settings above stay; \reg{LCX} is written before \reg{LCCTRL}.
+No timing diagram is given for these variants.
+
+\begin{tabularx}{\linewidth}{@{}L l l L@{}}
+\toprule
+Format & \texttt{LCX} transmit & \texttt{LCX} receive & Firmware \\
+\midrule
+8 data bits, even parity, 1 stop bit & \texttt{0x02} & \texttt{0x02} & a set \reg{FERR} in \reg{LRnSTAT} marks a wrong parity; cleared by writing \texttt{0x40} \\
+8 data bits, odd parity, 1 stop bit & \texttt{0x01} & \texttt{0x01} & as above \\
+9 data bits, 1 stop bit & \texttt{0x03} & \texttt{0x03} & transmit: write \reg{LCX} = \texttt{0x03} or \texttt{0x83}, then \reg{LTnDATA}; receive: read bit 7 of \reg{LCX}, then \reg{LRnDATA} \\
+8 data bits, no parity, 2 stop bits on transmit & \texttt{0x83} & \texttt{0x00} & none \\
+\bottomrule
+\end{tabularx}
+
+\paragraph{I2C slave with bus condition flags.} Receive cell: the clock pin is SCL (\reg{CEN} = 1, \reg{TRIG} = 1, rising edge), the data
+input is SDA, \reg{LCX} = \texttt{0x0C} (\reg{BCD}, \reg{BEV}), \reg{LCEVM} = \texttt{0x80}. The event flag of the cell is then set
+by a received byte, a start and a stop. Firmware reads \reg{LRnSTAT} and \reg{LCX}, and clears a condition by
+writing \texttt{0x2C} (start) or \texttt{0x1C} (stop). Transmit cell for read data: clocked by SCL, open drain,
+driven while busy, \reg{LCX} = \texttt{0x04} (\reg{ESTR}); a byte is written while SCL is high in the acknowledge clock
+and goes out from the next falling edge. The acknowledge is driven by firmware through the direction register.
+After each acknowledge clock the receive cell is restarted, because it has counted that clock as a bit.
+The file \texttt{fw20\_i2cs9.c} of the RTL package is a complete slave. No timing diagram is given.
+
+\paragraph{Example 2: transmission with a bit clock (SPI master, mode 0).} 8 clock cycles per bit, frame
+\texttt{0xA6}. The second output is the clock. The receive cell takes one sample per transmitted bit; in the
+simulation it listens on the data output.
+
+{\small\input{figs/lcex_2.tex}}
+
+\begin{figure}[H]
+\centering
+\input{figs/wave_2.tex}
+\caption{Example 2. The level that the receive cell takes is the one at the pin four clock cycles before the
+rising clock edge. A device that answers on the falling clock edge has to deliver its data within half a bit
+time minus four clock cycles: zero at B = 4, four cycles at B = 8.}
+\end{figure}
+
+\paragraph{Example 3: compare mode (pulse width, as for WS2812).} Frame \texttt{0xB0}. For WS2812 at 60\,MHz:
+A = 48, B = 75, C = 24.
+
+{\small\input{figs/lcex_3.tex}}
+
+\begin{figure}[H]
+\centering
+\input{figs/wave_3.tex}
+\caption{Example 3. Each bit lasts B = 20 cycles; the output is high for A = 12 cycles for a one and for C = 5
+cycles for a zero.}
+\end{figure}
+
+\paragraph{Example 4: Manchester code (10BASE-T).} 6 clock cycles per bit. The transmit cell sends a preamble
+byte, the match pattern and one data byte. The receive cell uses the time unit of half a clock cycle and takes
+its timing from every bit: the edge in the middle of a bit is accepted and the sample follows three quarters of
+a bit later.
+
+{\small\input{figs/lcex_4.tex}}
+
+\begin{figure}[H]
+\centering
+\input{figs/wave_4.tex}
+\caption{Example 4, from the end of the preamble. The edges at the bit boundaries arrive while the timer runs
+and are not accepted. \reg{MATCH} is set when the last eight bits equal \texttt{0xD5}; \reg{RXF} is set eight bits
+later. \reg{IDLE} is set when no edge has arrived for B = 24 time units.}
+\end{figure}
+
+\paragraph{Example 5: NRZI with bit stuffing and end of packet on two outputs (USB low-speed framing).} Here at
+10 clock cycles per bit; frame \texttt{0xFE}. At 60\,MHz a USB low-speed bit is 40 cycles (B = 40).
+
+{\small\input{figs/lcex_5.tex}}
+
+\begin{figure}[H]
+\centering
+\input{figs/wave_5.tex}
+\caption{Example 5. A zero toggles the outputs, a one keeps them. After six ones the cell inserts a zero. Then
+both outputs are low for two bit times, and \reg{BUSY} stays set until then. The dashed line is the released pin.}
+\end{figure}
+
+\paragraph{Further configurations.} The table lists the settings of the other configurations that were tested:
+clocked reception and transmission as SPI slave and I2C slave, WS2812 reception with forwarding, USB reception.
+Timing diagrams for these are not included yet. The firmware files of the design package show their use.
+
+\begin{table}[H]
+\centering\scriptsize
+\setlength{\tabcolsep}{2.5pt}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lccccccccccccc@{}}
+\toprule
+Use & CTRL & PIN & OUT & CLK & TIM & A & B & C & LUT & SH & MATCH & RUN & EVM \\
+\midrule
+SPI master, T & A0 & 01 & 13 & 08 & 04 & 1 & HB & 1 & enc F0 & E0 & -- & -- & -- \\
+SPI master, R & C0 & 40 & -- & -- & 02 & 1 & 1 & 0 & dec F0 & E0 & -- & -- & 80 \\
+SPI slave, T & A0 & 01 & 50 & 20 & 41 & 1 & 1 & 1 & enc F0 & E0 & -- & -- & -- \\
+SPI slave, R & C0 & -- & -- & 30 & 41 & 1 & 1 & 0 & dec F0 & E0 & -- & -- & 80 \\
+I2C slave, R & C0 & 80 & -- & B0 & 41 & 1 & 1 & 0 & dec F0 & E0 & -- & -- & 80 \\
+I2C slave, T & 80 & 02 & 80 & A0 & 41 & 1 & 1 & 1 & enc F0 & E0 & -- & 04 & -- \\
+WS2812 control, T & A0 & 01 & 10 & -- & -- & 48 & 75 & 24 & enc F0 & E4 & -- & -- & 40 \\
+WS2812 LED, R & C0 & -- & -- & -- & 68 & 36 & 150 & 0 & dec F0 & E0 & -- & -- & 90 \\
+WS2812 forward, T & 80 & 01 & 30 & -- & 02 & 48 & 70 & 24 & enc F0 & EC & -- & -- & -- \\
+USB, R & C0 & $p$ & -- & $q$|01 & C0 & 20 & 40 & 0 & dec C3 & F2 & 80 & C2 & A0 \\
+USB, T & A0 & 02 & $p,q$ & -- & -- & 1 & 40 & 1 & enc A5 & F0 & -- & C2 & 40 \\
+\bottomrule
+\end{tabular}}
+\caption{Cell settings of further tested configurations, from the firmware of the design package. T: transmit cell, R: receive cell. USB values are for 60\,MHz
+(40 cycles per bit); \texttt{PIN} of USB receive is the pin number in bits 7:5, \texttt{CLK} holds the pin of the
+second line in bits 7:5 and \reg{BLEN} in bit 0. \texttt{OUT} of USB transmit holds both output pins with \reg{OUTEN} and \reg{NEN}.
+\texttt{TIM} combines the edge rule, \reg{ACC}, \reg{STOP}, \reg{TWOPH} and \reg{TRIG} as in the bit tables of section~\ref{sec:lcregs}.}
+\label{tab:cfgfw}
+\end{table}
+
+\subsection{Registers of the line cells}\label{sec:lcregs}
+
+
+The four cells have the same register layout. This section describes one receive cell and one transmit cell;
+the table gives the addresses of all four. A receive cell has 14 configuration registers, a transmit cell 14.
+A register or field that a cell type does not have reads as zero. All configuration registers are R/W and
+reset to \texttt{0x00}. Each pair has an owner core (\reg{LCOWN}); only the owner can access the cells of the pair
+and sees their event flags. Configuration registers are written while the cell is disabled (\reg{EN} = 0);
+while it is enabled only \reg{RXEN}, \reg{TXEN}, \reg{LOW2}, \reg{LCEVM} and \reg{LCX} may be changed. In \reg{LCX} the fields \reg{PAR}, \reg{ESTR} and \reg{BCD} keep their values while the cell is enabled.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Cell & Configuration block & Status register & Data register & Event flag \\
+\midrule
+Receive cell 0 (R0) & \texttt{0x3F00} + offset & \texttt{LR0STAT} \texttt{0x08} & \texttt{LR0DATA} \texttt{0x09} & \texttt{LR0}, \reg{IFRH} bit 0 \\
+Transmit cell 0 (T0) & \texttt{0x3F10} + offset & \texttt{LT0STAT} \texttt{0x0A} & \texttt{LT0DATA} \texttt{0x0B} & \texttt{LT0}, bit 1 \\
+Receive cell 1 (R1) & \texttt{0x3F60} + offset & \texttt{LR1STAT} \texttt{0x10} & \texttt{LR1DATA} \texttt{0x11} & \texttt{LR1}, bit 2 \\
+Transmit cell 1 (T1) & \texttt{0x3F70} + offset & \texttt{LT1STAT} \texttt{0x12} & \texttt{LT1DATA} \texttt{0x13} & \texttt{LT1}, bit 3 \\
+\bottomrule
+\end{tabular}
+\caption{Addresses of the four line cells. R0 and T0 form pair 0, R1 and T1 pair 1. In C:
+\texttt{LC\_REG(LC\_T1, LC\_ENC)} is register \texttt{LCENC} of transmit cell 1.}
+\end{table}
+
+\paragraph{Status and data.} Reading \reg{LRnDATA} returns the oldest received frame and removes it; the receive
+cell holds two frames. Writing \reg{LTnDATA} stores one frame for transmission; a write while \reg{TXE} is 0 is
+ignored. A status bit selected in \reg{LCEVM} sets the event flag of the cell. Latched bits are cleared by writing a
+one to them. Disabling a cell clears its status and its buffers.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lllL>{\raggedright\arraybackslash}p{34mm}@{}}
+\toprule
+Bit & Cell & Kind & Set when & Cleared by \\
+\midrule
+\reg{RXF} (7) & R & level & at least one frame is in the holding register & reading \reg{LRnDATA} removes the oldest frame \\
+\reg{FERR} (6) & R & latched & a frame with a wrong parity bit was received (\reg{PAR} = 1 or 2) & writing 1 \\
+\reg{TXE} (6) & T & level & the frame buffer is empty; it is set again when the frame moves to the shift register & a write to \reg{LTnDATA} that is accepted \\
+\reg{EOP} (5) & R & latched & both pins went low (start of both-low) & writing 1 \\
+\reg{BUSY} (5) & T & level & a frame is being sent, including the end-of-packet periods & the end of the frame \\
+\reg{IDLE} (4) & R & latched & the line became idle & writing 1 \\
+\reg{MATCH} (3) & R & latched & the match pattern was found & writing 1 \\
+\reg{OVR} (2) & R & latched & a completed frame was dropped, because the holding register was full & writing 1 \\
+\reg{STUFF} (1) & R & latched & a stuffed bit broke the run-length rule & writing 1 \\
+\reg{BOTHL} (0) & R & level & the input pin and the clock pin are both low, with \reg{EN} = 1 & the pins leaving the state \\
+\bottomrule
+\end{tabularx}
+\caption{Status bits. The bits 7 and 4 to 0 of a transmit cell read as 0.}
+\end{table}
+
+\paragraph{Configuration registers.} The first column of the two tables gives the offset in the configuration block.
+
+\begin{table}[H]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{LCCTRL} & \texttt{+0 R} & \texttt{EN} & \texttt{RXEN} & \textcolor{black!45}{--} & \texttt{UNIT} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
+\texttt{LCPIN} & \texttt{+1 R} & \multicolumn{3}{c|}{\texttt{INSEL}} & \texttt{INV} & \multicolumn{2}{c|}{\texttt{FILT}} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{LCCLK} & \texttt{+3 R} & \multicolumn{3}{c|}{\texttt{CSEL}} & \texttt{CEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{CPHA} & \texttt{BLEN} \\ \hline
+\texttt{LCTIM} & \texttt{+4 R} & \multicolumn{2}{c|}{\texttt{EDGE}} & \texttt{ACC} & \multicolumn{2}{c|}{\texttt{STOP}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
+\texttt{LCA} & \texttt{+5 R} & \multicolumn{8}{c|}{\texttt{A}} \\ \hline
+\texttt{LCB} & \texttt{+6 R} & \multicolumn{8}{c|}{\texttt{B}} \\ \hline
+\texttt{LCEC} & \texttt{+7 R} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{EC}} \\ \hline
+\texttt{LCDEC} & \texttt{+8 R} & \multicolumn{8}{c|}{\texttt{decode table}} \\ \hline
+\texttt{LCSH} & \texttt{+A R} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{MEN} & \textcolor{black!45}{--} \\ \hline
+\texttt{LCMATCH} & \texttt{+B R} & \multicolumn{8}{c|}{\texttt{pattern}} \\ \hline
+\texttt{LCRUN} & \texttt{+C R} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{REF}} \\ \hline
+\texttt{LCEVM} & \texttt{+D R} & \multicolumn{8}{c|}{\texttt{mask over LRnSTAT}} \\ \hline
+\texttt{LCCS} & \texttt{+E R} & \multicolumn{3}{c|}{\texttt{SSEL}} & \texttt{SSEN} & \texttt{SSPOL} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{LCX} & \texttt{+F R} & \texttt{X9} & \texttt{ECF} & \texttt{STA} & \texttt{STP} & \texttt{BEV} & \texttt{BCD} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
+\end{tabular}
+\caption{Receive cell: bit assignment of the configuration registers.}
+\end{table}
+
+\begin{table}[H]
+\centering\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{LCCTRL} & \texttt{+0 T} & \texttt{EN} & \textcolor{black!45}{--} & \texttt{TXEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
+\texttt{LCPIN} & \texttt{+1 T} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{OEM}} \\ \hline
+\texttt{LCOUT} & \texttt{+2 T} & \multicolumn{3}{c|}{\texttt{OUTSEL}} & \texttt{OUTEN} & \multicolumn{3}{c|}{\texttt{NSEL}} & \texttt{NEN} \\ \hline
+\texttt{LCCLK} & \texttt{+3 T} & \multicolumn{3}{c|}{\texttt{CSEL}} & \textcolor{black!45}{--} & \texttt{NFN} & \texttt{CPOL} & \texttt{CPHA} & \textcolor{black!45}{--} \\ \hline
+\texttt{LCTIM} & \texttt{+4 T} & \multicolumn{2}{c|}{\texttt{EDGE}} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
+\texttt{LCA} & \texttt{+5 T} & \multicolumn{8}{c|}{\texttt{A}} \\ \hline
+\texttt{LCB} & \texttt{+6 T} & \multicolumn{8}{c|}{\texttt{B}} \\ \hline
+\texttt{LCC} & \texttt{+7 T} & \multicolumn{8}{c|}{\texttt{C}} \\ \hline
+\texttt{LCENC} & \texttt{+9 T} & \multicolumn{8}{c|}{\texttt{encode table}} \\ \hline
+\texttt{LCSH} & \texttt{+A T} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \texttt{SRC} & \texttt{CMP} & \textcolor{black!45}{--} & \texttt{SS} \\ \hline
+\texttt{LCRUN} & \texttt{+C T} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \texttt{LOW2} & \texttt{IDLE} & \texttt{EOP} & \textcolor{black!45}{--} \\ \hline
+\texttt{LCEVM} & \texttt{+D T} & \multicolumn{8}{c|}{\texttt{mask over LTnSTAT}} \\ \hline
+\texttt{LCCS} & \texttt{+E T} & \multicolumn{3}{c|}{\texttt{SSEL}} & \texttt{SSEN} & \texttt{SSPOL} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{LCX} & \texttt{+F T} & \texttt{X9} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \texttt{ESTR} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
+\end{tabular}
+\caption{Transmit cell: bit assignment of the configuration registers.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Field & Bits & Meaning \\
+\midrule
+\reg{EN} & 1 & Cell enabled. Clearing it resets timer, bit counter, buffers and status \\
+\reg{RXEN}, \reg{TXEN} & 1 + 1 & R: receiver active; while 0 the receiver is reset and the holding register keeps its frames. T: transmitter active; clearing it ends transmission at once \\
+\reg{UNIT} & 1 & Time unit: peripheral clock, or both edges of the source clock (half a clock period) \\
+\reg{PRE} & 3 & Prescaler for the time unit: 1, 2, 4, \dots, 128 \\
+\midrule
+\reg{INSEL} & 3 & Input pin, one of the eight bidirectional pins \\
+\reg{INV} & 1 & Invert the input \\
+\reg{FILT} & 2 & Glitch filter: off, two equal samples, majority of three \\
+\reg{OEM} & 2 & Output enable: from the port direction register, always driven, driven while the cell is busy \\
+\reg{OUTSEL}, \reg{OUTEN} & 3 + 1 & Pin for the true output, and its enable \\
+\reg{NSEL}, \reg{NEN} & 3 + 1 & Pin for the second output, and its enable \\
+\reg{NFN} & 1 & Function of the second output: complement of the true output, or bit clock \\
+\reg{CSEL}, \reg{CEN} & 3 + 1 & R: separate clock pin for the edge detector, and its enable; without it the edge detector uses the input pin. T: clock pin for \reg{TRIG} = 1 \\
+\reg{CPOL}, \reg{CPHA} & 1 + 1 & Idle level of the bit clock, and the clock phase: data is sampled at the first clock edge of a bit (0) or at the second (1) \\
+\reg{BLEN} & 1 & Enables the both-low detector on the input pin and pin \reg{CSEL} \\
+\midrule
+\reg{EDGE} & 2 & Edge that is detected: none, rising, falling, both \\
+\reg{ACC} & 1 & Edge accepted always, or only while the cell is waiting \\
+\reg{STOP} & 2 & After expiry: keep running, stop after each sample, stop after a complete frame \\
+\reg{TWOPH} & 1 & One bit takes two timer periods; the phase input of the lookup tables alternates \\
+\reg{TRIG} & 2 & R: sample point from the timer, from an accepted pin edge (external clock), or from the middle of each bit of the transmit cell. T: next bit from the timer, from an edge on the clock pin, or one bit per received bit of the receive cell \\
+\reg{LCA} & 8 & Loaded into the timer on an accepted edge. In compare mode: high time for a one \\
+\reg{LCB} & 8 & Loaded on expiry: the bit or half-bit period. While waiting: timeout that sets \reg{IDLE} \\
+\reg{LCC} & 8 & In compare mode: high time for a zero \\
+\midrule
+\reg{LEN} & 3 & Frame length minus one: a frame has \reg{LEN}+1 bits, 1 to 8 \\
+\reg{LSBF} & 1 & Least significant bit first \\
+\reg{SRC} & 1 & Bit source for transmit: own frame buffer, or the receive cell's decoded bit \\
+\reg{CMP} & 1 & Transmit in compare mode (pulse width) and not through the encode table \\
+\reg{MEN} & 1 & Match enabled: the bit counter resets when the shift register equals \reg{LCMATCH} \\
+\reg{SS} & 1 & Transmit adds a start bit at the inverse idle level and a stop bit at the idle level \\
+\reg{LIM} & 3 & Run length limit, 0 switches stuffing off \\
+\reg{RMODE} & 1 & Count ones, or count equal bits \\
+\reg{LOW2} & 1 & Drive both outputs low while set \\
+\reg{EOP} & 1 & After the last bit of a frame both outputs are low for two bit periods; \reg{BUSY} stays set during that time. For timer-triggered transmission \\
+\reg{IDLE} & 1 & Output level while not transmitting \\
+\reg{REF} & 2 & Reference event for the clock loop: none, accepted edge, both pins low, both pins low after the line was idle \\
+\reg{SSEL}, \reg{SSEN}, \reg{SSPOL} & 3 + 1 + 1 & Chip select pin for slave operation, its enable and its active level \\
+\bottomrule
+\end{tabularx}
+\caption{Configuration fields.}
+\label{tab:fields}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Field & Encoding & Values \\
+\midrule
+\reg{UNIT} & 1 bit & 0 peripheral clock, 1 both edges of the source clock \\
+\reg{PRE} & 3 bits & Divide the time unit by $2^{\mathtt{PRE}}$ \\
+\reg{FILT} & 2 bits & 0 off, 1 two equal samples, 2 majority of three, 3 reserved \\
+\reg{OEM} & 2 bits & 0 from \reg{DDR}, 1 always driven, 2 driven while busy, 3 reserved \\
+\reg{EDGE} & 2 bits & 0 none, 1 rising, 2 falling, 3 both. In a transmit cell with \reg{TRIG} = 1: the clock edge at which the other side samples \\
+\reg{ACC} & 1 bit & 0 always, 1 only while waiting \\
+\reg{STOP} & 2 bits & 0 keep running, 1 after each sample, 2 after a complete frame, 3 reserved \\
+\reg{TRIG} & 2 bits & Receive cell: 0 timer started by an edge, 1 accepted pin edge, 2 middle of each bit of the transmit cell of the pair. Transmit cell: 0 timer, 1 edge on pin \reg{CSEL}, 2 one bit per received bit of the receive cell of the pair. 3 reserved \\
+\reg{LEN} & 3 bits & Frame length minus one \\
+\reg{PAR} & 2 bits & Additional bit after the data bits: 0 none, 1 odd parity, 2 even parity, 3 ninth data bit \reg{X9} \\
+\reg{X9} & 1 bit & R, read only: additional bit of the oldest frame. T: ninth data bit of the frame that is written next \\
+\reg{ESTR} & 1 bit & T with \reg{TRIG} = 1: 0 first bit at the write of the frame, 1 at the first shift edge after it \\
+\reg{BCD}, \reg{BEV} & 1 bit each & R: bus condition detector on; the flags of \reg{LCX} set the event flag of the cell \\
+\reg{STP}, \reg{STA}, \reg{ECF} & 1 bit each & R: stored flags for a stop condition, a start condition and the edge count; write 1 to clear; cleared while \reg{EN} = 0 \\
+\reg{EC} & 4 bits & R: 0 off; 1 to 15: number of falling data edges while the clock pin is low that sets \reg{ECF} \\
+\reg{SRC} & 1 bit & 0 own frame buffer, 1 decoded bit of the receive cell of the pair \\
+\reg{NFN} & 1 bit & 0 complement of the true output, 1 bit clock \\
+\reg{LIM} & 3 bits & Run length limit; 0 switches stuffing off \\
+\reg{RMODE} & 1 bit & 0 count ones, 1 count equal bits \\
+\reg{REF} & 2 bits & 0 none, 1 accepted edge, 2 both pins low, 3 both pins low after the line was idle \\
+\reg{SSEL}, \reg{SSEN}, \reg{SSPOL} & 3 + 1 + 1 bits & Chip select pin, its enable and its active level. While the pin is inactive the bit counter is held in reset \\
+\bottomrule
+\end{tabularx}
+\caption{Encoding of the line cell fields.}
+\end{table}
+
+\paragraph{Lookup tables.} The decode table is indexed by $4\cdot\mathit{pin} + 2\cdot\mathit{previous\ sample} +
+\mathit{phase}$, the encode table by $4\cdot\mathit{data} + 2\cdot\mathit{phase} + \mathit{previous\ output}$.
+Bit $i$ of the register is the output for index $i$.
+
+\begin{table}[H]
+\centering\small
+\begin{tabular}{@{}lll@{}}
+\toprule
+Table & Function & Value \\
+\midrule
+Decode & level & \texttt{0xF0} (\texttt{LUT\_DEC\_LEVEL}) \\
+Decode & inverted level & \texttt{0x0F} (\texttt{LUT\_DEC\_INVERT}) \\
+Decode & NRZI, one when the level did not change & \texttt{0xC3} (\texttt{LUT\_DEC\_NRZI}) \\
+Encode & NRZ & \texttt{0xF0} (\texttt{LUT\_ENC\_NRZ}) \\
+Encode & NRZI, toggle on zero & \texttt{0xA5} (\texttt{LUT\_ENC\_NRZI}) \\
+Encode & Manchester, first half inverted data, second half data & \texttt{0xC3} (\texttt{LUT\_ENC\_MANCH}) \\
+\bottomrule
+\end{tabular}
+\caption{Lookup table values for common line codes.}
+\end{table}
+
+
+\subsection{Limits of the line cells in this revision}
+
+\begin{itemize}
+\item Frames have 1 to 8 data bits and one optional additional bit. Eight data bits with parity and two stop bits are not supported by one cell.
+\item The two inputs of the bus condition detector have separate synchronisers: data that changes less than one clock cycle before or after a clock edge at the pins can be taken as a start or stop condition.
+\item \reg{FERR} is one flag for the cell and is not stored with each frame.
+\item The receive cell does not sample the stop bit of a start-stop frame and does not check the start bit
+again after its edge. A second receive cell on the same pin can do both.
+\item A transmit cell that is clocked by a pin has no underrun indication: a frame that is written late starts
+in the middle of the frame time.
+\item The end of packet with both outputs low is the only end sequence; the idle pulse of 10BASE-T is made by
+firmware on a single-ended output.
+\item Forwarding regenerates the high times of a pulse-width code and keeps the bit period of the input.
+\end{itemize}
+
+\section{16-bit timer}\label{sec:timer}
+
+The timer counts cycles of the peripheral clock divided by $2^{\mathtt{PS}}$ while \reg{RUN} is set. It has:
+
+\begin{itemize}
+\item \textbf{Two compare values.} When the count equals \reg{OCRA} or \reg{OCRB}, the event flag \reg{OCA} or \reg{OCB}
+is set. With \reg{CTC} the count restarts at zero after it has reached \reg{OCRA}, which gives a period of
+\reg{OCRA}+1 counts.
+\item \textbf{Overflow.} The flag \reg{OVF} is set when the count wraps from \texttt{0xFFFF} to zero.
+\item \textbf{Capture.} The count is copied to \reg{ICR} and the flag \reg{CAPT} is set by an edge on a pin of the
+bidirectional port, by an accepted edge of a receive cell, or by the reference event of a receive cell. This
+measures pulse widths and the time of protocol events; the USB firmware uses it for the answer time.
+\end{itemize}
+
+The 16-bit registers are read low byte first and written high byte first; the header file has
+\texttt{timer\_count}, \texttt{timer\_capture} and \texttt{timer\_set}. There is one timer for both cores.
+Section~\ref{sec:expwm} has an example.
+
+\input{ds_gen/timer.tex}
+
+\section{PWM}\label{sec:pwm}
+
+Three PWM channels share one 8-bit counter that counts cycles of the peripheral clock divided by
+$2^{\mathtt{PPS}}$ from zero to \reg{PWMTOP}. The period is \reg{PWMTOP}+1 counts. The output of channel $n$ is high
+while the count is below \reg{PWMn}, so the value 0 gives a constant low level and a value above \reg{PWMTOP} a
+constant high level. A new duty value is taken over when the counter restarts, so no period is cut short. An
+enabled channel drives its output pin (PWM0 to PWM2) in place of the port bit. In simulation a period of 100
+cycles with duty values of 25, 50 and 75 was exact while both cores ran protocols.
+
+\input{ds_gen/pwm.tex}
+
+\section{CRC unit}\label{sec:crc}
+
+The CRC unit is a shift register of 1 to 32 bit with a programmable polynomial. It shifts towards the high or
+the low bit, so it covers CRCs that are defined with either bit order. It takes its input from one of five
+sources:
+
+\begin{itemize}
+\item bytes that firmware writes to \reg{CRCIN}; one byte takes four clock cycles;
+\item the bits that a receive cell delivers, starting after the match pattern, without stuffed bits;
+\item the bits that a transmit cell sends.
+\end{itemize}
+
+\reg{CRCVAL} can be read and written at any time; writing it sets the start value. \reg{CRCREF} holds a value
+for comparison. \reg{CRCST.EQ} shows whether value and reference are equal now, \reg{CRCST.EQF} whether they were
+equal at the end of the last frame. For a received packet that carries its own check sequence, the value after
+the last bit is a constant (the residual) when the packet is correct, so firmware only tests \reg{EQF}:
+\texttt{0xDEBB20E3} for the frame check sequence of Ethernet, \texttt{0xB001} for the CRC-16 and \texttt{0x06} for
+the CRC5 of USB.
+
+\reg{EQF} is taken from the bit stream. If the firmware lost bytes (\reg{OVR} of the receive cell), the CRC can
+still be correct, so both are checked. There is one unit; a core claims it with \reg{OWNER} while the unit is
+disabled, and the other core then reads zero.
+
+\lstinputlisting{examples/ex_crc.c}
+
+The example was compiled (385 bytes) and not simulated in this form; both uses are part of simulated firmware.
+
+\input{ds_gen/crc.tex}
+
+\section{Host link, mailbox and debug}\label{sec:host}
+
+\subsection{Host link}
+
+The host link is an SPI slave on the pins HCK, HCS, HDI and HDO: mode 0, most significant bit first, chip
+select active low, one command per chip select period. The pins are sampled with the system clock, so the host
+clock is at most one eighth of the system clock. The host link works while the cores are in reset and needs no
+firmware.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Code & Bytes after the code & Function \\
+\midrule
+\texttt{0x02} & address high, address low, data \ldots & Write. The address is a data address and increments in the memories. Code memory 0 is at \texttt{0x4000}, code memory 1 at \texttt{0x4800} \\
+\texttt{0x03} & address high, address low, one unused byte; then data is returned & Read. In the memories the address increments; a register is read once and its value is repeated \\
+\texttt{0x04} & control byte & Bit 7: core reset. Bit 4: core that the following commands refer to. Bits 1, 0: halt core 1, core 0 \\
+\texttt{0x05} & one unused byte; then four bytes are returned & Status (table~\ref{tab:hstat}) \\
+\texttt{0x06} & instruction, high byte first & Inject: the selected halted core executes the instruction and returns to its position \\
+\texttt{0x07} & one byte & Mailbox write to the firmware; refused while the last byte has not been read \\
+\texttt{0x08} & one unused byte; then mailbox status and one byte are returned & Mailbox read from the firmware \\
+\texttt{0x09} & instruction, high byte first & Execute: like inject, without the return; used to set the program counter with a jump \\
+\texttt{0x0A} & -- & Step: the selected core executes one instruction or one interrupt entry \\
+\bottomrule
+\end{tabularx}
+\caption{Host link commands. Unknown codes are ignored.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Byte & Bits & Meaning \\
+\midrule
+1 & 7 & access allowed: core reset set, or every enabled core halted and no injection running \\
+ & 6 & an injection, execution or step is running \\
+ & 5, 4 & break flags of core 1 and core 0 \\
+ & 1, 0 & core 1, core 0 halted \\
+2 & 7 & error: an access, an injection or a mailbox write was refused since the last status command \\
+ & 6 & core reset \\
+ & 5, 4 & core 1, core 0 waiting \\
+ & 2 & selected core \\
+ & 1, 0 & core 1, core 0 enabled \\
+3, 4 & & program counter of the selected core, high and low byte; at the start of an instruction it is the address of that instruction plus one \\
+\bottomrule
+\end{tabularx}
+\caption{Bytes returned by the status command.}
+\label{tab:hstat}
+\end{table}
+
+\textbf{Access condition.} Memory and register access by the host is carried out only while the core reset is
+set or every enabled core is halted; otherwise it is refused and the error bit is set. Halting one core for a
+memory access therefore stops both. The mailbox, the status command, inject and step do not need this.
+
+\subsection{Loading and starting a program}
+
+After reset the core reset is set. The host writes the images to \texttt{0x4000} and \texttt{0x4800}, reads them
+back if it wants to check them, and clears the core reset with the control command. Section~\ref{sec:load} shows
+the sequence.
+
+\subsection{Debugging}
+
+The host halts a core with the control command or the firmware halts itself with \texttt{BREAK}. While a core is
+halted, the host reads and writes memory and registers, reads the program counter, injects single
+instructions (for instance to read a register of the core through the mailbox), and steps. Core registers are
+not directly visible; they are read by injected instructions.
+
+\subsection{Mailbox}
+
+The mailbox passes single bytes between host and firmware while the cores run. It holds one byte in each
+direction. The firmware reads a byte from the host in \reg{MBDATA} when \reg{MBSTAT.RXF} is set; the event flag
+\reg{MBX} follows this bit. It writes a byte for the host to \reg{MBDATA} when \reg{MBSTAT.TXE} is set. In
+simulation the host link carried one byte per 152 clock cycles with blind writes and one per 280 to 496
+cycles with status polling.
+
+\subsection{Debug pin}
+
+The debug pin shows one internal signal selected with \reg{DBGSEL}: the sample point, the accepted edge or
+the reference event of a receive cell, or the transmitted bit of a transmit cell. This makes the timing of a
+line cell visible on an oscilloscope next to the line signal.
+
+\input{ds_gen/host.tex}
+
+\section{Software}
+
+\subsection{Tool chain}\label{sec:tools}
+
+Section~\ref{sec:compiler} names the compilers and the machine option. The examples use GCC. Two linker symbols place
+constants in the code memory of the core and set the size of the data memory. An image for core 1 includes
+\texttt{rpe\_core1.h}, which sets its stack and start-up code, and places its variables above its stack.
+
+\begin{lstlisting}[language=sh]
+# image for core 0
+avr-gcc -mmcu=attiny40 -Os -Wall -Ifw \
+    -Wl,--defsym=__RODATA_PM_OFFSET__=0x4000 -Wl,--defsym=__DATA_REGION_LENGTH__=0x800 \
+    -o app.elf app.c
+# image for core 1
+avr-gcc -mmcu=attiny40 -Os -Wall -Ifw \
+    -Wl,--defsym=__RODATA_PM_OFFSET__=0x4800 -Wl,--defsym=__DATA_REGION_LENGTH__=0x800 \
+    -Wl,--section-start=.data=0x800440 -o app1.elf app1.c
+avr-objcopy -O binary app.elf app.bin
+\end{lstlisting}
+
+Rules for code on this core: a function gets its arguments in six registers, which is three arguments of up to 16 bit, and further arguments on the stack; protected registers are
+written with \texttt{PROT\_WRITE(reg, value)}; a core waits for events with \texttt{wait\_for} and does not poll
+in a loop when the other core has deadlines; large buffers are placed in the section \texttt{.noinit}.
+
+\subsection{Loading a program from the host}\label{sec:load}
+
+The listing shows the sequence for a host with an SPI interface. It is a sketch of the command sequence and
+has not been run against the simulation in this form; the testbench contains the same sequence in Verilog.
+
+\begin{lstlisting}[language=Python]
+def cmd(*b):            # one host link command: chip select low, bytes out, bytes back
+    return spi.xfer(bytes(b))
+
+def load(image0, image1=b""):
+    cmd(0x04, 0x80)                                  # core reset set, nothing halted
+    for base, image in ((0x4000, image0), (0x4800, image1)):
+        for i in range(0, len(image), 64):           # write command: address, then data
+            a = base + i
+            cmd(0x02, a >> 8, a & 0xFF, *image[i:i + 64])
+    for base, image in ((0x4000, image0), (0x4800, image1)):
+        back = cmd(0x03, base >> 8, base & 0xFF, 0, *([0] * len(image)))
+        assert back[4:] == image                     # one unused byte follows the address
+    cmd(0x04, 0x00)                                  # release the core reset: core 0 starts
+\end{lstlisting}
+
+\subsection{Example: UART echo at 115\,200 baud}
+
+Simulated against an independent UART model at bit time errors of $-3$, 0 and $+3\,\%$; 196 bytes of code.
+
+\lstinputlisting{examples/ex_uart_echo.c}
+
+\subsection{Example: SPI master}
+
+The cell settings are those of the tested SPI master firmware; the example itself was compiled (240 bytes) and
+not simulated.
+
+\lstinputlisting{examples/ex_spi_master.c}
+
+\subsection{Example: WS2812 controller}
+
+The cell settings are those of the tested WS2812 firmware; compiled (251 bytes), not simulated in this form.
+
+\lstinputlisting{examples/ex_ws2812.c}
+
+\subsection{Example: PWM and a periodic timer event}\label{sec:expwm}
+
+Compiled (148 bytes), not simulated in this form.
+
+\lstinputlisting{examples/ex_pwm_timer.c}
+
+\subsection{Example: two cores with a lock and a software flag}\label{sec:ex2c}
+
+Three files: a header with the shared variable and one image per core. The pattern is that of the tested
+two-core firmware; compiled (124 and 136 bytes), not simulated in this form.
+
+\lstinputlisting{examples/ex_shared.h}
+\lstinputlisting{examples/ex_two_c0.c}
+\lstinputlisting{examples/ex_two_c1.c}
+
+\subsection{Example: I2C master read, started by an interrupt line}
+
+Uses the tested I2C master library \texttt{i2cm.h}; compiled (816 bytes), not simulated in this form.
+
+\lstinputlisting{examples/ex_i2c_read.c}
+
+\subsection{Further firmware}
+
+The design package contains complete, simulated firmware for: a USB low-speed HID device with enumeration
+(\texttt{fwusb.c}, \texttt{usb\_stack.S}), a bridge from an I2C sensor to USB reports (\texttt{fwsens\_c1.c}), a
+10BASE-T endpoint that answers ARP and ping (\texttt{fweth.c}), an SPI slave and an I2C slave with line cells
+(\texttt{fw16\_spis.c}, \texttt{fw18\_i2cs.c}), a bridge from the host link mailbox to UART (\texttt{fwu\_mbx.c}) and
+from UART to WS2812 (\texttt{fwu\_ws.c}).
+
+\section{Application information}
+
+\tbd: reference circuits for USB low-speed (series resistors, pull-up on D$-$), 10BASE-T (line driver,
+transformer), I2C pull-ups, WS2812 level; decoupling; connection of the host link to a host controller;
+layout notes.
+
+\section{Known limitations of this revision}
+
+\begin{itemize}
+\item UART: one receive cell does not check the stop bit and does not validate the start bit. A second receive
+cell on the same pin can sample the stop bit.
+\item Frames have at most 8 data bits and one additional bit (parity or ninth bit).
+\item Transmit cells clocked by a pin (SPI slave, I2C slave) have no underrun indication.
+\item 10BASE-T: no differential idle pulse at the end of a frame and no link pulses by hardware.
+\item USB from the internal oscillator needs the frame-time check of the supplied firmware.
+\item A host access to memory or registers halts both cores.
+\item The time base repeats after 65\,536 clock cycles (1.09\,ms at 60\,MHz).
+\end{itemize}
+
+Changes that remove the first five points are specified (specification section 18.5) and not implemented.
+
+\section{Package and ordering information}
+
+\tbd. The competition chip is a Tiny Tapeout design of 8x4 tiles on the IHP 130\,nm shuttle and is delivered
+on the Tiny Tapeout carrier board.
+
+\section{Revision history}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Revision & Date & Changes \\
+\midrule
+0.1 & 21 November 2026 & first set-up from specification draft 0.34; electrical data, package and application circuits open \\
+0.2 & 21 November 2026 & table of contents; chapter order changed to memory, clocking, core, peripherals \\
+0.3 & 21 November 2026 & line cells: additional frame bit (parity, ninth bit), start at the shift edge, bus condition detector and edge count; registers \reg{LCX} and \reg{LCEC}, status bit \reg{FERR} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\appendix
+
+\section{Memory and register map}\label{sec:map}
+
+\subsection{Memory map}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Data addresses & Size & Content \\
+\midrule
+\texttt{0x0000} to \texttt{0x003F} & 64 & fast I/O registers (IN, OUT; bit instructions up to \texttt{0x1F}) \\
+\texttt{0x0040} to \texttt{0x083F} & 2\,048 & data memory \\
+\texttt{0x0840} to \texttt{0x3EFF} & & reserved \\
+\texttt{0x3F00} to \texttt{0x3FFF} & 256 & configuration page \\
+\texttt{0x4000} to \texttt{0x47FF} & 2\,048 & code memory 0 \\
+\texttt{0x4800} to \texttt{0x4FFF} & 2\,048 & code memory 1 \\
+\bottomrule
+\end{tabularx}
+\caption{Data address space of both cores and of the host link.}
+\end{table}
+
+Program addresses: core 0 executes code memory 0 at word addresses 0 to 1\,023 and code memory 1 at 1\,024 to
+2\,047. Core 1 executes code memory 1 at word addresses 0 to 1\,023.
+
+\subsection{Fast I/O registers}
+
+\input{ds_gen/app_fast.tex}
+
+\subsection{Configuration page}
+
+\input{ds_gen/app_cfg.tex}
+
+\subsection{Bit fields of all registers}
+
+The bit fields of the line cell registers are in section~\ref{sec:lcregs}.
+
+\input{ds_gen/app_bits.tex}
+
+\end{document}

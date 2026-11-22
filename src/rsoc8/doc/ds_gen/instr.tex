@@ -1,0 +1,88 @@
+{\small\begin{longtable}{@{}llp{0.36\linewidth}lll@{}}
+\caption{Instruction set. Rd, Rr: registers r16 to r31, coded as register number minus 16. K: 8-bit constant. Cycles: clock cycles in which the core is enabled; ``1 / 2'': not taken or not skipped / taken or skipped.}\label{tab:instr}\\
+\toprule
+Mnemonic & Operands & Operation & Flags & Code (bit 15 to 0) & Cycles \\
+\midrule
+\endfirsthead
+\toprule
+Mnemonic & Operands & Operation & Flags & Code (bit 15 to 0) & Cycles \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\multicolumn{6}{@{}l}{\rule{0pt}{2.6ex}\textbf{Arithmetic and logic}} \\
+\texttt{ADD} & Rd, Rr & Rd $\leftarrow$ Rd + Rr & Z C N V & \texttt{0000 1111 dddd rrrr} & 1 \\
+\texttt{ADC} & Rd, Rr & Rd $\leftarrow$ Rd + Rr + C & Z C N V & \texttt{0001 1111 dddd rrrr} & 1 \\
+\texttt{SUB} & Rd, Rr & Rd $\leftarrow$ Rd $-$ Rr & Z C N V & \texttt{0001 1011 dddd rrrr} & 1 \\
+\texttt{SBC} & Rd, Rr & Rd $\leftarrow$ Rd $-$ Rr $-$ C & Z C N V & \texttt{0000 1011 dddd rrrr} & 1 \\
+\texttt{AND} & Rd, Rr & Rd $\leftarrow$ Rd and Rr & Z N V & \texttt{0010 0011 dddd rrrr} & 1 \\
+\texttt{OR} & Rd, Rr & Rd $\leftarrow$ Rd or Rr & Z N V & \texttt{0010 1011 dddd rrrr} & 1 \\
+\texttt{EOR} & Rd, Rr & Rd $\leftarrow$ Rd xor Rr & Z N V & \texttt{0010 0111 dddd rrrr} & 1 \\
+\texttt{CP} & Rd, Rr & Rd $-$ Rr & Z C N V & \texttt{0001 0111 dddd rrrr} & 1 \\
+\texttt{CPC} & Rd, Rr & Rd $-$ Rr $-$ C & Z C N V & \texttt{0000 0111 dddd rrrr} & 1 \\
+\texttt{SUBI} & Rd, K & Rd $\leftarrow$ Rd $-$ K & Z C N V & \texttt{0101 KKKK dddd KKKK} & 1 \\
+\texttt{SBCI} & Rd, K & Rd $\leftarrow$ Rd $-$ K $-$ C & Z C N V & \texttt{0100 KKKK dddd KKKK} & 1 \\
+\texttt{ANDI} & Rd, K & Rd $\leftarrow$ Rd and K & Z N V & \texttt{0111 KKKK dddd KKKK} & 1 \\
+\texttt{ORI} & Rd, K & Rd $\leftarrow$ Rd or K & Z N V & \texttt{0110 KKKK dddd KKKK} & 1 \\
+\texttt{CPI} & Rd, K & Rd $-$ K & Z C N V & \texttt{0011 KKKK dddd KKKK} & 1 \\
+\texttt{COM} & Rd & Rd $\leftarrow$ not Rd & Z C N V & \texttt{1001 0101 dddd 0000} & 1 \\
+\texttt{NEG} & Rd & Rd $\leftarrow$ 0 $-$ Rd & Z C N V & \texttt{1001 0101 dddd 0001} & 1 \\
+\texttt{INC} & Rd & Rd $\leftarrow$ Rd + 1 & Z N V & \texttt{1001 0101 dddd 0011} & 1 \\
+\texttt{DEC} & Rd & Rd $\leftarrow$ Rd $-$ 1 & Z N V & \texttt{1001 0101 dddd 1010} & 1 \\
+\texttt{LSR} & Rd & shift right, bit 7 $\leftarrow$ 0, C $\leftarrow$ bit 0 & Z C N V & \texttt{1001 0101 dddd 0110} & 1 \\
+\texttt{ROR} & Rd & shift right, bit 7 $\leftarrow$ C, C $\leftarrow$ bit 0 & Z C N V & \texttt{1001 0101 dddd 0111} & 1 \\
+\texttt{ASR} & Rd & shift right, bit 7 kept, C $\leftarrow$ bit 0 & Z C N V & \texttt{1001 0101 dddd 0101} & 1 \\
+\texttt{SWAP} & Rd & exchange the two halves of Rd & -- & \texttt{1001 0101 dddd 0010} & 1 \\
+\multicolumn{6}{@{}l}{\rule{0pt}{2.6ex}\textbf{Data transfer}} \\
+\texttt{MOV} & Rd, Rr & Rd $\leftarrow$ Rr & -- & \texttt{0010 1111 dddd rrrr} & 1 \\
+\texttt{LDI} & Rd, K & Rd $\leftarrow$ K & -- & \texttt{1110 KKKK dddd KKKK} & 1 \\
+\texttt{LD} & Rd, X & Rd $\leftarrow$ (X) & -- & \texttt{1001 0001 dddd 1100} & 2 \textsuperscript{a} \\
+\texttt{ST} & X, Rr & (X) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 1100} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, X+ & Rd $\leftarrow$ (X+) & -- & \texttt{1001 0001 dddd 1101} & 2 \textsuperscript{a} \\
+\texttt{ST} & X+, Rr & (X+) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 1101} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, $-$X & Rd $\leftarrow$ ($-$X) & -- & \texttt{1001 0001 dddd 1110} & 2 \textsuperscript{a} \\
+\texttt{ST} & $-$X, Rr & ($-$X) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 1110} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, Y & Rd $\leftarrow$ (Y) & -- & \texttt{1000 0001 dddd 1000} & 2 \textsuperscript{a} \\
+\texttt{ST} & Y, Rr & (Y) $\leftarrow$ Rr & -- & \texttt{1000 0011 rrrr 1000} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, Y+ & Rd $\leftarrow$ (Y+) & -- & \texttt{1001 0001 dddd 1001} & 2 \textsuperscript{a} \\
+\texttt{ST} & Y+, Rr & (Y+) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 1001} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, $-$Y & Rd $\leftarrow$ ($-$Y) & -- & \texttt{1001 0001 dddd 1010} & 2 \textsuperscript{a} \\
+\texttt{ST} & $-$Y, Rr & ($-$Y) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 1010} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, Z & Rd $\leftarrow$ (Z) & -- & \texttt{1000 0001 dddd 0000} & 2 \textsuperscript{a} \\
+\texttt{ST} & Z, Rr & (Z) $\leftarrow$ Rr & -- & \texttt{1000 0011 rrrr 0000} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, Z+ & Rd $\leftarrow$ (Z+) & -- & \texttt{1001 0001 dddd 0001} & 2 \textsuperscript{a} \\
+\texttt{ST} & Z+, Rr & (Z+) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 0001} & 1 \textsuperscript{b} \\
+\texttt{LD} & Rd, $-$Z & Rd $\leftarrow$ ($-$Z) & -- & \texttt{1001 0001 dddd 0010} & 2 \textsuperscript{a} \\
+\texttt{ST} & $-$Z, Rr & ($-$Z) $\leftarrow$ Rr & -- & \texttt{1001 0011 rrrr 0010} & 1 \textsuperscript{b} \\
+\texttt{LDS} & Rd, k & Rd $\leftarrow$ (k), k = \texttt{0x40} to \texttt{0xBF} & -- & \texttt{1010 0kkk dddd kkkk} & 2 \\
+\texttt{STS} & k, Rr & (k) $\leftarrow$ Rr & -- & \texttt{1010 1kkk rrrr kkkk} & 1 \\
+\texttt{IN} & Rd, A & Rd $\leftarrow$ I/O(A), A = 0 to 63 & -- & \texttt{1011 0AA1 dddd AAAA} & 1 \\
+\texttt{OUT} & A, Rr & I/O(A) $\leftarrow$ Rr & -- & \texttt{1011 1AA1 rrrr AAAA} & 1 \\
+\texttt{PUSH} & Rr & (SP) $\leftarrow$ Rr, SP $\leftarrow$ SP $-$ 1 & -- & \texttt{1001 0011 rrrr 1111} & 1 \\
+\texttt{POP} & Rd & SP $\leftarrow$ SP + 1, Rd $\leftarrow$ (SP) & -- & \texttt{1001 0001 dddd 1111} & 2 \\
+\multicolumn{6}{@{}l}{\rule{0pt}{2.6ex}\textbf{Bits and flags}} \\
+\texttt{SBI} & A, b & I/O(A) bit b $\leftarrow$ 1, A = 0 to 31 & -- & \texttt{1001 1010 AAAA Abbb} & 1 \\
+\texttt{CBI} & A, b & I/O(A) bit b $\leftarrow$ 0 & -- & \texttt{1001 1000 AAAA Abbb} & 1 \\
+\texttt{BST} & Rd, b & T $\leftarrow$ Rd bit b & T & \texttt{1111 1011 dddd 0bbb} & 1 \\
+\texttt{BLD} & Rd, b & Rd bit b $\leftarrow$ T & -- & \texttt{1111 1001 dddd 0bbb} & 1 \\
+\texttt{BSET} & s & flag s $\leftarrow$ 1 (SEC, SEZ, SEN, SEV, SET, SEI) & flag s & \texttt{1001 0100 0sss 1000} & 1 \\
+\texttt{BCLR} & s & flag s $\leftarrow$ 0 (CLC, CLZ, CLN, CLV, CLT, CLI) & flag s & \texttt{1001 0100 1sss 1000} & 1 \\
+\multicolumn{6}{@{}l}{\rule{0pt}{2.6ex}\textbf{Jumps, calls and skips}} \\
+\texttt{RJMP} & k & PC $\leftarrow$ PC + 1 + k, k = $-$2048 to 2047 & -- & \texttt{1100 kkkk kkkk kkkk} & 2 \\
+\texttt{IJMP} &  & PC $\leftarrow$ Z & -- & \texttt{1001 0100 0000 1001} & 2 \\
+\texttt{RCALL} & k & push PC + 1; PC $\leftarrow$ PC + 1 + k & -- & \texttt{1101 kkkk kkkk kkkk} & 2 \\
+\texttt{ICALL} &  & push PC + 1; PC $\leftarrow$ Z & -- & \texttt{1001 0101 0000 1001} & 2 \\
+\texttt{RET} &  & pop PC & -- & \texttt{1001 0101 0000 1000} & 3 \\
+\texttt{RETI} &  & pop PC, I $\leftarrow$ 1 & I & \texttt{1001 0101 0001 1000} & 3 \\
+\texttt{BRBS} & s, k & if flag s = 1: PC $\leftarrow$ PC + 1 + k, k = $-$64 to 63 & -- & \texttt{1111 00kk kkkk ksss} & 1 / 2 \\
+\texttt{BRBC} & s, k & if flag s = 0: PC $\leftarrow$ PC + 1 + k & -- & \texttt{1111 01kk kkkk ksss} & 1 / 2 \\
+\texttt{CPSE} & Rd, Rr & skip the next instruction if Rd = Rr & -- & \texttt{0001 0011 dddd rrrr} & 1 / 2 \\
+\texttt{SBRC} & Rr, b & skip if Rr bit b = 0 & -- & \texttt{1111 1101 rrrr 0bbb} & 1 / 2 \\
+\texttt{SBRS} & Rr, b & skip if Rr bit b = 1 & -- & \texttt{1111 1111 rrrr 0bbb} & 1 / 2 \\
+\texttt{SBIC} & A, b & skip if I/O(A) bit b = 0, A = 0 to 31 & -- & \texttt{1001 1001 AAAA Abbb} & 1 / 2 \\
+\texttt{SBIS} & A, b & skip if I/O(A) bit b = 1 & -- & \texttt{1001 1011 AAAA Abbb} & 1 / 2 \\
+\multicolumn{6}{@{}l}{\rule{0pt}{2.6ex}\textbf{Control}} \\
+\texttt{NOP} &  & no operation & -- & \texttt{0000 0000 0000 0000} & 1 \\
+\texttt{SLEEP} &  & wait for the events of the wait mask & -- & \texttt{1001 0101 1000 1000} & 1 \\
+\texttt{BREAK} &  & halt the core for the host link & -- & \texttt{1001 0101 1001 1000} & 1 \\
+\end{longtable}}

@@ -1,0 +1,57 @@
+\begin{tikzpicture}[x=1mm,y=1mm,
+  sb/.style={blk,font=\scriptsize,inner sep=2pt,minimum height=14mm,minimum width=34mm,text width=31mm}]
+  % ---------------- state graph
+  \node[sb,fill=fillD] (s0) at (22,112) {\textbf{Waiting, quiet}\\ after reset and after idle};
+  \node[sb,fill=fillB] (s1) at (80,112) {\textbf{Running}\\ timer T counts down};
+  \node[sb,fill=fillA] (s2) at (138,112) {\textbf{Waiting, timeout}\\ after a sample, \reg{STOP} = 1 or 2};
+  \draw[ar] (s0.east) -- (s1.west) node[midway,above,lbl,align=center]{accepted edge,\\ T := A (R1)};
+  \draw[ar] ($(s1.east)+(0,4)$) -- ($(s2.west)+(0,4)$) node[pos=0.42,above,lbl,align=center,inner sep=1pt,yshift=2.2mm]{\reg{STOP} = 1: after a sample\\ \reg{STOP} = 2: after a frame (R5)};
+  \draw[ar] ($(s2.west)+(0,-4)$) -- ($(s1.east)+(0,-4)$) node[midway,below,lbl,align=center]{accepted\\ edge (R1)};
+  \node[lbl,align=center] at (80,126) {expiry is a sample point, T := B (R2 to R4)};
+  \draw[ar] (s1.south) -- (80,99) -| (30,105);
+  \node[lbl,anchor=west] at (31,95.8) {\reg{STOP} = 0: eighth expiry without an accepted edge: \reg{IDLE} (R13)};
+  \draw[ar] (s2.south) -- (138,91) -| (14,105);
+  \node[lbl,anchor=west] at (15,87.5) {timeout B ends without an accepted edge: \reg{IDLE} is set, receiver reset (R13)};
+  \node[blk,fill=white,font=\scriptsize,inner sep=2pt,minimum width=62mm,text width=59mm,minimum height=10mm,dashed] (rs) at (24,140) {\textbf{Receiver reset (R12)} from any state: start of both-low, chip select inactive, \reg{RXEN} or \reg{EN} = 0};
+  \draw[ar,dashed] (22,135) -- (s0.north);
+  % ---------------- timing view
+  \def\w{14}
+  \def\xz{40}
+  % bit boundaries
+  \foreach \i in {0,...,6} { \draw[densely dotted,line width=0.3pt,black!45] ({\xz+\i*\w},0) -- ({\xz+\i*\w},62); }
+  \node[lbl,anchor=east] at (24,55.5) {line x};
+  \draw[line width=0.7pt,accent] (26,58) -- (40,58) -- (40,53) -- (54,53) -- (54,58) -- (68,58) -- (68,53) -- (70,53) -- (70,58) -- (71.5,58) -- (71.5,53) -- (82,53) -- (82,58) -- (110,58) -- (110,53) -- (128,53);
+  \foreach \i/\t in {0/start,1/d0,2/d1,3/d2,4/stop,5/start} {
+    \node[lbl] at ({\xz+\i*\w+\w/2},61.5) {\t};
+  }
+  \node[lbl,anchor=east] at (24,46) {receiver};
+  \fill[fillD,draw=ink,line width=0.4pt] (26,43.5) rectangle (40,48.5);
+  \fill[fillB,draw=ink,line width=0.4pt] (40,43.5) rectangle (96,48.5);
+  \fill[fillA,draw=ink,line width=0.4pt] (96,43.5) rectangle (103,48.5);
+  \fill[fillD,draw=ink,line width=0.4pt] (103,43.5) rectangle (110,48.5);
+  \fill[fillB,draw=ink,line width=0.4pt] (110,43.5) rectangle (128,48.5);
+  \node[lbl] at (68,46) {running};
+  \node[lbl,inner sep=0pt] at (99.5,46) {w};
+  \node[lbl,inner sep=0pt] at (33,46) {w};
+  \node[lbl,inner sep=0pt] at (106.5,46) {w};
+  \node[lbl,anchor=east] at (24,37) {accepted edge};
+  \draw[ar] (40,34.5) -- (40,40) node[above,lbl,inner sep=1pt]{R1};
+  \draw[ar] (110,34.5) -- (110,40) node[above,lbl,inner sep=1pt]{R1};
+  \draw[ar] (71.5,34.5) -- (71.5,40) ;
+  \node[lbl,anchor=north,inner sep=1pt,align=center,fill=white] at (71.5,34.5) {edge ignored\\ (\reg{ACC} = 1)};
+  \node[lbl,anchor=east] at (24,24) {timer T};
+  \draw[|-|,line width=0.4pt] (40,23) -- (61,23); \node[lbl,anchor=south,inner sep=0.6pt] at (50.5,23.2) {A};
+  \draw[|-|,line width=0.4pt] (61,23) -- (75,23); \node[lbl,anchor=south,inner sep=0.6pt] at (68,23.2) {B};
+  \draw[|-|,line width=0.4pt] (75,23) -- (89,23); \node[lbl,anchor=south,inner sep=0.6pt] at (82,23.2) {B};
+  \draw[|-|,dashed,line width=0.4pt] (89,23) -- (103,23); \node[lbl,anchor=north,inner sep=0.6pt,fill=white] at (96,21.2) {timeout B};
+  \draw[|-|,line width=0.4pt] (110,23) -- (131,23); \node[lbl,anchor=south,inner sep=0.6pt] at (120.5,23.2) {A};
+  \node[lbl,anchor=east] at (24,12) {sample point};
+  \foreach \x in {61,75,89} { \draw[ar] (\x,9.5) -- (\x,14.5); }
+  \node[lbl,anchor=north,inner sep=1pt] at (61,9.5) {R2, R4};
+  \node[lbl,anchor=north west,inner sep=1pt,fill=white] at (90,9.5) {R5, R10};
+  \node[lbl,anchor=east] at (24,0) {\reg{RXF}, \reg{IDLE}};
+  \draw[line width=0.7pt,accent] (26,-2) -- (89,-2) -- (89,2) -- (131,2);
+  \node[lbl,anchor=south west,inner sep=0.6pt,fill=white] at (91,2.6) {\reg{RXF}: frame stored};
+  \draw[line width=0.7pt,accent,dashed] (26,-5) -- (103,-5) -- (103,-1) -- (131,-1);
+  \node[lbl,anchor=north west,inner sep=1pt] at (104,-5.5) {\reg{IDLE} set (R13)};
+\end{tikzpicture}

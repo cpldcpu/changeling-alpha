@@ -6,7 +6,15 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = project.v
+PROJECT_SOURCES = tt_um_cpldcpu_changeling_alpha.v sram_bb.v \
+	rsoc8/rtl/rcore8d.v rsoc8/rtl/rdual.v rsoc8/rtl/rlinecells.v rsoc8/rtl/rlcports.v rsoc8/rtl/revents.v \
+	rsoc8/rtl/rtimers.v rsoc8/rtl/rclock.v rsoc8/rtl/rhost.v rsoc8/rtl/rpe_top.v rsoc8/rtl/rpe_osc_stub.v
+
+# Behavioural model of the IHP SRAM macro (RTL and gate-level simulation).
+# SIM also skips the blackbox declaration of the macro in src/sram_bb.v.
+SRAM_MODEL = $(PWD)/sram_model/RM_IHPSG13_1P_1024x16_c2_bm_bist.v $(PWD)/sram_model/RM_IHPSG13_1P_core_behavioral_bm_bist.v
+VERILOG_SOURCES += $(SRAM_MODEL)
+COMPILE_ARGS += -DFUNCTIONAL -DSIM
 
 ifneq ($(GATES),yes)
 
@@ -19,8 +27,6 @@ else
 # Gate level simulation:
 SIM_BUILD				= sim_build/gl
 COMPILE_ARGS    += -DGL_TEST
-COMPILE_ARGS    += -DFUNCTIONAL
-COMPILE_ARGS    += -DSIM
 # Cell models for the PDK in $(PDK) (ihp-sg13cmos5l or ihp-sg13g2), e.g. sg13cmos5l_stdcell.v
 PDK ?= ihp-sg13cmos5l
 PDK_CELL_PREFIX = $(patsubst ihp-%,%,$(PDK))

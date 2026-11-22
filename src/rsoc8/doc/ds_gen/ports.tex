@@ -1,0 +1,22 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x00} & \reg{PINR} & R & -- & Bidirectional port: synchronised pin levels \\
+\texttt{0x01} & \reg{DDR} & R/W & \texttt{0x00} & Bidirectional port: direction, 1 = output \\
+\texttt{0x02} & \reg{PORT} & R/W & \texttt{0x00} & Bidirectional port: output value \\
+\texttt{0x03} & \reg{PINB} & R & -- & Input pins: synchronised levels of all eight \\
+\texttt{0x04} & \reg{PORTC} & R/W & \texttt{0x00} & Output pins \\
+\texttt{0x3F53} & \reg{ODE} & R/W & \texttt{0x00} & Open-drain enable per pin of the bidirectional port \\
+\texttt{0x3F54} & \reg{PCMSK} & R/W & \texttt{0x00} & Pin-change mask per pin of the bidirectional port \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{PINB} & \texttt{0x03} & \texttt{IN7} & \texttt{IN6} & \texttt{IN5} & \texttt{REF} & \texttt{STRAP} & \texttt{HMOSI} & \texttt{HCS} & \texttt{HSCK} \\ \hline
+\texttt{PORTC} & \texttt{0x04} & \texttt{OUT7} & \texttt{OUT6} & \texttt{OUT5} & \texttt{OUT4} & \texttt{OUT3} & \texttt{DBG} & \texttt{CKO} & \textcolor{black!45}{--} \\ \hline
+\end{tabular}\par}

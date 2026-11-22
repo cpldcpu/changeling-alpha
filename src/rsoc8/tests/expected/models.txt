@@ -1,0 +1,19 @@
+== ev
+directed: 907 cycles, 0 errors
+random: seeds 0..99, 419916 cycles, 0 mismatching
+== dual
+lockB reads ['0x10', '0x10', '0x10', '0x12', '0x21', '0x20']
+directed: 190 cycles, 0 errors
+random: seeds 0..99, 300000 cycles, 0 mismatching
+== clkctl
+directed: 75363 cycles, 0 errors
+  F1 ok     : CLKCTL bit 7 (reserved) reads zero after writing a one (reads 00)
+  F2 ok     : K1: SRC=1 with OSCEN=0 enables the oscillator macro (osc_en=1) (osc_en=1)
+  F3 DEVIATES: K7: event 36 cycles after the last one with target 100 and window 64 is used (count 36) (TRCNTL=00 MDONE 0)
+random: seeds 0..99, 601736 cycles, 0 mismatching
+== prot
+directed: 23 cycles, 0 errors
+random: seeds 0..99, 300000 cycles, 0 mismatching
+== host
+directed: 17 items, 0 errors
+random: seeds 0..99, 12747 items, 0 mismatching
