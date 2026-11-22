@@ -13,7 +13,9 @@
 
   "//": "PL_TARGET_DENSITY_PCT - You can increase this if Global Placement fails with error GPL-0302.",
   "//": "Users have reported that values up to 80 worked well for them.",
-  "PL_TARGET_DENSITY_PCT": 60,
+  "//": "Changeling-alpha: 40. The movable cells fill about 30 % of the area outside the macros. With 60 the placer packed them",
+  "//": "densely and routing did not converge on the three routing layers below the power stripes (Metal3 overflow, run 45008997433).",
+  "PL_TARGET_DENSITY_PCT": 40,
 
   "//": "CLOCK_PERIOD - Increase this in case you are getting setup time violations.",
   "//": "The value is in nanoseconds, so 20ns == 50MHz. Changeling-alpha is specified for 60 MHz.",
