@@ -46,13 +46,15 @@
   "//": "Macro views straight from the PDK (sg13cmos5l_sram is a link to sg13g2_sram).",
   "//": "A macro is 236.8 x 336.46 um; the 8x4 project area is 1724.16 x 710.64 um. The three instances stand side by side",
   "//": "at the bottom left, flipped (FS) so that their pins face up towards the logic. x = 3.36 + n x 11.24 um keeps the power",
-  "//": "columns of every macro under the PDN stripes (n = 0, 23, 46). Instance names: hierarchy below the top module.",
+  "//": "columns of every macro under the PDN stripes (n = 0, 22, 44). The gap of 10.48 um between two macros is inside the",
+  "//": "macro halos, so no standard cell row is left between them (a row there has no power stripe: PDN-0179).",
+  "//": "Instance names: hierarchy below the top module.",
   "MACROS": {
     "RM_IHPSG13_1P_1024x16_c2_bm_bist": {
       "instances": {
         "chip.u.m_code0.u_mem": { "location": [3.36, 3.78], "orientation": "FS" },
-        "chip.u.m_code1.u_mem": { "location": [261.88, 3.78], "orientation": "FS" },
-        "chip.u.m_data.u_mem":  { "location": [520.4, 3.78], "orientation": "FS" }
+        "chip.u.m_code1.u_mem": { "location": [250.64, 3.78], "orientation": "FS" },
+        "chip.u.m_data.u_mem":  { "location": [497.92, 3.78], "orientation": "FS" }
       },
       "gds": ["pdk_dir::libs.ref/sg13cmos5l_sram/gds/RM_IHPSG13_1P_1024x16_c2_bm_bist.gds"],
       "lef": ["pdk_dir::libs.ref/sg13cmos5l_sram/lef/RM_IHPSG13_1P_1024x16_c2_bm_bist.lef"],
