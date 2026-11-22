@@ -47,6 +47,7 @@
 | `info.yaml`, `docs/info.md` | Tiny Tapeout project data and project page |
 | `test/` | cocotb tests through the pins, for RTL and gate-level simulation |
 | `analog/` | clock macro work: [analog/HANDOVER.md](analog/HANDOVER.md) |
+| `HANDOVER.md` | [state of the repository and of the hardening](HANDOVER.md), run history, open issues, local flow |
 | `.github/workflows/` | Tiny Tapeout flow (gds, precheck, gate-level test, docs, fpga), `regression` and `doc` |
 
 ## Status and known limitations

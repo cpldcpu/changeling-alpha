@@ -25,3 +25,6 @@ src/rsoc8/doc/*.toc
 src/rsoc8/doc/*.fls
 src/rsoc8/doc/*.fdb_latexmk
 src/rsoc8/doc/*.pdf
+runs/
+tt/
+venv/
