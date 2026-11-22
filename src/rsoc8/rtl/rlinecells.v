@@ -23,13 +23,13 @@ module rlc_cg (input clk, input en, output gclk);
 endmodule
 
 // ------------------------------------------------------------------ 8-bit configuration register
-module rlc_reg #(parameter [7:0] MASK = 8'hFF) (
+module rlc_reg #(parameter [7:0] MASK = 8'hFF, parameter [7:0] RST = 8'h00) (
     input clk, input rst_n, input we, input [7:0] d, output [7:0] q);
     wire gclk;
     reg [7:0] r;
     rlc_cg cg (.clk(clk), .en(we), .gclk(gclk));
     always @(posedge gclk or negedge rst_n)
-        if (!rst_n) r <= 8'h00; else r <= d & MASK;
+        if (!rst_n) r <= RST; else r <= d & MASK;
     assign q = r;
 endmodule
 

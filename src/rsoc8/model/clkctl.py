@@ -21,7 +21,7 @@ class ClkCtl:
         s.booted = 0
         s.src = 0; s.oscen = 0; s.ctl = 0        # CLKCTL: SRC OSCEN, ctl = bits 6:2 (LOOP TRIMD REFSEL[2] REFCELL)
         s.sel = 0                                # selected source (the one that rclk_src is told)
-        s.trim = 0x80; s.cdiv = 0; s.pdiv = 0; s.int = 0; s.tgt = 0; s.win_r = 0; s.cko_r = 0; s.dbg_r = 0
+        s.trim = 0x80; s.cdiv = 1; s.pdiv = 0; s.int = 0; s.tgt = 0; s.win_r = 0; s.cko_r = 0; s.dbg_r = 0
         s.cnth_lat = 0
         s.se = [0, 0, 0]; s.so = [0, 0, 0]; s.sa = [0, 0]
         s.wctr = 0; s.seen_e = 0; s.seen_o = 0; s.pres_e = 0; s.pres_o = 0

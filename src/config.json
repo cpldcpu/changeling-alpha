@@ -25,6 +25,10 @@
   "//": "(access time 7.7 ns at the slow corner, then 50 cells) reach 27 ns at the slow corner (run 45021839569).",
   "SYNTH_STRATEGY": "DELAY 4",
 
+  "//": "Constraints of the flow plus the two-cycle exception for the instruction paths of the cores (see the file).",
+  "PNR_SDC_FILE": "dir::timing.sdc",
+  "SIGNOFF_SDC_FILE": "dir::timing.sdc",
+
   "//": "IHP_CELLS: rsoc8/rtl/rlinecells.v instantiates the library clock gate sg13cmos5l_lgcp_1.",
   "VERILOG_DEFINES": ["IHP_CELLS"],
 

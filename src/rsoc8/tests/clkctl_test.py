@@ -80,12 +80,12 @@ def directed():
     s = Seq(); N = lambda n, **k: s.idle(n, **k)
     # K4: strap low: external clock, oscillator off; reset values
     s.idle(3, strap=0)
-    chk(s.rd(OSCTRIM) == 0x80 and s.rd(CDIV) == 0 and s.rd(TRINT) == 0 and s.rd(CLKCTL) == 0, 'reset values')
+    chk(s.rd(OSCTRIM) == 0x80 and s.rd(CDIV) == 1 and s.rd(TRINT) == 0 and s.rd(CLKCTL) == 0, 'reset values')
     # reserved bits read as zero: CLKCTL bit 7, CLKOUT, DBGSEL
     s.wr(CLKOUT, 0xFF); chk(s.rd(CLKOUT) == 0x87, 'CLKOUT writable bits')
     s.wr(DBGSEL, 0xFF); chk(s.rd(DBGSEL) == 0x8F, 'DBGSEL writable bits')
     # protected registers
-    s.wr(CDIV, 5); chk(s.rd(CDIV) == 0, 'CLKCDIV write without unlock ignored'); s.wr(CDIV, 5, unlock=1); chk(s.rd(CDIV) == 5, 'with unlock')
+    s.wr(CDIV, 5); chk(s.rd(CDIV) == 1, 'CLKCDIV write without unlock ignored'); s.wr(CDIV, 5, unlock=1); chk(s.rd(CDIV) == 5, 'with unlock')
     s.wr(CDIV, 0, host=1); chk(s.rd(CDIV) == 0, 'host writes without unlock'); s.wr(PDIV, 3); chk(s.rd(PDIV) == 3, 'CLKPDIV not protected')
     # K5: dividers
     s.wr(CDIV, 3, unlock=1); s.idle(8); o = s.idle(16)

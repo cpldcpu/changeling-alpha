@@ -3,7 +3,8 @@
 // the SPI host releases the core reset.
 //   +hex0=file +hex1=file   code memory images (16-bit words); +hex=file: one image of 2K words for core 0
 //   a write to fast I/O address 0x1F ends the simulation with that value as exit code
-//   +cdiv=n: the host writes CLKCDIV = n - 1 before it releases the core reset
+//   +cdiv=n: the host writes CLKCDIV = n - 1 before it releases the core reset (default n = 1; the reset value of
+//            the register gives divider 2, which is kept with +cdivreset)
 //   +duty=<percent>: duty cycle of the external clock; +ethm=<n> and related plusargs: Ethernet model, see tb/eth_model.v
 //   bidirectional pins: undriven pins read high (+pd=<hex mask>: low); +loop=xy connects pin x to pin y (x drives y)
 `timescale 1ns/1ps
@@ -316,7 +317,7 @@ module tb_sys;
             h_rd(16'h4802); hchk({hv2, hv} === img1[1], "read of code memory 1 in the core reset");
             if (herrs != 0) $display("HOST read in reset FAIL"); else $display("HOST read in reset ok");
         end
-        if (cdiv > 1) h_wr(16'h3F22, cdiv - 1);        // +cdiv=n: the host sets the core divider
+        if (!$test$plusargs("cdivreset")) h_wr(16'h3F22, cdiv - 1);   // the host sets the core divider (+cdiv=n, default 1); +cdivreset: reset value, divider 2
         h_ctrl(8'h00);
         if (htest == 1) host_test;
         if ($test$plusargs("sensor")) sens_use = 1;                              // +sensor: I2C sensor model on pins 4 to 6

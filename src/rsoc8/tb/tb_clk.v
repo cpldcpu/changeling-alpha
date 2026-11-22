@@ -85,7 +85,7 @@ module tb_clk;
         cycles(2200);
         expect_rd(9'h00F, 8'h06, 8'h04, "external clock present, oscillator not");
         // ---- 2. dividers; protected write
-        wr(9'h122, 8'd2, 0); expect_rd(9'h122, 8'hFF, 8'h00, "CLKCDIV needs the unlock");
+        wr(9'h122, 8'd2, 0); expect_rd(9'h122, 8'hFF, 8'h01, "CLKCDIV needs the unlock");
         wr(9'h122, 8'd2, 1); wr(9'h123, 8'd3, 0); cycles(20);
         n0 = n_clk; c0 = n_cke; p0 = n_pt; cycles(1200);
         if (n_cke - c0 != 400 || n_pt - p0 != 300) fail("divider ratios");

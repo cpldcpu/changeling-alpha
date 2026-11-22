@@ -107,7 +107,10 @@ module rclk_ctl (
     reg  [5:0] r_ctl;                     // REFCELL REFSEL TRIMD LOOP
     reg  [7:0] r_trim, cnth_lat;
     wire [7:0] r_cdiv, r_pdiv, r_int, tgtl, tgth, r_win, r_cko, r_dbg;
-    rlc_reg          u_cdiv (clk, rst_n, io_we & a_cdiv & ok, io_wdata, r_cdiv);
+    // Reset value 1: the cores run at half the system clock. The timing constraints give the paths from the
+    // code memories through the instruction inputs of the cores two clock cycles, which holds for a divider
+    // of 2 or more. Divider 1 (value 0) is for a system clock of 33 MHz or less.
+    rlc_reg #(8'hFF, 8'h01) u_cdiv (clk, rst_n, io_we & a_cdiv & ok, io_wdata, r_cdiv);
     rlc_reg          u_pdiv (clk, rst_n, io_we & a_pdiv, io_wdata, r_pdiv);
     rlc_reg #(8'h7F) u_int  (clk, rst_n, io_we & a_int, io_wdata, r_int);
     rlc_reg          u_tgtl (clk, rst_n, io_we & pg & (lo == 4'h7), io_wdata, tgtl);

@@ -68,6 +68,8 @@ The specification and the verification report describe draft 0.36. Changes made 
 | Instance `clocking` renamed to `u_clock` | `rtl/rpe_top.v` | `clocking` is a SystemVerilog keyword |
 | Clock gate cell `sg13cmos5l_lgcp_1` with `IHP_CELLS` | `rtl/rlinecells.v` | library of the target process |
 | The output register of the dedicated outputs is reset by the system reset, no longer by the core reset | `rtl/rlcports.v`, `rtl/rpe_top.v` | the data output of the host link was held at zero during the core reset, so status and memory could not be read back before a program was started. Found by the cocotb test; the system testbench (`+spiload`) and the cocotb test now read in the core reset |
+| Reset value of the core divider `CLKCDIV` is 1 (divider 2) instead of 0 | `rtl/rclock.v`, `rtl/rlinecells.v` (`rlc_reg` with a reset value) | at 60 MHz the paths from the code memories into the cores need two clock cycles at the slow corner; with divider 2 the cores have them. The testbench writes divider 1 where the tests assume it (`+cdiv`, `+cdivreset`) |
+| Keep attribute on the instruction inputs `prd0`, `prd1` | `rtl/rdual.v` | net names for the two-cycle timing exception in `src/timing.sdc` |
 
-Side effect of the last change: the clock output and the debug signal, whose enables belong to the clocking
+Side effect of the change of the output register: the clock output and the debug signal, whose enables belong to the clocking
 block, are no longer forced low while the core reset is set.

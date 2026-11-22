@@ -2,39 +2,39 @@ fw1 (one core: UART through line cells, time base, pin change interrupt, flags):
 fw2 (two cores: UART between the cores, shared memory, flags, lock):            EXIT 0 (core 0) cycles 2927
 fw3 (10BASE-T frame at 6 clock cycles per bit, both-edge sampling):              EXIT 0 (core 0) cycles 2397
 fw6 (timer compare and capture, PWM, CRC from software and from line cells):    PWM cycles 3001 high 751 1501 3001 EXIT 0 (core 0) cycles 14170 
-fw7 (clocking: dividers, measurement against a reference pin, window, outputs):   EXIT 0 (core 0) cycles 11847 
+fw7 (clocking: dividers, measurement against a reference pin, window, outputs):   EXIT 0 (core 0) cycles 11726 
 fw8 (program protection: write enables, limit, lock):                            EXIT 0 (core 0) cycles 143 
 fw1 loaded through the host link:                                                HOST load ok HOST read in reset ok EXIT 0 (core 0) cycles 1566 
 fw2 (two images) loaded through the host link:                                   HOST load ok HOST read in reset ok EXIT 0 (core 0) cycles 2927 
 host link: status, mailbox, halt, memory and register access, step, inject, break: HOST PASS EXIT 0 (core 0) cycles 48497 
-the same with the core clock enabled every third cycle:                          HOST PASS EXIT 0 (core 0) cycles 48531 
+the same with the core clock enabled every third cycle:                          HOST PASS EXIT 0 (core 0) cycles 48529 
 -- cores at half the clock rate (+cdiv=2), peripherals at the full rate
-fw1: EXIT 0 (core 0) cycles 2193 
-fw2: EXIT 0 (core 0) cycles 4105 
-fw6: PWM cycles 3003 high 753 1503 3003 EXIT 0 (core 0) cycles 20915 
-fw3 (expected to fail with 110: one core cannot serve both directions):  EXIT 110 (core 0) cycles 3035 
-fw5 (10BASE-T, one core sends, the other receives):                      EXIT 0 (core 0) cycles 4893 
-fw4 (10BASE-T receive from a generator, 6 clock cycles per bit):         EXIT 0 (core 0) cycles 4661 
+fw1: EXIT 0 (core 0) cycles 2192 
+fw2: EXIT 0 (core 0) cycles 4104 
+fw6: PWM cycles 3003 high 753 1503 3003 EXIT 0 (core 0) cycles 20914 
+fw3 (expected to fail with 110: one core cannot serve both directions):  EXIT 110 (core 0) cycles 3034 
+fw5 (10BASE-T, one core sends, the other receives):                      EXIT 0 (core 0) cycles 4892 
+fw4 (10BASE-T receive from a generator, 6 clock cycles per bit):         EXIT 0 (core 0) cycles 4660 
 -- 10BASE-T receive at 3 clock cycles per bit (whole chip at 30 MHz), bit time of the sender -5 %, 0, +5 %
-fw4, bit time 28500 ps: EXIT 0 (core 0) cycles 3130 
-fw4, bit time 30000 ps: EXIT 0 (core 0) cycles 3169 
-fw4, bit time 31500 ps: EXIT 0 (core 0) cycles 3207 
+fw4, bit time 28500 ps: EXIT 0 (core 0) cycles 2759 
+fw4, bit time 30000 ps: EXIT 0 (core 0) cycles 2798 
+fw4, bit time 31500 ps: EXIT 0 (core 0) cycles 2836 
 directed: 1821 cycles, 0 errors
 random: seeds 0..99, 0 mismatching
 fwusb (USB HID device, enumeration by the host model), divider 1 and 4:  USB PASS USB PASS 
 fwsens (I2C sensor with interrupt line to USB reports), divider 1:       SENSOR: events 19, reports 16 (2 with error bit), dropped 2, I2C reads 16 SENSOR: SCL period 1460 to 25330 ns inside a transfer (shortest: 684.9 kHz) USB PASS 
-fwsens, short enumeration, divider 2 and 4:                              SENSOR: events 19, reports 15 (2 with error bit), dropped 2, I2C reads 15 SENSOR: SCL period 1720 to 42920 ns inside a transfer (shortest: 581.4 kHz) USB PASS SENSOR: events 19, reports 14 (2 with error bit), dropped 2, I2C reads 14 SENSOR: SCL period 2240 to 77200 ns inside a transfer (shortest: 446.4 kHz) USB PASS 
+fwsens, short enumeration, divider 2 and 4:                              SENSOR: events 19, reports 15 (2 with error bit), dropped 2, I2C reads 15 SENSOR: SCL period 1720 to 42900 ns inside a transfer (shortest: 581.4 kHz) USB PASS SENSOR: events 19, reports 14 (2 with error bit), dropped 2, I2C reads 14 SENSOR: SCL period 2240 to 77200 ns inside a transfer (shortest: 446.4 kHz) USB PASS 
 fwusb, HID class requests (GET/SET_REPORT with OUT data stage, GET_CONFIGURATION, GET_IDLE, protocol) and endpoint 0 robustness, short enumeration: USB PASS 
 fwsens, the same checks (GET_REPORT returns the report of core 1): SENSOR: events 19, reports 16 (2 with error bit), dropped 2, I2C reads 16 SENSOR: SCL period 1460 to 25330 ns inside a transfer (shortest: 684.9 kHz) USB PASS 
 PASS: synchroniser order
 clocking block, two unrelated clocks: shortest high phase 8333 ps, shortest low phase 8333 ps, 277245 clock cycles PASS 
 fw10 (WS2812 controller, LED with forwarding, second LED):           EXIT 0 (core 0) cycles 4801 
-fw11 (SPI master and slave, modes 0 and 1), core divider 1 and 2:    EXIT 0 (core 0) cycles 3568  EXIT 0 (core 0) cycles 5047 
-fw12 (I2C firmware master, slave with line cells), divider 1 and 2:  EXIT 0 (core 0) cycles 20822  EXIT 0 (core 0) cycles 22903 
-fw13 (USB low-speed host and device), divider 1 and 3:               EXIT 0 (core 0) cycles 17109  EXIT 0 (core 0) cycles 24630 
+fw11 (SPI master and slave, modes 0 and 1), core divider 1 and 2:    EXIT 0 (core 0) cycles 3568  EXIT 0 (core 0) cycles 5046 
+fw12 (I2C firmware master, slave with line cells), divider 1 and 2:  EXIT 0 (core 0) cycles 20822  EXIT 0 (core 0) cycles 22902 
+fw13 (USB low-speed host and device), divider 1 and 3:               EXIT 0 (core 0) cycles 17109  EXIT 0 (core 0) cycles 24631 
 fw13 with a wrong CRC5 in the IN token: the device must not answer:  EXIT 0 (core 0) cycles 12675 
-fw14 (10BASE-T frame check with the CRC unit), good frame, then a wrong bit: EXIT 0 (core 0) cycles 4131  EXIT 0 (core 0) cycles 3067 
-fw9 (switch to the oscillator, trim loop, clock output), strap low:  PINS clock output 1002 debug 0, period of the clock output 133.5 ns, value written 163 EXIT 0 (core 0) cycles 29275 
-fw9, strap high, host link at 1 MHz:                                 PINS clock output 1002 debug 0, period of the clock output 133.5 ns, value written 163 EXIT 0 (core 0) cycles 28478 
+fw14 (10BASE-T frame check with the CRC unit), good frame, then a wrong bit: EXIT 0 (core 0) cycles 3760  EXIT 0 (core 0) cycles 2696 
+fw9 (switch to the oscillator, trim loop, clock output), strap low:  PINS clock output 1002 debug 0, period of the clock output 133.5 ns, value written 163 EXIT 0 (core 0) cycles 29653 
+fw9, strap high, host link at 1 MHz:                                 PINS clock output 1002 debug 0, period of the clock output 133.5 ns, value written 163 EXIT 0 (core 0) cycles 29164 
 fwusbo (USB HID device on the oscillator, trimmed by the keep-alive signal), start -15 % and +12 %: USB PASS USB PASS 
-fwsenso (two-core sensor bridge on the oscillator, 1 ms frames, HID class requests, endpoint 0): SENSOR: events 19, reports 14 (2 with error bit), dropped 2, I2C reads 14 SENSOR: SCL period 10223 to 16053 ns inside a transfer (shortest: 97.8 kHz) USB PASS 
+fwsenso (two-core sensor bridge on the oscillator, 1 ms frames, HID class requests, endpoint 0): SENSOR: events 19, reports 14 (2 with error bit), dropped 2, I2C reads 14 SENSOR: SCL period 10223 to 16122 ns inside a transfer (shortest: 97.8 kHz) USB PASS 
