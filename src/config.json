@@ -21,6 +21,10 @@
   "//": "The value is in nanoseconds, so 20ns == 50MHz. Changeling-alpha is specified for 60 MHz.",
   "CLOCK_PERIOD": 16.67,
 
+  "//": "Timing repair during place and route works on the default corner. With the typical corner it found nothing to",
+  "//": "repair while the slow corner failed by 9.6 ns (run 45045076268), so the slow corner is the default corner here.",
+  "DEFAULT_CORNER": "nom_slow_1p08V_125C",
+
   "//": "Constraints of the flow plus the two-cycle exception for the instruction paths of the cores (see the file).",
   "PNR_SDC_FILE": "dir::timing.sdc",
   "SIGNOFF_SDC_FILE": "dir::timing.sdc",

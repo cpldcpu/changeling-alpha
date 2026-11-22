@@ -101,8 +101,10 @@ module rcore8d #(
 
     // data memory byte: taken from the memory output in the cycle after the read, or from a
     // capture register if the core was not enabled in that cycle
+    // dq takes the memory output one clock cycle after the read. The keep attribute preserves its name: the
+    // timing constraints of the implementation flow exclude it from the two-cycle exception of the data memory.
     reg       rd_first, dq_v;
-    reg [7:0] dq;
+    (* keep *) reg [7:0] dq;
     wire [7:0] dmq = dq_v ? dq : dm_rdata;
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin rd_first <= 1'b0; dq_v <= 1'b0; dq <= 8'h00; end
