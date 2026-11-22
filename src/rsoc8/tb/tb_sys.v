@@ -310,6 +310,11 @@ module tb_sys;
             h_load(1);
             for (i = 0; i < 1024; i = i + 1) if (`ROM1[i] !== img1[i]) herrs = herrs + 1;
             if (herrs != 0) $display("HOST load errors %0d", herrs); else $display("HOST load ok");
+            // reads through the host link while the core reset is still set
+            h_status; hchk(hs0[7] == 1'b1, "status in the core reset: access allowed");
+            h_rd(16'h4000); hchk({hv2, hv} === img0[0], "read of code memory 0 in the core reset");
+            h_rd(16'h4802); hchk({hv2, hv} === img1[1], "read of code memory 1 in the core reset");
+            if (herrs != 0) $display("HOST read in reset FAIL"); else $display("HOST read in reset ok");
         end
         if (cdiv > 1) h_wr(16'h3F22, cdiv - 1);        // +cdiv=n: the host sets the core divider
         h_ctrl(8'h00);

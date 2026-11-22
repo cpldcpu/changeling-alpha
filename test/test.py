@@ -4,8 +4,9 @@
 # Tests of Changeling-alpha through its pins only, so that the same file runs on the RTL and on the
 # gate-level netlist. The firmware is loaded through the host link, as on the demo board.
 #
-#   test_load_and_uart_echo   loads fw/uart_echo.hex (src/rsoc8/fw/fwu_echo.c, 60 clock cycles per bit),
-#                             reads the code memory back, starts core 0 and checks the echo of four characters
+#   test_load_and_uart_echo   loads fw/uart_echo.hex (src/rsoc8/fw/fwu_echo.c, 60 clock cycles per bit), reads the
+#                             status and the code memory back in the core reset, starts core 0 and checks the
+#                             echo of four characters
 #
 # The complete regression (firmware tests against protocol models, block tests against Python models)
 # is in src/rsoc8/tests and src/rsoc8/blocks; see src/rsoc8/README.md.
@@ -131,15 +132,16 @@ async def test_load_and_uart_echo(dut):
     image = load_hex("uart_echo.hex")
     await host.write(0x4000, image)
 
-    # The data output of the host link is an output register of the port block, which is held in the core
-    # reset. Reading back therefore needs the reset released; the halt requests keep both cores stopped.
-    dut._log.info("Release the core reset with both cores halted, read the code memory back")
-    await host.control(0x03)
-    await ClockCycles(dut.clk, 20)
+
+    dut._log.info("Read the status and the code memory back while the core reset is still set")
+    await host.start()
+    st = [await host.byte(b) for b in (0x05, 0, 0, 0)]
+    await host.stop()
+    assert st[2] & 0x80, f"status {st[2]:#04x}: access not allowed in the core reset"
     back = await host.read(0x4000, len(image))
     assert back == image, "code memory differs from the image"
 
-    dut._log.info("Let the cores run")
+    dut._log.info("Release the core reset")
     await host.control(0x00)
     await ClockCycles(dut.clk, 2000)             # the firmware sets up the line cells
     assert bit(dut.uio_oe, TX_PIN) == 1, "transmit pin is not an output"

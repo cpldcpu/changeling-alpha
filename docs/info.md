@@ -37,9 +37,8 @@ Documentation:
    `uio[5]` (1 Mbit/s, 8 data bits, 1 stop bit).
 
 The host link commands are in the datasheet, chapter "Host link, mailbox and debug". The cocotb test in
-`test/test.py` performs the steps above in simulation. The data output of the host link works only after the
-core reset has been released; to read memory back before the program runs, release the reset with both
-halt requests set (`0x04 0x03`).
+`test/test.py` performs the steps above in simulation. Status and memory can be read through the host link while
+the core reset is still set, so a loaded program can be checked before it runs.
 
 ## External hardware
 

@@ -113,7 +113,7 @@ module rpe_core (
     wire [3:0] lc_evt;
     wire       pc_evt, capt_evt, oca_evt, ocb_evt, ovf_evt, trim_evt, cko_en, cko, dbg_en, dbg;
     wire [2:0] pwm_en, pwm_out;
-    rlcports ports (.clk(clk), .rst_n(rst_c), .ptick(ptick),
+    rlcports ports (.clk(clk), .rst_n(rst_c), .rst_sys_n(rst_sys_n), .ptick(ptick),
         .io_addr(io_addr), .io_core(io_core), .io_host(io_host), .io_re(io_re), .io_we(io_we), .io_wdata(io_wdata),
         .io_wmask(io_wmask), .io_rdata(rd_ports), .io_unlock(io_unlock), .io_prot(prot_ports),
         .uio_in(uio_in), .uio_out(uio_out), .uio_oe(uio_oe), .in_pins(in_pins), .out_pins(out_pins),

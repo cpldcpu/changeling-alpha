@@ -11,7 +11,8 @@
 
 module rlcports (
     input            clk,
-    input            rst_n,
+    input            rst_n,          // reset of the cores and the peripherals
+    input            rst_sys_n,      // system reset: the output register of the dedicated outputs works during the core reset
     input            ptick,          // peripheral clock enable
 
     // register bus
@@ -162,11 +163,17 @@ module rlcports (
         end
     end
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin uio_out <= 8'h00; uio_oe <= 8'h00; out_pins <= 8'h00; end
+        if (!rst_n) begin uio_out <= 8'h00; uio_oe <= 8'h00; end
         else begin
             uio_out  <= pv;
             uio_oe   <= pe;
-            out_pins <= (r_portc & ~ovr_en) | (ovr_val & ovr_en);
         end
+    end
+    // The dedicated outputs carry the data output of the host link (pin 0). The host may read status and
+    // memory while the core reset is set, so this register is reset by the system reset only. During the
+    // core reset PORTC and the enables of clock output, debug signal and PWM are zero.
+    always @(posedge clk or negedge rst_sys_n) begin
+        if (!rst_sys_n) out_pins <= 8'h00;
+        else            out_pins <= (r_portc & ~ovr_en) | (ovr_val & ovr_en);
     end
 endmodule

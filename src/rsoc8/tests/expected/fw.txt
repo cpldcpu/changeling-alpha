@@ -4,8 +4,8 @@ fw3 (10BASE-T frame at 6 clock cycles per bit, both-edge sampling):             
 fw6 (timer compare and capture, PWM, CRC from software and from line cells):    PWM cycles 3001 high 751 1501 3001 EXIT 0 (core 0) cycles 14170 
 fw7 (clocking: dividers, measurement against a reference pin, window, outputs):   EXIT 0 (core 0) cycles 11847 
 fw8 (program protection: write enables, limit, lock):                            EXIT 0 (core 0) cycles 143 
-fw1 loaded through the host link:                                                HOST load ok EXIT 0 (core 0) cycles 1566 
-fw2 (two images) loaded through the host link:                                   HOST load ok EXIT 0 (core 0) cycles 2927 
+fw1 loaded through the host link:                                                HOST load ok HOST read in reset ok EXIT 0 (core 0) cycles 1566 
+fw2 (two images) loaded through the host link:                                   HOST load ok HOST read in reset ok EXIT 0 (core 0) cycles 2927 
 host link: status, mailbox, halt, memory and register access, step, inject, break: HOST PASS EXIT 0 (core 0) cycles 48497 
 the same with the core clock enabled every third cycle:                          HOST PASS EXIT 0 (core 0) cycles 48531 
 -- cores at half the clock rate (+cdiv=2), peripherals at the full rate

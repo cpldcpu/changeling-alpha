@@ -5,7 +5,7 @@ module tb_sync;
     reg clk = 0, rst_n = 0; always #5 clk = ~clk;
     reg [7:0] uio_in = 0;
     wire [7:0] rd, uo, oe, op, ps; wire [1:0] own, re, ae, se, rs, rb, ts, tb; wire [3:0] le; wire pc, prot;
-    rlcports dut (.clk(clk), .rst_n(rst_n), .ptick(1'b1), .io_addr(9'd0), .io_core(1'b0), .io_host(1'b0), .io_re(1'b0),
+    rlcports dut (.clk(clk), .rst_n(rst_n), .rst_sys_n(rst_n), .ptick(1'b1), .io_addr(9'd0), .io_core(1'b0), .io_host(1'b0), .io_re(1'b0),
         .io_we(1'b0), .io_wdata(8'd0), .io_wmask(8'd0), .io_rdata(rd), .io_unlock(1'b0), .io_prot(prot),
         .uio_in(uio_in), .uio_out(uo), .uio_oe(oe), .in_pins(8'd0), .out_pins(op), .ovr_en(8'd0), .ovr_val(8'd0),
         .lc_own(own), .lc_evt(le), .pc_evt(pc), .ref_evt(re), .acc_evt(ae), .smp_evt(se), .rx_strobe(rs), .rx_bit(rb),

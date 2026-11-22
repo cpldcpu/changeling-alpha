@@ -57,3 +57,17 @@ latexmk -pdf rpe_spec.tex rpe_datasheet.tex rpe_verification.tex
 
 The timing diagrams and settings tables in `doc/figs/` are generated from simulation logs by
 `tests/gen_waves.py` and `tests/gen_lcex.py` (see `doc/history/change_log.md`, last section).
+
+## RTL changes after specification draft 0.36
+
+The specification and the verification report describe draft 0.36. Changes made in this repository since:
+
+| Change | File | Reason |
+|---|---|---|
+| Chip level module renamed from `tt_um_cpldcpu_rpe` to `rpe_chip` | `rtl/rpe_top.v` | the Tiny Tapeout top module is a separate file outside this folder |
+| Instance `clocking` renamed to `u_clock` | `rtl/rpe_top.v` | `clocking` is a SystemVerilog keyword |
+| Clock gate cell `sg13cmos5l_lgcp_1` with `IHP_CELLS` | `rtl/rlinecells.v` | library of the target process |
+| The output register of the dedicated outputs is reset by the system reset, no longer by the core reset | `rtl/rlcports.v`, `rtl/rpe_top.v` | the data output of the host link was held at zero during the core reset, so status and memory could not be read back before a program was started. Found by the cocotb test; the system testbench (`+spiload`) and the cocotb test now read in the core reset |
+
+Side effect of the last change: the clock output and the debug signal, whose enables belong to the clocking
+block, are no longer forced low while the core reset is set.
