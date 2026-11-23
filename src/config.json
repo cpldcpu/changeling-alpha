@@ -59,17 +59,17 @@
   },
 
   "//": "Macro views straight from the PDK (sg13cmos5l_sram is a link to sg13g2_sram).",
-  "//": "A macro is 236.8 x 336.46 um; the 8x4 project area is 1724.16 x 710.64 um. Staggered inward layout:",
-  "//": "m_code0 and m_code1 sit along the bottom edge (FS, pins up) and m_data sits at the top edge (N, pins down),",
-  "//": "leaving the west half open under the I/O pins. x = 3.36 + n x 11.24 um keeps the power columns of every macro",
-  "//": "aligned with the PDN stripes (n = 60, 92, 124). Gaps between macros remain wide enough for power stripes.",
+  "//": "A macro is 236.8 x 336.46 um; the 8x4 project area is 1724.16 x 710.64 um. The three instances stand side by side",
+  "//": "along the bottom edge, flipped (FS) so that their pins face up towards the logic, with m_data centered between",
+  "//": "m_code0 and m_code1. x = 3.36 + n x 11.24 um keeps every macro's power columns under the PDN stripes (n = 0, 53, 106).",
+  "//": "Gaps between macros are wide enough for power stripes (PDN-0179 otherwise).",
   "//": "Instance names: hierarchy below the top module.",
   "MACROS": {
     "RM_IHPSG13_1P_1024x16_c2_bm_bist": {
       "instances": {
-        "chip.u.m_code0.u_mem": { "location": [677.76, 3.78], "orientation": "FS" },
-        "chip.u.m_data.u_mem":  { "location": [1037.44, 370.40], "orientation": "N" },
-        "chip.u.m_code1.u_mem": { "location": [1397.12, 3.78], "orientation": "FS" }
+        "chip.u.m_code0.u_mem": { "location": [3.36, 3.78], "orientation": "FS" },
+        "chip.u.m_data.u_mem":  { "location": [599.08, 3.78], "orientation": "FS" },
+        "chip.u.m_code1.u_mem": { "location": [1194.8, 3.78], "orientation": "FS" }
       },
       "gds": ["pdk_dir::libs.ref/sg13cmos5l_sram/gds/RM_IHPSG13_1P_1024x16_c2_bm_bist.gds"],
       "lef": ["pdk_dir::libs.ref/sg13cmos5l_sram/lef/RM_IHPSG13_1P_1024x16_c2_bm_bist.lef"],
