@@ -18,12 +18,25 @@ source $::env(SCRIPTS_DIR)/base.sdc
 #   With a divider of 2 or more the cores use the data memory output only through dq.
 # Their names are kept by attributes in the RTL.
 proc ca_flops {pattern {skip ""}} {
-    # flip-flops whose outputs drive the nets that match the pattern; nets with $skip in their name are left out
+    # flip-flops whose outputs drive the nets that match the pattern (walking back through buffers/inverters); nets with $skip in their name are left out
     set nets {}
     foreach n [get_nets $pattern] {
         if { $skip eq "" || [string first $skip [get_full_name $n]] < 0 } { lappend nets $n }
     }
-    return [get_cells -of_objects [get_pins -of_objects $nets -filter "direction == output"]]
+    set result {}
+    foreach c [get_cells -of_objects [get_pins -of_objects $nets -filter "direction == output"]] {
+        set cur $c
+        for {set hop 0} {$hop < 4} {incr hop} {
+            if { [llength [get_pins -quiet -of_objects $cur -filter "name == CLK"]] > 0 } { break }
+            set in_pins [get_pins -quiet -of_objects $cur -filter "direction == input"]
+            if { [llength $in_pins] != 1 } { break }
+            set drv_pins [get_pins -quiet -of_objects [get_nets -of_objects $in_pins] -filter "direction == output"]
+            if { [llength $drv_pins] != 1 } { break }
+            set cur [get_cells -of_objects $drv_pins]
+        }
+        lappend result $cur
+    }
+    return [lsort -unique $result]
 }
 set ca_mems [get_cells {chip.u.m_code0.u_mem chip.u.m_code1.u_mem chip.u.m_data.u_mem}]
 set ca_one  [concat [ca_flops chip.u.host.tx_next*] [ca_flops chip.u.host.tx_hold*] \
