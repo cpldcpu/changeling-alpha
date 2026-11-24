@@ -17,8 +17,8 @@ module tb_clk;
     reg [8:0] io_addr = 0; reg io_host = 0, io_re = 0, io_we = 0, io_unlock = 0; reg [7:0] io_wdata = 0;
     wire [7:0] io_rdata; wire io_prot, clk, rst_sys_n, cke, ptick, trim_evt, cko_en, cko, dbg_en, dbg;
     reg ref_host = 0, ref_pin = 0; reg [1:0] ref_evt = 0;
-    rclock dut (.clk_ext(clk_ext), .clk_osc(clk_osc), .rst_n(rst_n), .strap(strap), .clk(clk), .rst_sys_n(rst_sys_n),
-        .osc_en(osc_en), .osc_trim(osc_trim), .io_addr(io_addr), .io_host(io_host), .io_re(io_re), .io_we(io_we),
+    rclock dut (.clk_ext(clk_ext), .clk_osc(clk_osc), .clk_slow(1'b0), .rst_n(rst_n), .strap(strap), .clk(clk), .rst_sys_n(rst_sys_n),
+        .osc_en(osc_en), .relax_en(), .osc_trim(osc_trim), .io_addr(io_addr), .io_host(io_host), .io_re(io_re), .io_we(io_we),
         .io_wdata(io_wdata), .io_rdata(io_rdata), .io_unlock(io_unlock), .io_prot(io_prot), .cke(cke), .ptick(ptick),
         .ref_host(ref_host), .ref_pin(ref_pin), .ref_evt(ref_evt), .trim_evt(trim_evt),
         .smp_evt(2'b00), .acc_evt(2'b00), .tx_strobe(2'b00), .core_cen(2'b00), .bus_hold(1'b0),

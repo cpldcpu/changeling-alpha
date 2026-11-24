@@ -1,0 +1,3 @@
+case,trim_from,trim_to,f_before_MHz,f_after_MHz,trans_period_ns,trans_hi_ns
+lsb_step,191,192,61.3231,61.8180,16.156,8.386
+msb_boundary,127,128,40.3534,40.3510,24.818,12.923

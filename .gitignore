@@ -28,3 +28,15 @@ src/rsoc8/doc/*.pdf
 runs/
 tt/
 venv/
+
+# analog: extracted/build/LaTeX temp files
+analog/*.ext
+analog/*_extracted.cir
+analog/build/
+analog/*/build/
+analog/report/*.aux
+analog/report/*.log
+analog/report/*.out
+analog/report/*.fls
+analog/report/*.fdb_latexmk
+analog/report/*.toc

@@ -79,11 +79,13 @@ module rclk_ctl (
     input            tgl_ext, tgl_osc, open_osc,
     output           sel,            // to rclk_src
     output           osc_en,         // enable input of the oscillator macro
+    output           relax_en,       // enable input of the relaxation oscillator
     output     [7:0] trim_sys,
 
     output reg       cke,            // core clock enable
     output reg       ptick,          // peripheral clock enable
 
+    input            clk_slow,       // relaxation oscillator (~100 kHz)
     input            ref_host,       // host link clock pin
     input            ref_pin,        // reference pin
     input      [1:0] ref_evt,        // reference events of the receive cells
@@ -103,7 +105,7 @@ module rclk_ctl (
     assign io_prot = a_ctl | a_cdiv;
     wire ok = io_unlock | io_host;
 
-    reg        booted, r_src, r_oscen, sel_q;
+    reg        booted, r_src, r_oscen, sel_q, r_relaxen;
     reg  [5:0] r_ctl;                     // REFCELL REFSEL TRIMD LOOP
     reg  [7:0] r_trim, cnth_lat;
     wire [7:0] r_cdiv, r_pdiv, r_int, tgtl, tgth, r_win, r_cko, r_dbg;
@@ -133,17 +135,19 @@ module rclk_ctl (
     // ---------------------------------------------------------------- source request (K3, K4)
     assign sel      = booted ? sel_q : strap;
     assign osc_en   = booted ? (r_oscen | r_src | sel_q | act) : strap;      // enabled while requested, selected or active (K1)
+    assign relax_en = r_relaxen;
     assign trim_sys = r_trim;
 
     // ---------------------------------------------------------------- trim counter (K6-K9)
-    reg  [2:0]  sh, sp;                   // reference pins: synchronisers and previous value
+    reg  [2:0]  sh, sp, ss;               // reference pins & clk_slow: synchronisers and previous value
     reg  [1:0]  st;                       // 0 idle, 1 waiting for the first edge, 2 counting
     reg  [15:0] cnt, trcnt;
     reg  [6:0]  per;
     reg         mdone, mvalid, done_q;
-    wire        edge_pin = refsel[0] ? (sp[1] & ~sp[2]) : (sh[1] & ~sh[2]);
+    wire        slowref  = (refsel == 2'd3);
+    wire        edge_pin = slowref ? (ss[1] & ~ss[2]) : (refsel[0] ? (sp[1] & ~sp[2]) : (sh[1] & ~sh[2]));
     wire        line     = (refsel == 2'd2);
-    wire        rev      = line ? ref_evt[refcell] : (edge_pin & ~refsel[1]);
+    wire        rev      = line ? ref_evt[refcell] : (edge_pin & (~refsel[1] | slowref));
     wire [15:0] cnt1     = (cnt == 16'hFFFF) ? cnt : cnt + 16'd1;
     wire        ctl_wr   = io_we & a_ctl & ok;
     wire        meas_wr  = io_we & a_int & io_wdata[7];
@@ -180,7 +184,7 @@ module rclk_ctl (
             4'd8:  dsig = core_cen[0];   4'd9:  dsig = core_cen[1];
             4'd10: dsig = bus_hold;      4'd11: dsig = ptick;
             4'd12: dsig = cke;           4'd13: dsig = (st != 2'd0);
-            4'd14: dsig = trim_evt;      default: dsig = 1'b0;
+            4'd14: dsig = trim_evt;      4'd15: dsig = ss[1];
         endcase
     end
     assign cko_en = r_cko[7];
@@ -190,16 +194,16 @@ module rclk_ctl (
 
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
-            booted <= 1'b0; r_src <= 1'b0; r_oscen <= 1'b0; sel_q <= 1'b0; r_ctl <= 6'd0; r_trim <= 8'h80; cnth_lat <= 8'd0;
+            booted <= 1'b0; r_src <= 1'b0; r_oscen <= 1'b0; sel_q <= 1'b0; r_relaxen <= 1'b0; r_ctl <= 6'd0; r_trim <= 8'h80; cnth_lat <= 8'd0;
             se <= 3'd0; so <= 3'd0; sa <= 2'd0; win <= 10'd0; seen_e <= 1'b0; seen_o <= 1'b0; pres_e <= 1'b0; pres_o <= 1'b0;
-            sh <= 3'd0; sp <= 3'd0; st <= 2'd0; cnt <= 16'd0; trcnt <= 16'd0; per <= 7'd0;
+            sh <= 3'd0; sp <= 3'd0; ss <= 3'd0; st <= 2'd0; cnt <= 16'd0; trcnt <= 16'd0; per <= 7'd0;
             mdone <= 1'b0; mvalid <= 1'b0; done_q <= 1'b0;
             cc <= 8'd0; pc <= 8'd0; cke <= 1'b1; ptick <= 1'b1; oc <= 8'd0; cko_q <= 1'b0; dbg_q <= 1'b0;
         end else begin
             // ---- start: the strap gives the first source
             if (!booted) begin booted <= 1'b1; r_src <= strap; r_oscen <= strap; sel_q <= strap; end
             else if ((r_src != sel_q) & (r_src ? pres_o : pres_e)) sel_q <= r_src;
-            if (ctl_wr) begin r_src <= io_wdata[0]; r_oscen <= io_wdata[1]; r_ctl <= {1'b0, io_wdata[6:2]}; end      // bit 7 is reserved and reads 0
+            if (ctl_wr) begin r_src <= io_wdata[0]; r_oscen <= io_wdata[1]; r_ctl <= {1'b0, io_wdata[6:2]}; r_relaxen <= io_wdata[7]; end
             // ---- presence
             se <= {se[1:0], tgl_ext}; so <= {so[1:0], tgl_osc}; sa <= {sa[0], open_osc};
             win <= win + 10'd1;
@@ -209,12 +213,12 @@ module rclk_ctl (
             cc <= cc_n; cke <= (cc_n == 8'd0);
             pc <= pc_n; ptick <= (pc_n == 8'd0);
             // ---- trim counter
-            sh <= {sh[1:0], ref_host}; sp <= {sp[1:0], ref_pin};
+            sh <= {sh[1:0], ref_host}; sp <= {sp[1:0], ref_pin}; ss <= {ss[1:0], clk_slow};
             done_q <= fin;
             cnt <= cnt1;
             if (ctl_wr) st <= 2'd0;
             else case (st)
-                2'd0: if (line | meas_wr | (loop & ~refsel[1])) st <= 2'd1;
+                2'd0: if (line | meas_wr | (loop & ~line)) st <= 2'd1;
                 2'd1: if (rev) begin st <= 2'd2; cnt <= 16'd1; per <= 7'd0; end
                 default: if (rev_c) begin
                     if (fin) begin
@@ -242,7 +246,7 @@ module rclk_ctl (
         if (a_stat) io_rdata = {strap, 1'b0, mvalid, mdone, trimd, pres_e, pres_o, act};
         if (a_dbg)  io_rdata = r_dbg;
         if (pg) case (lo)
-            4'h0: io_rdata = {r_ctl, r_oscen, r_src};
+            4'h0: io_rdata = {r_relaxen, r_ctl[4:0], r_oscen, r_src};
             4'h1: io_rdata = r_trim;
             4'h2: io_rdata = r_cdiv;
             4'h3: io_rdata = r_pdiv;
@@ -260,9 +264,9 @@ endmodule
 
 // ------------------------------------------------------------------ both parts
 module rclock (
-    input            clk_ext, clk_osc, rst_n, strap,
+    input            clk_ext, clk_osc, clk_slow, rst_n, strap,
     output           clk, rst_sys_n,
-    output           osc_en,
+    output           osc_en, relax_en,
     output     [7:0] osc_trim,
     input      [8:0] io_addr,
     input            io_host, io_re, io_we,
@@ -283,8 +287,8 @@ module rclock (
         .rst_sys_n(rst_sys_n), .tgl_ext(tgl_ext), .tgl_osc(tgl_osc), .open_osc(open_osc), .osc_trim(osc_trim));
     rclk_ctl ctl (.clk(clk), .rst_n(rst_sys_n), .strap(strap), .io_addr(io_addr), .io_host(io_host), .io_re(io_re),
         .io_we(io_we), .io_wdata(io_wdata), .io_rdata(io_rdata), .io_unlock(io_unlock), .io_prot(io_prot),
-        .tgl_ext(tgl_ext), .tgl_osc(tgl_osc), .open_osc(open_osc), .sel(sel), .osc_en(osc_en), .trim_sys(trim_sys),
-        .cke(cke), .ptick(ptick), .ref_host(ref_host), .ref_pin(ref_pin), .ref_evt(ref_evt), .trim_evt(trim_evt),
+        .tgl_ext(tgl_ext), .tgl_osc(tgl_osc), .open_osc(open_osc), .sel(sel), .osc_en(osc_en), .relax_en(relax_en), .trim_sys(trim_sys),
+        .cke(cke), .ptick(ptick), .clk_slow(clk_slow), .ref_host(ref_host), .ref_pin(ref_pin), .ref_evt(ref_evt), .trim_evt(trim_evt),
         .smp_evt(smp_evt), .acc_evt(acc_evt), .tx_strobe(tx_strobe), .core_cen(core_cen), .bus_hold(bus_hold),
         .cko_en(cko_en), .cko(cko), .dbg_en(dbg_en), .dbg(dbg));
 endmodule

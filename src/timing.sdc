@@ -3,6 +3,16 @@
 # 1. The constraints of the flow (clock on clk with CLOCK_PERIOD, input and output delays, loads).
 source $::env(SCRIPTS_DIR)/base.sdc
 
+# Custom analog oscillator clocks (rpe_clk_analog):
+# - clk_osc (~60 MHz across trim 0..255) is asynchronous to external clk and muxed glitch-free in rclk_src.
+# - clk_slow (~100 kHz) crosses into the system clock domain through a 3-FF synchronizer in rclk_ctl.
+create_clock -name clk_osc -period $::env(CLOCK_PERIOD) [get_pins chip.u.osc.u_analog/clk]
+set_clock_uncertainty $::env(CLOCK_UNCERTAINTY_CONSTRAINT) [get_clocks clk_osc]
+set_clock_transition $::env(CLOCK_TRANSITION_CONSTRAINT) [get_clocks clk_osc]
+set_clock_groups -asynchronous -group [get_clocks clk] -group [get_clocks clk_osc]
+set_false_path -through [get_pins chip.u.osc.u_analog/clk_slow]
+set_false_path -through [get_pins {chip.u.osc.u_analog/en_ring chip.u.osc.u_analog/en_relax chip.u.osc.u_analog/trim0 chip.u.osc.u_analog/trim1 chip.u.osc.u_analog/trim2 chip.u.osc.u_analog/trim3 chip.u.osc.u_analog/trim4 chip.u.osc.u_analog/trim5 chip.u.osc.u_analog/trim6 chip.u.osc.u_analog/trim7}]
+
 # 2. Two clock cycles for the paths that start at a memory or at a core register listed below.
 #
 # The cores advance only in cycles in which the core clock enable (core divider) is set. Every flip-flop and

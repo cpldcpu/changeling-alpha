@@ -160,8 +160,8 @@ def extend(reader, layer, sram_layer, clearance_um, stack_pitch, pin_face_margin
                                 sram_cols[nn].append((ox + box.xMin(), ox + box.xMax()))
             continue
         rail_sets.append((inst.getName(), ib.xMin(), ib.xMax(), {"VPWR": [], "VGND": []}))
-        for nn in ("VPWR", "VGND"):
-            mterm = master.findMTerm(nn)
+        for nn, pin_cands in (("VPWR", ("VPWR", "VDD")), ("VGND", ("VGND", "VSS"))):
+            mterm = next((master.findMTerm(p) for p in pin_cands if master.findMTerm(p) is not None), None)
             if mterm is None:
                 continue
             for mpin in mterm.getMPins():
@@ -634,7 +634,8 @@ def extend(reader, layer, sram_layer, clearance_um, stack_pitch, pin_face_margin
                 continue
 
             # ---- CFGMEM-style macro: stripes on the tile grid pass straight through
-            mterm = master.findMTerm(net_name)
+            pin_cands = ("VPWR", "VDD") if net_name == "VPWR" else ("VGND", "VSS")
+            mterm = next((master.findMTerm(p) for p in pin_cands if master.findMTerm(p) is not None), None)
             if mterm is None:
                 print(f"[WARNING] macro {inst.getName()} has no pin {net_name}")
                 continue

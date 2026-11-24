@@ -1,0 +1,27 @@
+IHP SG13CMOS5L KLayout LVS Sign-Off Summary
+==========================================
+GDS File      : /home/tim/ttapeout/changeling-alpha/analog/clk_macro/layout/rpe_clk_analog.gds
+SPICE Netlist : /home/tim/ttapeout/changeling-alpha/analog/clk_macro/build/rpe_clk_analog_lvs.spice
+LVS Runset    : sg13cmos5l.lvs (combine_devices=true, disable_tap_extraction=true, top_lvl_pins=true, strict port mode)
+Status        : PASS - Congratulations! Netlists match.
+
+Top-Level Pins (14): VDD, VSS, clk, clk_slow, en_relax, en_ring, trim0, trim1, trim2, trim3, trim4, trim5, trim6, trim7
+Extracted Combined Nets : 117
+Matched Combined Devices:
+  cap_cmomf           : 5
+  rppd                : 2
+  sg13_hv_nmos        : 3
+  sg13_hv_svaricap    : 2
+  sg13_lv_nmos        : 83
+  sg13_lv_pmos        : 116
+
+PDK LVS Netlist Normalizations (documented in analog/report):
+  1. Appended sg13cmos5l_stdcell.cdl (MN0/MP0 primitives) instead of .spice (XN0/XP0 subckt calls).
+  2. Normalized xschem rppd.sym LVS strings (adding ps=0.18e-6 and effective extracted lengths 21.125u / 41.055u matching IHP rppd.cdl unit test).
+
+Log Excerpt:
+  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : Devices to compare: layout=580 schematic=118 (schematic counted before alignment, both per circuit definition)
+  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : Starting SG13CMOS5L LVS Comparison in strict port mode.
+  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : flag_missing_ports enabled: missing/mislabeled top-level ports are treated as errors.
+  2026-11-24 15:45:14 +0100: Memory Usage (452964K) : INFO : Congratulations! Netlists match.
+  2026-11-24 15:45:14 +0100: Memory Usage (452964K) : LVS Total Run time 1.751521 seconds

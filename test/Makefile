@@ -6,14 +6,15 @@ SIM ?= icarus
 FST ?= -fst # Use more efficient FST format
 TOPLEVEL_LANG ?= verilog
 SRC_DIR = $(PWD)/../src
-PROJECT_SOURCES = tt_um_cpldcpu_changeling_alpha.v sram_bb.v \
+PROJECT_SOURCES = tt_um_cpldcpu_changeling_alpha.v sram_bb.v rpe_clk_analog_bb.v \
 	rsoc8/rtl/rcore8d.v rsoc8/rtl/rdual.v rsoc8/rtl/rlinecells.v rsoc8/rtl/rlcports.v rsoc8/rtl/revents.v \
-	rsoc8/rtl/rtimers.v rsoc8/rtl/rclock.v rsoc8/rtl/rhost.v rsoc8/rtl/rpe_top.v rsoc8/rtl/rpe_osc_stub.v
+	rsoc8/rtl/rtimers.v rsoc8/rtl/rclock.v rsoc8/rtl/rhost.v rsoc8/rtl/rpe_top.v
 
-# Behavioural model of the IHP SRAM macro (RTL and gate-level simulation).
-# SIM also skips the blackbox declaration of the macro in src/sram_bb.v.
+# Behavioural models of the IHP SRAM macro and custom analog clock macro (RTL and gate-level simulation).
+# SIM also skips the blackbox declarations in src/sram_bb.v and src/rpe_clk_analog_bb.v.
 SRAM_MODEL = $(PWD)/sram_model/RM_IHPSG13_1P_1024x16_c2_bm_bist.v $(PWD)/sram_model/RM_IHPSG13_1P_core_behavioral_bm_bist.v
-VERILOG_SOURCES += $(SRAM_MODEL)
+ANALOG_MODEL = $(PWD)/rpe_clk_analog_model.v
+VERILOG_SOURCES += $(SRAM_MODEL) $(ANALOG_MODEL)
 COMPILE_ARGS += -DFUNCTIONAL -DSIM
 
 ifneq ($(GATES),yes)

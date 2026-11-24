@@ -1,0 +1,16 @@
+* ngspice initialization for changeling-alpha analog simulations (ihp-sg13cmos5l)
+* Expects PDK_ROOT and PDK in environment (or uses repo defaults below via Makefile).
+
+setcs sourcepath = ( $sourcepath $PDK_ROOT/$PDK/libs.tech/ngspice/models $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_stdcell/spice )
+setcs sourcepath = ( $sourcepath $PDK_ROOT/$PDK/libs.tech/ngspice/models $PDK_ROOT/$PDK/libs.ref/sg13cmos5l_io/spice )
+
+set ngbehavior=hsa
+set noinit
+set num_threads=1
+
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/psp103.osdi'
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/psp103_nqs.osdi'
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/r3_cmc.osdi'
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/mosvar.osdi'
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/cap_cmomi.osdi'
+osdi '$PDK_ROOT/$PDK/libs.tech/ngspice/osdi/cap_cmomf.osdi'

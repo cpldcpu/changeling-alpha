@@ -1,0 +1,237 @@
+library(rpe_clk_analog_fast_1p32V_m40C) {
+	technology (cmos) ;
+	delay_model : table_lookup ;
+	voltage_map (VDD, 1.32) ;
+	voltage_map (VSS, 0.00) ;
+	revision : 1.0.0 ;
+	nom_process : 1.0 ;
+	nom_temperature : -40 ;
+	nom_voltage : 1.32 ;
+	operating_conditions("fast_1p32V_m40C") {
+		process : 1.0 ;
+		temperature : -40 ;
+		voltage : 1.32 ;
+		tree_type : "balanced_tree" ;
+	}
+	default_operating_conditions : fast_1p32V_m40C ;
+	default_max_transition : 1.5 ;
+	default_fanout_load : 1.0 ;
+	default_inout_pin_cap : 0.0 ;
+	default_input_pin_cap : 0.0 ;
+	default_output_pin_cap : 0.0 ;
+	default_cell_leakage_power : 11.10 ;
+	default_leakage_power_density : 0.0 ;
+	slew_lower_threshold_pct_rise : 30 ;
+	slew_upper_threshold_pct_rise : 70 ;
+	input_threshold_pct_rise : 50 ;
+	output_threshold_pct_rise : 50 ;
+	slew_lower_threshold_pct_fall : 30 ;
+	slew_upper_threshold_pct_fall : 70 ;
+	input_threshold_pct_fall : 50 ;
+	output_threshold_pct_fall : 50 ;
+	slew_derate_from_library : 0.5 ;
+	capacitive_load_unit (1, pf) ;
+	voltage_unit : "1V" ;
+	current_unit : "1uA" ;
+	time_unit : "1ns" ;
+	leakage_power_unit : "1nW" ;
+	pulling_resistance_unit : "1kohm" ;
+	library_features(report_delay_calculation) ;
+
+	lu_table_template(delay_template_5x5) {
+		variable_1 : input_net_transition ;
+		variable_2 : total_output_net_capacitance ;
+		index_1 ("0.010, 0.050, 0.150, 0.400, 1.000") ;
+		index_2 ("0.002, 0.010, 0.030, 0.080, 0.250") ;
+	}
+
+cell(rpe_clk_analog) {
+	area : 23495.5 ;
+	dont_touch : true ;
+	dont_use : true ;
+	is_macro_cell : true ;
+	cell_leakage_power : 11.10 ;
+	pg_pin(VDD) {
+		pg_type : primary_power ;
+		voltage_name : VDD ;
+	}
+	pg_pin(VSS) {
+		pg_type : primary_ground ;
+		voltage_name : VSS ;
+	}
+	pin(en_ring) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(en_relax) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim0) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim1) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim2) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim3) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim4) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim5) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim6) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(trim7) {
+		direction : input ;
+		capacitance : 0.012 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+	}
+	pin(clk) {
+		direction : output ;
+		capacitance : 0.0 ;
+		max_capacitance : 0.300 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+		internal_power() {
+			rise_power("scalar") { values ("2.2748") ; }
+			fall_power("scalar") { values ("2.2748") ; }
+		}
+		timing() {
+			related_pin : "en_ring" ;
+			timing_sense : positive_unate ;
+			cell_rise(delay_template_5x5) {
+				values ( \
+					"0.1333, 0.1382, 0.1505, 0.1811, 0.2851" \
+					"0.1434, 0.1483, 0.1606, 0.1912, 0.2952" \
+					"0.1686, 0.1735, 0.1858, 0.2164, 0.3204" \
+					"0.2316, 0.2365, 0.2488, 0.2794, 0.3834" \
+					"0.3828, 0.3877, 0.4000, 0.4306, 0.5346"
+				) ;
+			}
+			cell_fall(delay_template_5x5) {
+				values ( \
+					"0.1333, 0.1382, 0.1505, 0.1811, 0.2851" \
+					"0.1434, 0.1483, 0.1606, 0.1912, 0.2952" \
+					"0.1686, 0.1735, 0.1858, 0.2164, 0.3204" \
+					"0.2316, 0.2365, 0.2488, 0.2794, 0.3834" \
+					"0.3828, 0.3877, 0.4000, 0.4306, 0.5346"
+				) ;
+			}
+			rise_transition(delay_template_5x5) {
+				values ( \
+					"0.0197, 0.0234, 0.0328, 0.0562, 0.1357" \
+					"0.0225, 0.0263, 0.0356, 0.0590, 0.1386" \
+					"0.0297, 0.0335, 0.0428, 0.0662, 0.1458" \
+					"0.0477, 0.0515, 0.0608, 0.0842, 0.1638" \
+					"0.0909, 0.0947, 0.1040, 0.1274, 0.2070"
+				) ;
+			}
+			fall_transition(delay_template_5x5) {
+				values ( \
+					"0.0197, 0.0234, 0.0328, 0.0562, 0.1357" \
+					"0.0225, 0.0263, 0.0356, 0.0590, 0.1386" \
+					"0.0297, 0.0335, 0.0428, 0.0662, 0.1458" \
+					"0.0477, 0.0515, 0.0608, 0.0842, 0.1638" \
+					"0.0909, 0.0947, 0.1040, 0.1274, 0.2070"
+				) ;
+			}
+		}
+	}
+	pin(clk_slow) {
+		direction : output ;
+		capacitance : 0.0 ;
+		max_capacitance : 0.200 ;
+		max_transition : 1.5 ;
+		related_power_pin : VDD ;
+		related_ground_pin : VSS ;
+		internal_power() {
+			rise_power("scalar") { values ("88.9680") ; }
+			fall_power("scalar") { values ("88.9680") ; }
+		}
+		timing() {
+			related_pin : "en_relax" ;
+			timing_sense : positive_unate ;
+			cell_rise(delay_template_5x5) {
+				values ( \
+					"0.1333, 0.1382, 0.1505, 0.1811, 0.2851" \
+					"0.1434, 0.1483, 0.1606, 0.1912, 0.2952" \
+					"0.1686, 0.1735, 0.1858, 0.2164, 0.3204" \
+					"0.2316, 0.2365, 0.2488, 0.2794, 0.3834" \
+					"0.3828, 0.3877, 0.4000, 0.4306, 0.5346"
+				) ;
+			}
+			cell_fall(delay_template_5x5) {
+				values ( \
+					"0.1333, 0.1382, 0.1505, 0.1811, 0.2851" \
+					"0.1434, 0.1483, 0.1606, 0.1912, 0.2952" \
+					"0.1686, 0.1735, 0.1858, 0.2164, 0.3204" \
+					"0.2316, 0.2365, 0.2488, 0.2794, 0.3834" \
+					"0.3828, 0.3877, 0.4000, 0.4306, 0.5346"
+				) ;
+			}
+			rise_transition(delay_template_5x5) {
+				values ( \
+					"0.0197, 0.0234, 0.0328, 0.0562, 0.1357" \
+					"0.0225, 0.0263, 0.0356, 0.0590, 0.1386" \
+					"0.0297, 0.0335, 0.0428, 0.0662, 0.1458" \
+					"0.0477, 0.0515, 0.0608, 0.0842, 0.1638" \
+					"0.0909, 0.0947, 0.1040, 0.1274, 0.2070"
+				) ;
+			}
+			fall_transition(delay_template_5x5) {
+				values ( \
+					"0.0197, 0.0234, 0.0328, 0.0562, 0.1357" \
+					"0.0225, 0.0263, 0.0356, 0.0590, 0.1386" \
+					"0.0297, 0.0335, 0.0428, 0.0662, 0.1458" \
+					"0.0477, 0.0515, 0.0608, 0.0842, 0.1638" \
+					"0.0909, 0.0947, 0.1040, 0.1274, 0.2070"
+				) ;
+			}
+		}
+	}
+}
+}

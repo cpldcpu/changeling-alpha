@@ -44,7 +44,7 @@ module rpe_core (
     output wire [7:0] uio_oe
 );
     // ---------------------------------------------------------------- clock, reset
-    wire clk, rst_sys_n, rst_c, cke, ptick, clk_osc, osc_en;
+    wire clk, rst_sys_n, rst_c, cke, ptick, clk_osc, clk_slow, osc_en, relax_en;
     wire [7:0] osc_trim;
 
     // ---------------------------------------------------------------- register bus
@@ -135,9 +135,9 @@ module rpe_core (
         .pwm_en(pwm_en), .pwm_out(pwm_out));
 
     // ---------------------------------------------------------------- clocking, oscillator
-    rpe_osc osc (.en(osc_en), .trim(osc_trim), .clk(clk_osc));
-    rclock u_clock (.clk_ext(clk_ext), .clk_osc(clk_osc), .rst_n(rst_n), .strap(in_pins[3]),
-        .clk(clk), .rst_sys_n(rst_sys_n), .osc_en(osc_en), .osc_trim(osc_trim),
+    rpe_osc osc (.en(osc_en), .en_relax(relax_en), .trim(osc_trim), .clk(clk_osc), .clk_slow(clk_slow));
+    rclock u_clock (.clk_ext(clk_ext), .clk_osc(clk_osc), .clk_slow(clk_slow), .rst_n(rst_n), .strap(in_pins[3]),
+        .clk(clk), .rst_sys_n(rst_sys_n), .osc_en(osc_en), .relax_en(relax_en), .osc_trim(osc_trim),
         .io_addr(io_addr), .io_host(io_host), .io_re(io_re), .io_we(io_we), .io_wdata(io_wdata),
         .io_rdata(rd_clk), .io_unlock(io_unlock), .io_prot(prot_ck), .cke(cke), .ptick(ptick),
         .ref_host(in_pins[0]), .ref_pin(in_pins[4]), .ref_evt(ref_evt), .trim_evt(trim_evt),

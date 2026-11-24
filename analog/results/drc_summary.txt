@@ -1,0 +1,17 @@
+IHP SG13CMOS5L KLayout DRC Sign-Off Summary
+==========================================
+GDS File   : /home/tim/ttapeout/changeling-alpha/analog/clk_macro/layout/rpe_clk_analog.gds
+Top Cell   : rpe_clk_analog (171.500 x 137.000 um PR boundary = 23495.5 um^2)
+PDK Runset : ihp-sg13cmos5l.drc (KLayout 0.30.12)
+
+Run 1 (tables=main)        : 0 failing categories, 0 total violations (2026-11-24 15:44:57 +0100: KLayout DRC run for tables 'main' completed in 3.82 seconds)
+Run 2 (tables=main antenna): 0 failing categories, 0 total violations (2026-11-24 15:45:08 +0100: KLayout DRC run for tables 'main antenna' completed in 6.94 seconds)
+Checks Enabled             : FEOL, BEOL, OFFGRID, ANGLE, PIN, FORBIDDEN, RECOMMENDED, CONNECTIVITY_RULES, ANTENNA
+
+PEX-Re-Centered & Compacted Subblock Dimensions (vs. v1 baseline 40592.0 um^2):
+  rpe_clk_analog  : 171.500 x 137.000 um  (area=  23495.5 um^2, -42.1%)  bbox=(0.000, 0.000, 171.500, 137.000)
+  bias_lay        :  41.340 x  25.040 um  (area=   1035.2 um^2, -22.8%)  bbox=(0.600, 0.180, 41.940, 25.220)
+  idac_8b_lay     :  47.090 x 121.800 um  (area=   5735.6 um^2, -31.4%)  bbox=(-0.920, 0.520, 46.170, 122.320)
+  cco_core_lay    :  52.940 x  36.120 um  (area=   1912.2 um^2, -29.4%)  bbox=(-0.920, 1.380, 52.020, 37.500)
+  comp_lay        :  21.960 x  22.420 um  (area=    492.3 um^2, -35.8%)  bbox=(-0.040, 1.380, 21.920, 23.800)
+  relax_core_lay  :  93.440 x  62.220 um  (area=   5813.8 um^2, -33.2%)  bbox=(-0.920, 0.250, 92.520, 62.470)

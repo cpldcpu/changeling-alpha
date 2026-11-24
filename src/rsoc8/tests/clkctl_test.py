@@ -58,9 +58,9 @@ def findings():
     """Places where the RTL differs from the literal text of the specification. Each is a short sequence checked on the
     RTL output directly; returns a list of (id, text, ok)."""
     res = []
-    # D1: reserved bit 7 of CLKCTL reads as zero
+    # F1: bit 7 of CLKCTL is RELAXEN and reads back as written
     s = Seq(); s.idle(3); s.wr(CLKCTL, 0x80, unlock=1); s.rd(CLKCTL)
-    g = rtl_out(s, TAG + '_f1'); res.append(('F1', 'CLKCTL bit 7 (reserved) reads zero after writing a one', g[-1][0] == '00', 'reads ' + g[-1][0]))
+    g = rtl_out(s, TAG + '_f1'); res.append(('F1', 'CLKCTL bit 7 (RELAXEN) stores and reads back 80', g[-1][0] == '80', 'reads ' + g[-1][0]))
     # D2: K1 oscillator enable follows the requested source: SRC=1, OSCEN=0
     s = Seq(); s.idle(3); s.wr(CLKCTL, 0x01, unlock=1); s.idle(10)
     g = rtl_out(s, TAG + '_f2'); res.append(('F2', 'K1: SRC=1 with OSCEN=0 enables the oscillator macro (osc_en=1)', g[-1][3] == '1', 'osc_en=' + g[-1][3]))

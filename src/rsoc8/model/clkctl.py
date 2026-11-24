@@ -19,13 +19,13 @@ class ClkCtl:
 
     def __init__(s):
         s.booted = 0
-        s.src = 0; s.oscen = 0; s.ctl = 0        # CLKCTL: SRC OSCEN, ctl = bits 6:2 (LOOP TRIMD REFSEL[2] REFCELL)
+        s.src = 0; s.oscen = 0; s.relaxen = 0; s.ctl = 0   # CLKCTL: RELAXEN REFCELL REFSEL TRIMD LOOP OSCEN SRC
         s.sel = 0                                # selected source (the one that rclk_src is told)
         s.trim = 0x80; s.cdiv = 1; s.pdiv = 0; s.int = 0; s.tgt = 0; s.win_r = 0; s.cko_r = 0; s.dbg_r = 0
         s.cnth_lat = 0
         s.se = [0, 0, 0]; s.so = [0, 0, 0]; s.sa = [0, 0]
         s.wctr = 0; s.seen_e = 0; s.seen_o = 0; s.pres_e = 0; s.pres_o = 0
-        s.sh = [0, 0, 0]; s.sp = [0, 0, 0]       # reference synchronisers
+        s.sh = [0, 0, 0]; s.sp = [0, 0, 0]; s.ss = [0, 0, 0]       # reference synchronisers
         s.st = 0                                 # 0 idle, 1 waiting for the first event, 2 counting
         s.cnt = 0; s.trcnt = 0; s.per = 0
         s.mdone = 0; s.mvalid = 0; s.done_q = 0
@@ -43,7 +43,7 @@ class ClkCtl:
         if addr == CLKSTAT:
             return (strap << 7) | (s.mvalid << 5) | (s.mdone << 4) | (s.trimd() << 3) | (s.pres_e << 2) | (s.pres_o << 1) | s.sa[1]
         if addr == DBGSEL: return s.dbg_r
-        if addr == CLKCTL: return (s.refcell() << 6) | (s.refsel() << 4) | (s.trimd() << 3) | (s.loop() << 2) | (s.oscen << 1) | s.src
+        if addr == CLKCTL: return (s.relaxen << 7) | (s.refcell() << 6) | (s.refsel() << 4) | (s.trimd() << 3) | (s.loop() << 2) | (s.oscen << 1) | s.src
         if addr == OSCTRIM: return s.trim
         if addr == CDIV: return s.cdiv
         if addr == PDIV: return s.pdiv
@@ -57,7 +57,7 @@ class ClkCtl:
         return 0
 
     def step(s, strap=0, addr=0, re=0, we=0, wd=0, unlock=0, host=0, tgl_ext=0, tgl_osc=0, open_osc=0,
-             ref_host=0, ref_pin=0, ref_evt=(0, 0), smp=(0, 0), acc=(0, 0), txs=(0, 0), ccen=(0, 0), hold=0):
+             ref_host=0, ref_pin=0, ref_evt=(0, 0), smp=(0, 0), acc=(0, 0), txs=(0, 0), ccen=(0, 0), hold=0, clk_slow=0):
         c = s.cov
         ok = unlock or host
         if we: c['write_%03x%s' % (addr, '' if addr not in (CLKCTL, CDIV) else ('_accepted' if ok else '_rejected'))] += 1
@@ -74,8 +74,9 @@ class ClkCtl:
         osc_en = (s.oscen | s.src | s.sel | act) if s.booted else strap   # GAP-3: K1 says requested or active; the selected source is added (GAP-3b)
         # ---- trim counter combinational part
         line = s.refsel() == 2
-        edge_pin = (s.sp[1] and not s.sp[2]) if (s.refsel() & 1) else (s.sh[1] and not s.sh[2])
-        rev = (ref_evt[s.refcell()] if line else (edge_pin and not (s.refsel() & 2)))
+        slowref = s.refsel() == 3
+        edge_pin = (s.ss[1] and not s.ss[2]) if slowref else ((s.sp[1] and not s.sp[2]) if (s.refsel() & 1) else (s.sh[1] and not s.sh[2]))
+        rev = (ref_evt[s.refcell()] if line else (edge_pin and (not (s.refsel() & 2) or slowref)))
         rev = int(bool(rev))
         wspan = s.win_r * 64
         # window rule for a line reference: an event earlier than target minus window is not used.
@@ -95,7 +96,7 @@ class ClkCtl:
         # ---- debug signal selection
         sel_d = s.dbg_r & 15
         dsig = {0: smp[0], 1: smp[1], 2: txs[0], 3: txs[1], 4: acc[0], 5: acc[1], 6: ref_evt[0], 7: ref_evt[1],
-                8: ccen[0], 9: ccen[1], 10: hold, 11: s.ptick, 12: s.cke, 13: int(s.st != 0), 14: trim_evt}.get(sel_d, 0)  # GAP-4: 15
+                8: ccen[0], 9: ccen[1], 10: hold, 11: s.ptick, 12: s.cke, 13: int(s.st != 0), 14: trim_evt, 15: s.ss[1]}.get(sel_d, 0)
         out = (rd, prot, sel_o, osc_en, s.trim, s.cke, s.ptick, trim_evt, s.cko_r >> 7, s.cko_q, s.dbg_r >> 7, s.dbg_q)
         # ================= clock edge
         s.cko_r_old = s.cko_r
@@ -106,7 +107,7 @@ class ClkCtl:
             s.sel = s.src; c['switch_to_%d' % s.src] += 1
         elif s.src != s.sel: c['switch_pending_target_absent_cycles'] += 1
         if ctl_wr:
-            s.src = wd & 1; s.oscen = (wd >> 1) & 1; s.ctl = (wd >> 2) & 0x1F       # bit 7 is reserved: ignored
+            s.src = wd & 1; s.oscen = (wd >> 1) & 1; s.ctl = (wd >> 2) & 0x1F; s.relaxen = (wd >> 7) & 1
             c['clkctl_write']+=1
         elif we and addr == CLKCTL: c['clkctl_write_rejected'] += 1
         # presence (K2)
@@ -125,7 +126,7 @@ class ClkCtl:
         if we and addr == CDIV and ok: s.cdiv = wd
         if we and addr == PDIV: s.pdiv = wd
         # trim counter
-        s.sh = [ref_host] + s.sh[:2]; s.sp = [ref_pin] + s.sp[:2]
+        s.sh = [ref_host] + s.sh[:2]; s.sp = [ref_pin] + s.sp[:2]; s.ss = [clk_slow] + s.ss[:2]
         dq = s.done_q
         s.done_q = fin
         cnt_old = s.cnt; trcnt_old = s.trcnt
@@ -134,7 +135,7 @@ class ClkCtl:
             if s.st: c['measurement_aborted_by_clkctl_write'] += 1
             s.st = 0
         elif s.st == 0:
-            if line or meas_wr or (s.loop() and not (s.refsel() & 2)): s.st = 1
+            if line or meas_wr or (s.loop() and not line): s.st = 1
         elif s.st == 1:
             if rev: s.st = 2; s.cnt = 1; s.per = 0; c['measurement_started_%s' % ('line' if line else 'pin')] += 1
         else:

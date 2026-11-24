@@ -48,8 +48,8 @@
   "VERILOG_DEFINES": ["IHP_CELLS"],
 
   "//": "Hold slack margin - Increase them in case you are getting hold violations.",
-  "PL_RESIZER_HOLD_SLACK_MARGIN": 0.1,
-  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.05,
+  "PL_RESIZER_HOLD_SLACK_MARGIN": 0.3,
+  "GRT_RESIZER_HOLD_SLACK_MARGIN": 0.3,
 
   "//": "RUN_LINTER, LINTER_INCLUDE_PDK_MODELS - Disabling the linter is not recommended!",
   "RUN_LINTER": 1,
@@ -88,6 +88,18 @@
         "*_fast_*": ["pdk_dir::libs.ref/sg13cmos5l_sram/lib/RM_IHPSG13_1P_1024x16_c2_bm_bist_fast_1p32V_m55C.lib"],
         "*_slow_*": ["pdk_dir::libs.ref/sg13cmos5l_sram/lib/RM_IHPSG13_1P_1024x16_c2_bm_bist_slow_1p08V_125C.lib"]
       }
+    },
+    "rpe_clk_analog": {
+      "instances": {
+        "chip.u.osc.u_analog": { "location": [1514.88, 3.78], "orientation": "N" }
+      },
+      "gds": ["dir::../analog/clk_macro/layout/rpe_clk_analog_tt.gds"],
+      "lef": ["dir::../analog/clk_macro/layout/rpe_clk_analog.lef"],
+      "lib": {
+        "*_typ_*": ["dir::../analog/clk_macro/layout/rpe_clk_analog_typ_1p20V_25C.lib"],
+        "*_fast_*": ["dir::../analog/clk_macro/layout/rpe_clk_analog_fast_1p32V_m40C.lib"],
+        "*_slow_*": ["dir::../analog/clk_macro/layout/rpe_clk_analog_slow_1p08V_125C.lib"]
+      }
     }
   },
 
@@ -98,7 +110,8 @@
     "chip.u.m_code1.u_mem VPWR VGND VDD! VSS!",
     "chip.u.m_code1.u_mem VPWR VGND VDDARRAY! VSS!",
     "chip.u.m_data.u_mem VPWR VGND VDD! VSS!",
-    "chip.u.m_data.u_mem VPWR VGND VDDARRAY! VSS!"
+    "chip.u.m_data.u_mem VPWR VGND VDDARRAY! VSS!",
+    "chip.u.osc.u_analog VPWR VGND VDD VSS"
   ],
 
   "//": "PDN: Skip connecting the SRAM by pdngen; it is powered by ExtendPowerStripes instead.",

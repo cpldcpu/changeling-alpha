@@ -28,7 +28,7 @@ project:
     - "rsoc8/rtl/rclock.v"
     - "rsoc8/rtl/rhost.v"
     - "rsoc8/rtl/rpe_top.v"
-    - "rsoc8/rtl/rpe_osc_stub.v"
+    - "rpe_clk_analog_bb.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).

@@ -1,0 +1,142 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {}
+V {}
+S {}
+E {}
+T {Testbench: Ring Oscillator B (60 MHz Current-Controlled)} 0 -320 0 0 0.35 0.35 {layer=3}
+N -180 -110 -180 -80 {lab=GND}
+N -180 -170 -180 -200 {lab=VDD}
+N -80 -110 -80 -80 {lab=GND}
+N -80 -170 -80 -200 {lab=en}
+N -220 350 -220 360 {lab=GND}
+N -220 290 -220 280 {lab=trim0}
+N -100 350 -100 360 {lab=GND}
+N -100 290 -100 280 {lab=trim1}
+N 20 350 20 360 {lab=GND}
+N 20 290 20 280 {lab=trim2}
+N 140 350 140 360 {lab=GND}
+N 140 290 140 280 {lab=trim3}
+N 260 350 260 360 {lab=GND}
+N 260 290 260 280 {lab=trim4}
+N 380 350 380 360 {lab=GND}
+N 380 290 380 280 {lab=trim5}
+N 500 350 500 360 {lab=GND}
+N 500 290 500 280 {lab=trim6}
+N 620 350 620 360 {lab=GND}
+N 620 290 620 280 {lab=trim7}
+N 280 -220 280 -240 {lab=VDD}
+N 280 220 280 240 {lab=GND}
+N 120 -160 160 -160 {lab=en}
+N 120 -120 160 -120 {lab=trim7}
+N 120 -80 160 -80 {lab=trim6}
+N 120 -40 160 -40 {lab=trim5}
+N 120 0 160 0 {lab=trim4}
+N 120 40 160 40 {lab=trim3}
+N 120 80 160 80 {lab=trim2}
+N 120 120 160 120 {lab=trim1}
+N 120 160 160 160 {lab=trim0}
+N 400 0 440 0 {}
+N 440 0 440 60 {lab=clk}
+N 440 60 540 60 {lab=clk}
+N 540 120 540 150 {lab=GND}
+C {devices/title.sym} 0 460 0 0 {name=title1
+author=changeling-alpha}
+C {osc_ring_cc/osc_ring_cc.sym} 280 0 0 0 {name=XOSC}
+C {devices/vsource.sym} -180 -140 0 0 {name=Vdd
+value=1.2}
+C {devices/gnd.sym} -180 -80 0 0 {name=g1
+lab=GND}
+C {devices/lab_pin.sym} -180 -200 0 0 {name=l1
+lab=VDD}
+C {devices/vsource.sym} -80 -140 0 0 {name=Ven
+value=1.2}
+C {devices/gnd.sym} -80 -80 0 0 {name=g2
+lab=GND}
+C {devices/lab_pin.sym} -80 -200 0 0 {name=l2
+lab=en}
+C {devices/vsource.sym} -220 320 0 0 {name=Vtrim0
+value=0}
+C {devices/gnd.sym} -220 360 0 0 {name=gt0
+lab=GND}
+C {devices/lab_pin.sym} -220 280 0 0 {name=l3
+lab=trim0}
+C {devices/vsource.sym} -100 320 0 0 {name=Vtrim1
+value=0}
+C {devices/gnd.sym} -100 360 0 0 {name=gt1
+lab=GND}
+C {devices/lab_pin.sym} -100 280 0 0 {name=l4
+lab=trim1}
+C {devices/vsource.sym} 20 320 0 0 {name=Vtrim2
+value=0}
+C {devices/gnd.sym} 20 360 0 0 {name=gt2
+lab=GND}
+C {devices/lab_pin.sym} 20 280 0 0 {name=l5
+lab=trim2}
+C {devices/vsource.sym} 140 320 0 0 {name=Vtrim3
+value=0}
+C {devices/gnd.sym} 140 360 0 0 {name=gt3
+lab=GND}
+C {devices/lab_pin.sym} 140 280 0 0 {name=l6
+lab=trim3}
+C {devices/vsource.sym} 260 320 0 0 {name=Vtrim4
+value=0}
+C {devices/gnd.sym} 260 360 0 0 {name=gt4
+lab=GND}
+C {devices/lab_pin.sym} 260 280 0 0 {name=l7
+lab=trim4}
+C {devices/vsource.sym} 380 320 0 0 {name=Vtrim5
+value=0}
+C {devices/gnd.sym} 380 360 0 0 {name=gt5
+lab=GND}
+C {devices/lab_pin.sym} 380 280 0 0 {name=l8
+lab=trim5}
+C {devices/vsource.sym} 500 320 0 0 {name=Vtrim6
+value=0}
+C {devices/gnd.sym} 500 360 0 0 {name=gt6
+lab=GND}
+C {devices/lab_pin.sym} 500 280 0 0 {name=l9
+lab=trim6}
+C {devices/vsource.sym} 620 320 0 0 {name=Vtrim7
+value=1.2}
+C {devices/gnd.sym} 620 360 0 0 {name=gt7
+lab=GND}
+C {devices/lab_pin.sym} 620 280 0 0 {name=l10
+lab=trim7}
+C {devices/lab_pin.sym} 280 -240 0 0 {name=l11
+lab=VDD}
+C {devices/gnd.sym} 280 240 0 0 {name=g_vss
+lab=GND}
+C {devices/lab_pin.sym} 120 -160 0 0 {name=l12
+lab=en}
+C {devices/lab_pin.sym} 120 -120 0 0 {name=l13
+lab=trim7}
+C {devices/lab_pin.sym} 120 -80 0 0 {name=l14
+lab=trim6}
+C {devices/lab_pin.sym} 120 -40 0 0 {name=l15
+lab=trim5}
+C {devices/lab_pin.sym} 120 0 0 0 {name=l16
+lab=trim4}
+C {devices/lab_pin.sym} 120 40 0 0 {name=l17
+lab=trim3}
+C {devices/lab_pin.sym} 120 80 0 0 {name=l18
+lab=trim2}
+C {devices/lab_pin.sym} 120 120 0 0 {name=l19
+lab=trim1}
+C {devices/lab_pin.sym} 120 160 0 0 {name=l20
+lab=trim0}
+C {devices/capa.sym} 540 90 0 0 {name=Cload
+value=50f
+m=1}
+C {devices/lab_pin.sym} 440 0 0 1 {name=l21
+lab=clk}
+C {devices/gnd.sym} 540 150 0 0 {name=g_cload
+lab=GND}
+C {devices/code_shown.sym} -220 -300 0 0 {name=SPICE_MODELS
+only_toplevel=true
+value=".options temp=25
+.lib cornerMOSlv.lib mos_tt
+.lib cornerRES.lib res_typ
+.lib cornerCAP.lib cap_typ
+.include sg13cmos5l_stdcell.spice
+"}

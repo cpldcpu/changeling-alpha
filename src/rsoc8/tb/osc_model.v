@@ -3,9 +3,12 @@
 `timescale 1ns/1ps
 module rpe_osc (
     input  wire       en,
+    input  wire       en_relax,
     input  wire [7:0] trim,
-    output reg        clk
+    output reg        clk,
+    output wire       clk_slow
 );
+    assign clk_slow = 1'b0;
     parameter real ERR = 0.85;
     real err0; initial if (!$value$plusargs("oscerr=%f", err0)) err0 = ERR;
     real half; real drift = 1.0;         // drift: factor on the frequency, changed by the testbench

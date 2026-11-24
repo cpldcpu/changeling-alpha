@@ -8,7 +8,7 @@ module tb_clkctl;
     wire [7:0] rd, trim; wire prot, sel, osc_en, cke, ptick, trim_evt, cko_en, cko, dbg_en, dbg;
     rclk_ctl dut (.clk(clk), .rst_n(rst_n), .strap(strap), .io_addr(addr), .io_host(host), .io_re(re), .io_we(we), .io_wdata(wd),
         .io_rdata(rd), .io_unlock(unl), .io_prot(prot), .tgl_ext(te), .tgl_osc(to), .open_osc(oo), .sel(sel), .osc_en(osc_en),
-        .trim_sys(trim), .cke(cke), .ptick(ptick), .ref_host(rh), .ref_pin(rp), .ref_evt(rev), .trim_evt(trim_evt),
+        .relax_en(), .trim_sys(trim), .cke(cke), .ptick(ptick), .clk_slow(1'b0), .ref_host(rh), .ref_pin(rp), .ref_evt(rev), .trim_evt(trim_evt),
         .smp_evt(smp), .acc_evt(acc), .tx_strobe(txs), .core_cen(ccen), .bus_hold(hold), .cko_en(cko_en), .cko(cko),
         .dbg_en(dbg_en), .dbg(dbg));
     integer fi, fo; reg [1023:0] fin, fout;

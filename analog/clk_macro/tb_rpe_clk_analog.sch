@@ -1,0 +1,165 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {}
+V {}
+S {}
+E {}
+T {Testbench: Unified Custom Analog Clock Macro (rpe_clk_analog)} 0 -400 0 0 0.35 0.35 {layer=3}
+N -280 -70 -280 -40 {lab=GND}
+N -280 -130 -280 -160 {lab=VDD}
+N -160 -70 -160 -40 {lab=GND}
+N -160 -130 -160 -160 {lab=en_ring}
+N -40 -70 -40 -40 {lab=GND}
+N -40 -130 -40 -160 {lab=en_relax}
+N -260 370 -260 380 {lab=GND}
+N -260 310 -260 300 {lab=trim0}
+N -140 370 -140 380 {lab=GND}
+N -140 310 -140 300 {lab=trim1}
+N -20 370 -20 380 {lab=GND}
+N -20 310 -20 300 {lab=trim2}
+N 100 370 100 380 {lab=GND}
+N 100 310 100 300 {lab=trim3}
+N 220 370 220 380 {lab=GND}
+N 220 310 220 300 {lab=trim4}
+N 340 370 340 380 {lab=GND}
+N 340 310 340 300 {lab=trim5}
+N 460 370 460 380 {lab=GND}
+N 460 310 460 300 {lab=trim6}
+N 580 370 580 380 {lab=GND}
+N 580 310 580 300 {lab=trim7}
+N 280 -240 280 -260 {lab=VDD}
+N 280 240 280 260 {lab=GND}
+N 100 -180 140 -180 {lab=en_ring}
+N 100 -140 140 -140 {lab=en_relax}
+N 100 -100 140 -100 {lab=trim7}
+N 100 -60 140 -60 {lab=trim6}
+N 100 -20 140 -20 {lab=trim5}
+N 100 20 140 20 {lab=trim4}
+N 100 60 140 60 {lab=trim3}
+N 100 100 140 100 {lab=trim2}
+N 100 140 140 140 {lab=trim1}
+N 100 180 140 180 {lab=trim0}
+N 420 -20 460 -20 {}
+N 460 -20 460 -50 {lab=clk}
+N 460 -50 580 -50 {lab=clk}
+N 580 10 580 40 {lab=GND}
+N 420 20 460 20 {}
+N 460 20 460 70 {lab=clk_slow}
+N 460 70 580 70 {lab=clk_slow}
+N 580 130 580 160 {lab=GND}
+C {devices/title.sym} 0 500 0 0 {name=title1
+author=changeling-alpha}
+C {clk_macro/rpe_clk_analog.sym} 280 0 0 0 {name=XMAC}
+C {devices/vsource.sym} -280 -100 0 0 {name=Vdd
+value=1.2}
+C {devices/gnd.sym} -280 -40 0 0 {name=g_Vdd
+lab=GND}
+C {devices/lab_pin.sym} -280 -160 0 0 {name=l1
+lab=VDD}
+C {devices/vsource.sym} -160 -100 0 0 {name=Ven_ring
+value=1.2}
+C {devices/gnd.sym} -160 -40 0 0 {name=g_Ven_ring
+lab=GND}
+C {devices/lab_pin.sym} -160 -160 0 0 {name=l2
+lab=en_ring}
+C {devices/vsource.sym} -40 -100 0 0 {name=Ven_relax
+value=1.2}
+C {devices/gnd.sym} -40 -40 0 0 {name=g_Ven_relax
+lab=GND}
+C {devices/lab_pin.sym} -40 -160 0 0 {name=l3
+lab=en_relax}
+C {devices/vsource.sym} -260 340 0 0 {name=Vtrim0
+value=1.2}
+C {devices/gnd.sym} -260 380 0 0 {name=gt0
+lab=GND}
+C {devices/lab_pin.sym} -260 300 0 0 {name=l4
+lab=trim0}
+C {devices/vsource.sym} -140 340 0 0 {name=Vtrim1
+value=1.2}
+C {devices/gnd.sym} -140 380 0 0 {name=gt1
+lab=GND}
+C {devices/lab_pin.sym} -140 300 0 0 {name=l5
+lab=trim1}
+C {devices/vsource.sym} -20 340 0 0 {name=Vtrim2
+value=1.2}
+C {devices/gnd.sym} -20 380 0 0 {name=gt2
+lab=GND}
+C {devices/lab_pin.sym} -20 300 0 0 {name=l6
+lab=trim2}
+C {devices/vsource.sym} 100 340 0 0 {name=Vtrim3
+value=0}
+C {devices/gnd.sym} 100 380 0 0 {name=gt3
+lab=GND}
+C {devices/lab_pin.sym} 100 300 0 0 {name=l7
+lab=trim3}
+C {devices/vsource.sym} 220 340 0 0 {name=Vtrim4
+value=1.2}
+C {devices/gnd.sym} 220 380 0 0 {name=gt4
+lab=GND}
+C {devices/lab_pin.sym} 220 300 0 0 {name=l8
+lab=trim4}
+C {devices/vsource.sym} 340 340 0 0 {name=Vtrim5
+value=0}
+C {devices/gnd.sym} 340 380 0 0 {name=gt5
+lab=GND}
+C {devices/lab_pin.sym} 340 300 0 0 {name=l9
+lab=trim5}
+C {devices/vsource.sym} 460 340 0 0 {name=Vtrim6
+value=0}
+C {devices/gnd.sym} 460 380 0 0 {name=gt6
+lab=GND}
+C {devices/lab_pin.sym} 460 300 0 0 {name=l10
+lab=trim6}
+C {devices/vsource.sym} 580 340 0 0 {name=Vtrim7
+value=1.2}
+C {devices/gnd.sym} 580 380 0 0 {name=gt7
+lab=GND}
+C {devices/lab_pin.sym} 580 300 0 0 {name=l11
+lab=trim7}
+C {devices/lab_pin.sym} 280 -260 0 0 {name=l12
+lab=VDD}
+C {devices/gnd.sym} 280 260 0 0 {name=g_vss
+lab=GND}
+C {devices/lab_pin.sym} 100 -180 0 0 {name=l13
+lab=en_ring}
+C {devices/lab_pin.sym} 100 -140 0 0 {name=l14
+lab=en_relax}
+C {devices/lab_pin.sym} 100 -100 0 0 {name=l15
+lab=trim7}
+C {devices/lab_pin.sym} 100 -60 0 0 {name=l16
+lab=trim6}
+C {devices/lab_pin.sym} 100 -20 0 0 {name=l17
+lab=trim5}
+C {devices/lab_pin.sym} 100 20 0 0 {name=l18
+lab=trim4}
+C {devices/lab_pin.sym} 100 60 0 0 {name=l19
+lab=trim3}
+C {devices/lab_pin.sym} 100 100 0 0 {name=l20
+lab=trim2}
+C {devices/lab_pin.sym} 100 140 0 0 {name=l21
+lab=trim1}
+C {devices/lab_pin.sym} 100 180 0 0 {name=l22
+lab=trim0}
+C {devices/capa.sym} 580 -20 0 0 {name=Cload_ring
+value=50f
+m=1}
+C {devices/lab_pin.sym} 460 -20 0 1 {name=l23
+lab=clk}
+C {devices/gnd.sym} 580 40 0 0 {name=g_Cload_ring
+lab=GND}
+C {devices/capa.sym} 580 100 0 0 {name=Cload_relax
+value=50f
+m=1}
+C {devices/lab_pin.sym} 460 20 0 1 {name=l24
+lab=clk_slow}
+C {devices/gnd.sym} 580 160 0 0 {name=g_Cload_relax
+lab=GND}
+C {devices/code_shown.sym} -280 -350 0 0 {name=SPICE_MODELS
+only_toplevel=true
+value=".options temp=25
+.lib cornerMOSlv.lib mos_tt
+.lib cornerMOShv.lib mos_tt
+.lib cornerRES.lib res_typ
+.lib cornerCAP.lib cap_typ
+.include sg13cmos5l_stdcell.spice
+"}

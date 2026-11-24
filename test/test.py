@@ -61,6 +61,9 @@ class Host:
     async def control(self, v):                  # bit 7 core reset, bit 4 selected core, bits 1:0 halt requests
         await self.start(); await self.byte(0x04); await self.byte(v); await self.stop()
 
+    async def inject(self, word):                # inject 16-bit AVR instruction into halted core and return
+        await self.start(); await self.byte(0x06); await self.byte(word >> 8); await self.byte(word & 255); await self.stop()
+
     async def write(self, addr, data):
         await self.start(); await self.byte(0x02); await self.byte(addr >> 8); await self.byte(addr & 255)
         for b in data:
@@ -141,6 +144,23 @@ async def test_load_and_uart_echo(dut):
     back = await host.read(0x4000, len(image))
     assert back == image, "code memory differs from the image"
 
+    # Seed unused SRAM output registers (dr_r) with arbitrary 2-state values via the host link.
+    # On silicon SRAM outputs are always 2-state; leaving behavioral dr_r=X causes GL X-pessimism
+    # across synthesized cm0_rdata/cm1_rdata muxes.
+    await host.write(0x4800, [0x5A, 0xA5, 0x3C, 0xC3])
+    await host.read(0x4800, 2)
+    await host.write(0x0100, [0x5A, 0xA5, 0x3C, 0xC3])
+    await host.read(0x0100, 2)
+    await host.read(0x4000, 2)
+
+    # Seed unreset AVR register file R[0..15] (r16..r31) with arbitrary 2-state value 0x5A via host
+    # link instruction injection so 4-state GL sim matches silicon on startup EOR r17, r17.
+    await host.control(0x01)                     # release core reset while halting core 0
+    await ClockCycles(dut.clk, 10)
+    for k in range(16):
+        await host.inject(0xE50A | (k << 4))     # LDI r(16+k), 0x5A
+    await host.control(0x80)                     # return PC/state/SP/SREG to reset before starting
+
     dut._log.info("Release the core reset")
     await host.control(0x00)
     await ClockCycles(dut.clk, 2000)             # the firmware sets up the line cells
@@ -152,3 +172,51 @@ async def test_load_and_uart_echo(dut):
         got = await rx
         assert got == ch, f"sent {ch:#04x}, echo {got}"
         dut._log.info(f"echo of {ch:#04x} ok")
+
+
+@cocotb.test()
+async def test_internal_osc_and_relax(dut):
+    """Exercise rpe_clk_analog ring (clk) and relax (clk_slow) through the Tiny Tapeout pins."""
+    cocotb.start_soon(Clock(dut.clk, CLK_PS, unit="ps").start())
+    host = Host(dut)
+
+    dut.ena.value = 1
+    dut.ui_in.value = host.ui                    # strap low: external clock
+    dut.uio_in.value = 0xFF
+    dut.rst_n.value = 0
+    await ClockCycles(dut.clk, 10)
+    dut.rst_n.value = 1
+    await ClockCycles(dut.clk, 20)
+
+    # 1. Enable relax oscillator (CLKCTL[7] = RELAXEN) and route clk_slow to dbg uo_out[2] (DBGSEL = 0x8F)
+    await host.write(0x3F20, [0x80])
+    await host.write(0x3F52, [0x8F])
+    seen = set()
+    for _ in range(500):
+        await ClockCycles(dut.clk, 2)            # ~1000 cycles = ~16.7 us > 1 period at 98.5 kHz
+        seen.add(bit(dut.uo_out, 2))
+        if seen == {0, 1}:
+            break
+    assert seen == {0, 1}, f"clk_slow did not toggle on dbg pin uo_out[2]: seen={seen}"
+    dut._log.info("relax_core clk_slow observed toggling on uo_out[2]")
+
+    # 2. Set OSCTRIM=155 (~60 MHz post-PEX), power on ring oscillator (OSCEN=1), verify presence flag
+    await host.write(0x3F21, [155])
+    await host.write(0x3F20, [0x82])
+    await ClockCycles(dut.clk, 2500)
+    st = (await host.read(0x000F, 1))[0]
+    assert st & 0x02, f"CLKSTAT={st:#04x}: ring oscillator presence (pres_o) not detected"
+
+    # 3. Switch system clock to internal ring oscillator (SRC=1) and confirm act=1
+    await host.write(0x3F20, [0x83])
+    await ClockCycles(dut.clk, 200)
+    st = (await host.read(0x000F, 1))[0]
+    assert (st & 0x03) == 0x03, f"CLKSTAT={st:#04x}: failed to switch system clock to internal ring oscillator"
+    dut._log.info(f"Switched system clock to rpe_clk_analog (CLKSTAT={st:#04x})")
+
+    # 4. Switch back to external clock and power down both internal oscillators
+    await host.write(0x3F20, [0x00])
+    await host.write(0x3F52, [0x00])
+    await ClockCycles(dut.clk, 2500)
+    st = (await host.read(0x000F, 1))[0]
+    assert (st & 0x01) == 0, f"CLKSTAT={st:#04x}: failed to return to external clock"
