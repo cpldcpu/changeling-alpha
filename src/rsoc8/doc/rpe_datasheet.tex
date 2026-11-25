@@ -39,7 +39,7 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancyhead[L]{\small rcore8 protocol emulator: datasheet}
-\fancyhead[R]{\small Preliminary, revision 0.3}
+\fancyhead[R]{\small Preliminary, revision 0.4}
 \fancyfoot[C]{\small\thepage}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcommand{\est}{\textsuperscript{e}}
@@ -68,14 +68,14 @@
 {\large Two-core 8-bit RISC microcontroller with programmable line cells for serial protocols}\\[6pt]
 {\large Preliminary datasheet}\\[8pt]
 Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
-{\small Revision 0.3, 21 November 2026. Based on specification draft 0.36. Drafted with Claude (Anthropic).}
+{\small Revision 0.4, 25 November 2026. Based on specification draft 0.37. Drafted with Claude (Anthropic).}
 \end{center}
 
 \noindent\fcolorbox{accent}{fillA}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
 \textbf{Status of this document.} The device does not exist in silicon. All functional data are from RTL
-simulation; rates and limits are given in clock cycles and converted with a 60\,MHz clock. Electrical data,
-timing against real pins, the internal oscillator, package and ordering information are not available yet and
-are marked \tbd. Values marked with a superscript e are estimates.}}
+simulation; rates and limits are given in clock cycles and converted with a 60\,MHz clock. The data of the
+internal oscillators are from circuit simulation of the extracted layout. Electrical data, timing against real
+pins, package and ordering information are not available yet and are marked \tbd. Values marked with a superscript e are estimates.}}
 
 {\small\setcounter{tocdepth}{2}\begin{multicols}{2}\tableofcontents\end{multicols}}
 
@@ -83,7 +83,7 @@ are marked \tbd. Values marked with a superscript e are estimates.}}
 
 \begin{itemize}
 \item \textbf{Two 8-bit RISC cores} with 16 registers and 70 instructions of 16 bit; most instructions take one
-clock cycle. Programmed in C with GCC (section~\ref{sec:tools}).
+core cycle. The cores run at half the system clock after reset (30\,MHz at 60\,MHz). Programmed in C with GCC (section~\ref{sec:tools}).
 \item \textbf{Memory:} 2\,KB of code memory per core (1\,024 words of 16 bit, SRAM), 2\,KB of shared data memory.
 A program for one core can use both code memories (4\,KB).
 \item \textbf{Program loaded by a host} through an SPI host link after reset; no non-volatile memory on the chip.
@@ -96,8 +96,9 @@ exist for UART, SPI master and slave, I2C slave, WS2812 controller and LED, USB 
 channels}; \textbf{CRC unit} with programmable polynomial up to 32 bit, fed by software or by a line cell.
 \item \textbf{Event system:} 16 event flags per core, wait for a set of flags without polling, 16 interrupt
 vectors, a shared time base with a wake-up time per core, four locks between the cores.
-\item \textbf{Clocking:} external clock up to 60\,MHz\,(\tbd) or internal oscillator with 8-bit trim; trim counter
-and loop against a reference pin, the host clock or a line event (USB keep-alive); separate dividers for
+\item \textbf{Clocking:} external clock up to 60\,MHz or internal ring oscillator for 60\,MHz with 8-bit trim; trim counter
+and loop against a reference pin, the host clock, a line event (USB keep-alive) or the internal relaxation
+oscillator of about 100\,kHz; separate dividers for
 cores and peripherals.
 \item \textbf{Program protection:} write enables and a lock for the code memories.
 \item Technology: IHP 130\,nm CMOS with five metal layers, through Tiny Tapeout. Supply voltage, temperature range, package: \tbd.
@@ -167,7 +168,8 @@ Storage temperature & & \tbd & & \tbd & $^\circ$C \\
 Supply voltage, core & $V_{DD}$ & \tbd & 1.2 & \tbd & V \\
 Supply voltage, pins & $V_{DDIO}$ & \tbd & \tbd & \tbd & V \\
 Ambient temperature & $T_A$ & \tbd & & \tbd & $^\circ$C \\
-External clock frequency & $f_{CLK}$ & & 60 & \tbd & MHz \\
+External clock frequency & $f_{CLK}$ & & & 60 & MHz \\
+System clock with core divider 1 (\reg{CLKCDIV} = 0) & & & & 30 & MHz \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{Supply current}} \\
 Both cores running, 60\,MHz & $I_{DD}$ & & \tbd & & mA \\
@@ -179,11 +181,17 @@ Input low / high level & $V_{IL}$, $V_{IH}$ & \tbd & & \tbd & V \\
 Output low / high level at \tbd\,mA & $V_{OL}$, $V_{OH}$ & \tbd & & \tbd & V \\
 Input sampling: delay to the first synchroniser stage & & & \tbd & & ns \\
 \midrule
-\multicolumn{6}{@{}l}{\textit{Internal oscillator}} \\
-Frequency after trimming & $f_{OSC}$ & & 15 & & MHz \\
-Frequency before trimming & & \tbd & & \tbd & MHz \\
-Trim step & & & \tbd & & \% \\
-Drift over temperature and supply after trimming & & & \tbd & & \% \\
+\multicolumn{6}{@{}l}{\textit{Internal oscillators (simulation of the extracted layout, three corners)}} \\
+Ring, \reg{OSCTRIM} = 128 (reset value) & $f_{OSC}$ & 52.8 & 52.8 & 58.5 & MHz \\
+Ring, \reg{OSCTRIM} = 155 & & 59.1 & 59.9 & 66.9 & MHz \\
+Ring, \reg{OSCTRIM} = 255 & & 78.1 & 83.8 & 96.9 & MHz \\
+Ring, \reg{OSCTRIM} = 0 & & & 15.8 & & MHz \\
+Ring, trim step near 60\,MHz & & & 0.4 & & \% \\
+Relaxation oscillator & $f_{SLOW}$ & 83.6 & 98.5 & 115.5 & kHz \\
+Relaxation oscillator over supply, 1.08 to 1.32\,V (schematic) & & $-1.4$ & & $+1.5$ & \% \\
+Relaxation oscillator over temperature, $-40$ to 125\,$^\circ$C (schematic) & & $-3.3$ & & $+1.7$ & \% \\
+Supply current, ring at 60\,MHz & & & 61.5 & & $\mu$A \\
+Supply current, relaxation oscillator & & & 4.1 & & $\mu$A \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{Host link}} \\
 Host clock frequency & $f_{HCK}$ & & & $f_{SYS}/8$ & \\
@@ -191,7 +199,9 @@ Set-up and hold of HDI and HCS to HCK & & \tbd & & & ns \\
 \bottomrule
 \end{tabularx}
 \caption{Electrical characteristics. The core supply of 1.2\,V is the nominal value of the technology. The limit
-of the host clock follows from the design: the host link pins are sampled with the system clock.}
+of the host clock follows from the design: the host link pins are sampled with the system clock. The corners
+of the oscillator values are typical (1.20\,V, 25\,$^\circ$C), slow (1.08\,V, 125\,$^\circ$C) and fast (1.32\,V,
+$-40\,^\circ$C); minimum and maximum are the lowest and highest of the three. They are not measured.}
 \end{table}
 
 \section{Memory}\label{sec:mem}
@@ -254,10 +264,17 @@ to the first host access, and brown-out behaviour: \tbd.
 \subsection{Clock sources and switching}
 
 \begin{itemize}
-\item \textbf{External clock}, up to 60\,MHz\,(\tbd).
-\item \textbf{Internal oscillator}, 15\,MHz nominal, with an 8-bit trim value (\reg{OSCTRIM}); a higher value gives a
-higher frequency. Range and step: \tbd.
+\item \textbf{External clock}, up to 60\,MHz.
+\item \textbf{Internal ring oscillator} for 60\,MHz, with an 8-bit trim value (\reg{OSCTRIM}); a higher value gives
+a higher frequency, from about 16 to 84\,MHz at the typical corner. At a fixed trim value the frequency changes
+strongly with temperature, so the ring is used with the trim loop (section~\ref{sec:trim}).
+\item \textbf{Internal relaxation oscillator}, about 100\,kHz, enabled with \reg{RELAXEN}. It is a reference for
+the trim loop. It is not a source of the system clock.
 \end{itemize}
+
+\textbf{The system clock must not exceed 60\,MHz.} The ring oscillator can: trim values above about 155 give
+more than 60\,MHz at the typical corner. The reset value of \reg{OSCTRIM} gives 53 to 59\,MHz. If the chip stops
+because of too high a trim value, apply reset with the strap pin low.
 
 After reset the strap pin selects the source (low: external clock). Firmware or the host requests the other
 source with \reg{SRC}. A request enables the oscillator; the switch is carried out when the requested clock is
@@ -268,17 +285,20 @@ switched off while it is the active or the requested source.
 \subsection{Dividers}
 
 The core divider (\reg{CLKCDIV}) and the peripheral divider (\reg{CLKPDIV}) each enable their part in one of
-$n+1$ cycles of the source clock, $n$ = 0 to 255. They are independent: changing the core divider does not
+$n+1$ cycles of the source clock, $n$ = 0 to 255. After reset \reg{CLKCDIV} is 1: the cores run at half the
+system clock, the peripherals at the full rate. \reg{CLKCDIV} = 0 is allowed only with a system clock of
+30\,MHz or less. They are independent: changing the core divider does not
 change a bit rate. The peripheral divider applies to the line cells, the timer, the PWM and the time base;
 each line cell has its own prescaler behind it. The clock output pin gives the source clock divided by 2 to 256
 (\reg{CLKOUT}).
 
-\subsection{Trimming the oscillator}
+\subsection{Trimming the oscillator}\label{sec:trim}
 
 The trim counter counts cycles of the source clock over an interval given by a reference:
 
 \begin{itemize}
-\item a number of periods (\reg{INT}+1) of the host link clock or of the reference pin, started with \reg{MEAS}; or
+\item a number of periods (\reg{INT}+1) of the host link clock, of the reference pin or of the relaxation
+oscillator, started with \reg{MEAS}; or
 \item the time between two reference events of a receive cell, for instance the keep-alive signal of USB.
 \end{itemize}
 
@@ -291,7 +311,15 @@ the same through the host link before any firmware runs.
 
 \lstinputlisting{examples/ex_clock.c}
 
-The example was compiled (192 bytes); the same sequence with other values is part of a simulated test.
+The frequency of the relaxation oscillator differs from chip to chip (84 to 116\,kHz over the simulated
+corners) and changes little with supply and temperature. The example therefore trims the ring against an
+external reference first and then measures the relaxation oscillator once; that count is the target for the
+loop. A period of the relaxation oscillator is about 609 cycles at 60\,MHz and the count stops at 65\,535, so
+\reg{INT} is at most about 90. Enabling the relaxation oscillator lowers the ring frequency by about 5\,\%, so
+it is enabled before the first trim.
+
+The example was compiled (252 bytes). The loop with the reference pin and the loop and single measurement
+with the relaxation oscillator are part of a simulated test of the clocking block, with other values.
 
 \input{ds_gen/clock.tex}
 
@@ -358,7 +386,7 @@ is held for that cycle (section~\ref{sec:twocore}). A core with priority, and a 
 never held.
 \end{itemize}
 
-An interrupt entry takes 2 cycles and \texttt{RETI} 3. At 60\,MHz with divider 1 a core executes up to 60 million
+An interrupt entry takes 2 cycles and \texttt{RETI} 3. At 60\,MHz with the reset value of the divider a core executes up to 30 million
 one-cycle instructions per second.
 
 \subsection{Data addressing}
@@ -1165,7 +1193,8 @@ cycles with status polling.
 \subsection{Debug pin}
 
 The debug pin shows one internal signal selected with \reg{DBGSEL}: the sample point, the accepted edge or
-the reference event of a receive cell, or the transmitted bit of a transmit cell. This makes the timing of a
+the reference event of a receive cell, or the transmitted bit of a transmit cell; further the clock enables,
+the state of the trim counter and the output of the relaxation oscillator. This makes the timing of a
 line cell visible on an oscilloscope next to the line signal.
 
 \input{ds_gen/host.tex}
@@ -1278,6 +1307,10 @@ cell on the same pin can sample the stop bit.
 \item Transmit cells clocked by a pin (SPI slave, I2C slave) have no underrun indication.
 \item 10BASE-T: no differential idle pulse at the end of a frame and no link pulses by hardware.
 \item USB from the internal oscillator needs the frame-time check of the supplied firmware.
+\item The cores run at no more than 30\,MHz: core divider 1 is not allowed above a system clock of 30\,MHz.
+\item The ring oscillator can be set faster than the logic allows (above 60\,MHz).
+\item The system clock cannot be taken from the relaxation oscillator; there is no sleep state on the slow clock.
+\item The protocol tests from the internal oscillator were simulated with an oscillator model at 15\,MHz, not at 60\,MHz.
 \item A host access to memory or registers halts both cores.
 \item The time base repeats after 65\,536 clock cycles (1.09\,ms at 60\,MHz).
 \end{itemize}
@@ -1300,6 +1333,7 @@ Revision & Date & Changes \\
 0.1 & 21 November 2026 & first set-up from specification draft 0.34; electrical data, package and application circuits open \\
 0.2 & 21 November 2026 & table of contents; chapter order changed to memory, clocking, core, peripherals \\
 0.3 & 21 November 2026 & line cells: additional frame bit (parity, ninth bit), start at the shift edge, bus condition detector and edge count; registers \reg{LCX} and \reg{LCEC}, status bit \reg{FERR} \\
+0.4 & 25 November 2026 & core divider 2 after reset and limit for divider 1; ring oscillator for 60\,MHz and relaxation oscillator with simulated data; \reg{RELAXEN}, \reg{REFSEL} = 3, debug signal 15; clock example \\
 \bottomrule
 \end{tabularx}
 \end{table}

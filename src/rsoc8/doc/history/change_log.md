@@ -290,3 +290,35 @@ receive cell; new status bit `FERR` (bit 6 of `LRnSTAT`). With both registers at
   in the `linecells` package.
 - `tests/spii2c.sh`: the fault insertion into `rlinecells.v` now selects the lines by their text and not by line number.
 - Synthesis: 14,308 cells, 2,058 flip-flops, 87 clock gates, 221,326 um2 (before: 13,697 / 2,004 / 81 / 215,062).
+
+## Specification draft 0.37, datasheet revision 0.4, verification report issue 3 (25 November 2026)
+
+State of the repository after the design passed the Tiny Tapeout flow with the oscillator macro (commit
+`c7f1d06`, flow run 45510873906).
+
+RTL since draft 0.36, all described in the specification (paragraph "Draft 0.37" in the review section) and
+listed in `src/rsoc8/README.md`:
+
+- `rtl/rclock.v`: reset value of the core divider 2; `RELAXEN` (bit 7 of `CLKCTL`), input `clk_slow`,
+  `REFSEL` = 3, debug signal 15 (the last four by Tim S. B.).
+- `rtl/rdual.v`: injection sequencer and restore read only in cycles with the core clock enable.
+- `rtl/rcore8d.v`: `dq` independent of `cen`; keep attributes for the timing constraints.
+- `rtl/rlcports.v`: output register reset by the system reset.
+
+Documents:
+
+- Specification: clock sources rewritten for the macro `rpe_clk_analog` (ring oscillator for 60 MHz,
+  relaxation oscillator of about 100 kHz) with a table of simulated values; rules K1, K5, K6, K7; register
+  tables (`RELAXEN`, `REFSEL` = 3, reset value of `CDIV`, debug signal 15); operation at 30 MHz is the state
+  after reset; results of the physical implementation.
+- Datasheet: electrical table and clocking chapter with the simulated oscillator values, limits (system clock
+  at most 60 MHz, core divider 1 up to 30 MHz), new clock example, limitations.
+- Verification report: section for draft 0.37, paths of the repository, known gaps.
+- `fw/rpe.h`: `CKC_RELAXEN`, `CKC_REF_SLOW`. `fw/examples/ex_clock.c` (same file in `doc/examples/`): trim against
+  the reference pin to 60 MHz, then loop against the relaxation oscillator (252 bytes).
+
+Tests:
+
+- `tb/tb_clk.v`, part 15: relaxation oscillator model at 98.54 kHz; no measurement while disabled, single
+  measurement, loop, loop follows a faster reference. Three inserted faults are detected.
+- `tests/run_fw.sh`: host link test also at core divider 2.

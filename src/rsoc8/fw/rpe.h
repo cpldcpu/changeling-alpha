@@ -252,7 +252,9 @@
 #define CKC_REF_HOST 0x00
 #define CKC_REF_PIN  0x10
 #define CKC_REF_CELL 0x20
+#define CKC_REF_SLOW 0x30                  /* relaxation oscillator, about 100 kHz */
 #define CKC_REFCELL(n) (((n) & 1) << 6)     /* receive cell that supplies the reference event */
+#define CKC_RELAXEN  0x80                  /* enables the relaxation oscillator */
 #define TRI_MEAS     0x80
 #define TRINT_MEAS   0x80                  /* write 1: start a measurement; reads 1 while it runs */
 #define CKO_EN       0x80

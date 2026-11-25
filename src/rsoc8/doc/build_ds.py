@@ -59,9 +59,9 @@ V = "\n\\vspace{4pt}\n"
 
 # configuration page registers: (address, name, access, reset, function)
 CFG = {
- 'clock': [('0x3F20', 'CLKCTL', 'R/W, protected', 'strap', 'Source request, oscillator enable, loop, reference selection'),
+ 'clock': [('0x3F20', 'CLKCTL', 'R/W, protected', 'strap', 'Source request, oscillator enables, loop, reference selection'),
            ('0x3F21', 'OSCTRIM', 'R/W', '\\texttt{0x80}', 'Trim value of the oscillator'),
-           ('0x3F22', 'CLKCDIV', 'R/W, protected', '\\texttt{0x00}', 'Core clock divider minus one'),
+           ('0x3F22', 'CLKCDIV', 'R/W, protected', '\\texttt{0x01}', 'Core clock divider minus one'),
            ('0x3F23', 'CLKPDIV', 'R/W', '\\texttt{0x00}', 'Peripheral clock divider minus one'),
            ('0x3F24', 'TRINT', 'R/W', '\\texttt{0x00}', 'Start of a measurement, reference periods per measurement'),
            ('0x3F25', 'TRCNTL', 'R', '\\texttt{0x00}', 'Count of the last measurement, low byte'),

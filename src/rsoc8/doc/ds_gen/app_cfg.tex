@@ -40,9 +40,9 @@ Address & Name & Access & Reset & Function \\
 \texttt{0x3F1E} & \texttt{LCCS} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
 \texttt{0x3F1F} & \texttt{LCX} & R/W & \texttt{0x00} & Transmit cell 0, section~\ref{sec:lcregs} \\
 \midrule
-\texttt{0x3F20} & \texttt{CLKCTL} & R/W, protected & strap & Source request, oscillator enable, loop, reference selection \\
+\texttt{0x3F20} & \texttt{CLKCTL} & R/W, protected & strap & Source request, oscillator enables, loop, reference selection \\
 \texttt{0x3F21} & \texttt{OSCTRIM} & R/W & \texttt{0x80} & Trim value of the oscillator \\
-\texttt{0x3F22} & \texttt{CLKCDIV} & R/W, protected & \texttt{0x00} & Core clock divider minus one \\
+\texttt{0x3F22} & \texttt{CLKCDIV} & R/W, protected & \texttt{0x01} & Core clock divider minus one \\
 \texttt{0x3F23} & \texttt{CLKPDIV} & R/W & \texttt{0x00} & Peripheral clock divider minus one \\
 \texttt{0x3F24} & \texttt{TRINT} & R/W & \texttt{0x00} & Start of a measurement, reference periods per measurement \\
 \texttt{0x3F25} & \texttt{TRCNTL} & R & \texttt{0x00} & Count of the last measurement, low byte \\

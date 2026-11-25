@@ -17,8 +17,11 @@ module tb_clk;
     reg [8:0] io_addr = 0; reg io_host = 0, io_re = 0, io_we = 0, io_unlock = 0; reg [7:0] io_wdata = 0;
     wire [7:0] io_rdata; wire io_prot, clk, rst_sys_n, cke, ptick, trim_evt, cko_en, cko, dbg_en, dbg;
     reg ref_host = 0, ref_pin = 0; reg [1:0] ref_evt = 0;
-    rclock dut (.clk_ext(clk_ext), .clk_osc(clk_osc), .clk_slow(1'b0), .rst_n(rst_n), .strap(strap), .clk(clk), .rst_sys_n(rst_sys_n),
-        .osc_en(osc_en), .relax_en(), .osc_trim(osc_trim), .io_addr(io_addr), .io_host(io_host), .io_re(io_re), .io_we(io_we),
+    // relaxation oscillator model: 98.54 kHz (value after extraction, typical corner) while enabled
+    wire relax_en; reg clk_slow = 0; real slow_half = 5074200.0;
+    always begin #(slow_half); if (relax_en) clk_slow = ~clk_slow; else clk_slow = 0; end
+    rclock dut (.clk_ext(clk_ext), .clk_osc(clk_osc), .clk_slow(clk_slow), .rst_n(rst_n), .strap(strap), .clk(clk), .rst_sys_n(rst_sys_n),
+        .osc_en(osc_en), .relax_en(relax_en), .osc_trim(osc_trim), .io_addr(io_addr), .io_host(io_host), .io_re(io_re), .io_we(io_we),
         .io_wdata(io_wdata), .io_rdata(io_rdata), .io_unlock(io_unlock), .io_prot(io_prot), .cke(cke), .ptick(ptick),
         .ref_host(ref_host), .ref_pin(ref_pin), .ref_evt(ref_evt), .trim_evt(trim_evt),
         .smp_evt(2'b00), .acc_evt(2'b00), .tx_strobe(2'b00), .core_cen(2'b00), .bus_hold(1'b0),
@@ -186,6 +189,37 @@ module tb_clk;
         if (n_clk != n0) fail("clock without a source");
         rst_n = 0; osc_dead = 0; strap = 0; #200000 rst_n = 1; cycles(50);
         expect_rd(9'h00F, 8'h81, 8'h00, "restart on the external clock");
+        // ---- 15. loop with the relaxation oscillator as reference (REFSEL = 3)
+        // 4 periods of 98.54 kHz are 40.59 us; the oscillator model has 15 MHz at the right trim: target 609.
+        if (relax_en !== 0) fail("relaxation oscillator enabled after reset");
+        wr(9'h120, 8'h03, 1); cycles(3000);         // run from the oscillator (model starts 15 % slow)
+        expect_rd(9'h00F, 8'h01, 8'h01, "runs from the oscillator before the slow reference test");
+        wr(9'h121, 8'h80, 0);
+        wr(9'h124, 8'h03, 0); wr(9'h127, 8'h61, 0); wr(9'h128, 8'h02, 0); wr(9'h129, 8'd2, 0);     // 4 periods, target 609, window 128
+        t0 = n_tev; wr(9'h120, 8'h37, 1);           // REFSEL = 3, LOOP, RELAXEN = 0: no reference edges
+        cycles(8000);
+        expect_rd(9'h121, 8'hFF, 8'h80, "no trim step while the relaxation oscillator is off");
+        if (n_tev != t0) fail("measurement event without a slow reference");
+        wr(9'h120, 8'hB3, 1);                       // RELAXEN = 1, loop off: one measurement over 4 periods
+        wr(9'h124, 8'h83, 0); wait_done; rd_cnt;
+        f = 4.0 * 2.0 * slow_half / (66667.0 / 0.85);
+        if (cntv < f - 1.5 || cntv > f + 1.5) begin fail("count against the relaxation oscillator"); $display("  count %0d expected %0f", cntv, f); end
+        expect_rd(9'h121, 8'hFF, 8'h80, "a single measurement does not change the trim value");
+        wr(9'h120, 8'hB7, 1);                       // LOOP
+        expect_rd(9'h120, 8'hFF, 8'hB7, "CLKCTL reads RELAXEN, REFSEL = 3, LOOP, OSCEN, SRC");
+        if (relax_en !== 1) fail("RELAXEN does not enable the relaxation oscillator");
+        cycles(80000);
+        rd_cnt; rd(9'h121); trim0 = rdv;
+        if (cntv < 606 || cntv > 612) begin fail("loop with the slow reference did not reach the target"); $display("  count %0d trim %0d", cntv, trim0); end
+        if (trim0 < 8'd158 || trim0 > 8'd170) begin fail("trim value after the loop with the slow reference"); $display("  trim %0d", trim0); end
+        if (n_tev - t0 < 30) fail("events of valid measurements with the slow reference");
+        if (period < 66667.0 * 0.99 || period > 66667.0 * 1.01) fail("oscillator period after the loop with the slow reference");
+        slow_half = 5074200.0 / 1.05; cycles(80000);                            // reference 5 % faster: the loop follows
+        if (period < 66667.0 / 1.05 * 0.99 || period > 66667.0 / 1.05 * 1.01) fail("loop does not follow the slow reference");
+        wr(9'h120, 8'h03, 1); cycles(50);
+        if (relax_en !== 0) fail("RELAXEN cleared, relaxation oscillator still enabled");
+        wr(9'h120, 8'h00, 1); cycles(3000);
+        expect_rd(9'h00F, 8'h01, 8'h00, "back on the external clock");
         // ---- shortest phases of the system clock over the whole run
         $display("shortest high phase %0.0f ps, shortest low phase %0.0f ps, %0d clock cycles", min_hi, min_lo, n_clk);
         if (min_hi < 8300 || min_lo < 8300) fail("short pulse on the system clock");

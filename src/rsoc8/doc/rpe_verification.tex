@@ -39,7 +39,7 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0.3pt}
 \fancyhead[L]{\small rcore8 protocol emulator: verification report}
-\fancyhead[R]{\small Issue 2, for specification draft 0.36}
+\fancyhead[R]{\small Issue 3, for specification draft 0.37}
 \fancyfoot[C]{\small\thepage}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcommand{\est}{\textsuperscript{e}}
@@ -58,7 +58,7 @@
 {\LARGE\bfseries\color{accent} rcore8 protocol emulator}\\[4pt]
 {\large Verification report}\\[8pt]
 Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
-{\small Issue 2, 21 November 2026, for specification draft 0.36 and the RTL packages of the same date. Drafted with Claude (Anthropic).}
+{\small Issue 3, 25 November 2026, for specification draft 0.37 and the RTL in the repository \texttt{cpldcpu/changeling-alpha}, branch \texttt{integration}. Drafted with Claude (Anthropic).}
 \end{center}
 
 \vspace{2pt}
@@ -66,15 +66,19 @@ Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
 \textbf{Summary.} All digital blocks of the chip exist as RTL and are verified by simulation: block by block
 against behavioural models and directed tests, and on the top level with firmware in C against protocol models
 that were written independently of the RTL. UART, SPI, I2C, WS2812, USB low-speed and 10BASE-T all run on the
-top level. The complete regression passes on the RTL of this date. Not verified: timing, placement and
-anything else that needs the physical flow; the oscillator macro, which exists only as a model; operation
-against real partners. The hardware changes specified in section 18.5 of the specification are not
+top level. The base regression and the long suites named in section~\ref{sec:state} pass on the RTL of this date.
+Since issue 3 the design is placed and routed with the oscillator macro; static timing at three corners, the
+layout checks and a gate-level test through the pins pass (section~\ref{sec:v037}). Not verified: the
+two-cycle timing exception at gate level with delays; the protocols on the internal oscillator at 60\,MHz;
+operation against real partners; anything on silicon. The hardware changes specified in section 18.5 of the specification are not
 implemented and therefore not verified.}}
 
 \section{Scope}
 
-The report covers the RTL in the packages \texttt{rsys\_rtl.tar.gz} (whole chip), \texttt{rdual\_rtl.tar.gz} (two
-cores with arbiter) and \texttt{linecells\_rtl.tar.gz} (line cells with their model). The specification is the
+The report covers the RTL in \texttt{src/rsoc8/rtl} of the repository. The three packages of issue 2 are now
+folders: \texttt{rsys} is \texttt{src/rsoc8}, \texttt{rdual} is \texttt{src/rsoc8/blocks/dual} and \texttt{linecells}
+is \texttt{src/rsoc8/blocks/linecells}; the two block folders use the RTL in \texttt{src/rsoc8/rtl}. The tables of
+section~\ref{sec:where} keep the package names in this sense. The specification is the
 reference for expected behaviour; rule numbers in this report are those of the specification. The report states
 what was tested, with what result, how each test can be run again, and what is not covered. Details of single
 tests are in the verification subsections of the specification and in the \texttt{README.md} of each package.
@@ -204,6 +208,40 @@ bit stuffing against a protocol partner (only against the model); \texttt{FERR} 
 frame. Synthesis after the change: 14\,308 cells, 2\,058 flip-flops, 221\,326\,$\mu$m$^2$ (before: 13\,697 cells,
 2\,004 flip-flops, 215\,062\,$\mu$m$^2$).
 
+\section{Changes of draft 0.37 and physical implementation}\label{sec:v037}
+
+Draft 0.37 changes the RTL for the physical implementation (specification, paragraph ``Draft 0.37'' in the
+review section): core divider 2 after reset, injection sequencer and restore read only in cycles with the
+core clock enable, the register \texttt{dq}, the reset of the output register, and the relaxation oscillator
+as a reference of the trim counter.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLL@{}}
+\toprule
+Subject & Test & Result \\
+\midrule
+Host link with the cores at divider 2 and 3: halt, memory and register access, step, inject, break & \texttt{tests/run\_fw.sh}, lines ``the same with the core clock enabled every second / third cycle'' & pass \\
+Cores at half the clock rate, peripherals at the full rate: firmware tests 1, 2, 3, 4, 5, 6 & \texttt{tests/run\_fw.sh} with \texttt{+cdiv=2} & as at divider 1; test 3 fails with 110 as expected \\
+Relaxation oscillator as reference: no measurement while it is disabled; single measurement over 4 periods; loop reaches the target; loop follows a reference that is 5\,\% faster; \reg{RELAXEN} read back and at the macro pin & \texttt{tb/tb\_clk.v}, part 15, in \texttt{tests/run\_fw.sh} & pass: count within 1.5 of the computed value, trim 158 to 170, period within 1\,\% \\
+The same test with three faults inserted into copies of \texttt{rclock.v}: reference selection 3 not decoded; synchroniser of the slow clock not connected; \reg{RELAXEN} stuck at one & by hand, \texttt{sed} on a copy & each fault detected (5, 5 and 4 failed checks) \\
+Model of the clocking block with \reg{RELAXEN} and reference selection 3 & \texttt{model/clkctl.py}, \texttt{tests/run\_models.sh} & 0 mismatching; the testbench of the comparison holds the slow clock at 0 \\
+Whole chip through the Tiny Tapeout pins: load through the host link, read back, UART echo & \texttt{test/test.py}, \texttt{test\_load\_and\_uart\_echo}, on RTL and on the routed netlist & pass \\
+Internal oscillators through the pins: slow clock visible on the debug pin, ring detected, switch to the ring and back & \texttt{test/test.py}, \texttt{test\_internal\_osc\_and\_relax}, with \texttt{test/rpe\_clk\_analog\_model.v}, on RTL and on the routed netlist & pass \\
+Static timing after routing, 16.67\,ns, with the two-cycle exception & flow run 45510873906 & set-up slack $+1.75$\,ns slow, $+5.38$\,ns typical, $+5.19$\,ns fast; hold $+0.21$\,ns \\
+Layout: design rules, comparison with the netlist, antenna rules, Tiny Tapeout precheck & same run & no error. The comparison treats the four macros as black boxes \\
+Oscillator macro: design rules, comparison of layout and schematic, simulation of the extracted layout at three corners & \texttt{analog/results/}, work by Tim S.\ B. & no violation, netlists match; values in the table of section 11.1 of the specification \\
+\bottomrule
+\end{tabularx}
+\caption{Tests for draft 0.37 and results of the physical implementation. The gate-level test runs without
+delays.}
+\end{table}
+
+Not tested: the two-cycle exception with gate delays; the restore read after a host access in a cycle without
+core clock enable as a directed case (the host test covers host access to a running core at dividers 2 and 3,
+and it was not checked that this case occurs); a core divider of 1 on the routed netlist; the macro file
+\texttt{rpe\_clk\_analog\_tt.gds} with the full rule deck (the records are for \texttt{rpe\_clk\_analog.gds}).
+
 \section{Fault insertion}
 
 \begin{table}[H]
@@ -253,10 +291,13 @@ specification.
 \section{Known gaps}
 
 \begin{enumerate}
-\item \textbf{Physical.} No static timing, no placement, no gate-level simulation. The 60\,MHz question for the
-cores and the SRAM is open. The both-edge input sampling was simulated without pin delays.
-\item \textbf{Oscillator.} Only a model. Noise, drift over temperature and the real trim characteristic are not
-covered.
+\item \textbf{Physical.} Static timing passes only with the two-cycle exception for the paths from the
+memories and from the core state. Its condition, that the capture enables are low in cycles without core clock
+enable on the synthesised netlist, is not checked by a gate-level simulation with delays or by a formal
+property. The both-edge input sampling was simulated without pin delays.
+\item \textbf{Oscillator.} The macro is verified by circuit simulation of the extracted layout at three
+corners, without mismatch analysis in the result files. The protocol tests on the internal oscillator (USB,
+UART) ran with a model at 15\,MHz and are not repeated at 60\,MHz. Noise is not covered.
 \item \textbf{Blocks without a model.} The clock switching between two asynchronous sources and the injection
 sequencer have directed tests only. Collisions on the code memories and the host port are covered by the random
 two-core test and not by the second-round model.
@@ -266,16 +307,16 @@ devices. USB signal levels, the pull-up resistor and the 10BASE-T line driver ar
 no stop-bit and start-level check in one receive cell; no underrun indication; no differential idle pulse and no
 link pulses for 10BASE-T; the trim window can settle on packet ends without the firmware check; a host access
 to memory halts both cores. Section 18.5 of the specification specifies changes for the first four.
-\item \textbf{Not rerun on the final RTL.} The arbitration matrix of the second round (1.5 hours) ran on the RTL
-before the four fixes, which do not touch the two-core block. The synthesis was last run before the four fixes.
+\item \textbf{Not rerun on the final RTL.} The stress tests with two protocols at once and the tolerance sweeps
+of the 10BASE-T suite (section~\ref{sec:state}).
 \item \textbf{Single cases not covered.} USB against a real host timing, GET\_REPORT on the oscillator under a
 frequency step, interrupts from line cell and timer flags during a wait, the one-core build, a 9-bit frame.
 \end{enumerate}
 
-\section{Folder structure and location of the tests}
+\section{Folder structure and location of the tests}\label{sec:where}
 
-Each package unpacks into one directory. Generated files (simulator images, firmware images, logs) go to
-\texttt{build/}, which is not part of the packages.
+All paths are in the repository. Generated files (simulator images, firmware images, logs) go to
+\texttt{build/} folders, which are not part of the repository.
 
 \begin{table}[H]
 \centering\small
@@ -283,20 +324,23 @@ Each package unpacks into one directory. Generated files (simulator images, firm
 \toprule
 Path & Content \\
 \midrule
-\texttt{rsys/} & whole chip; \texttt{README.md} (history of every addition, plusargs), \texttt{HANDOVER.md} \\
-\texttt{rsys/rtl/} & RTL of all blocks; top level \texttt{rpe\_top.v} \\
-\texttt{rsys/tb/} & testbenches: \texttt{tb\_sys.v} (whole chip, all firmware tests), block testbenches \texttt{tb\_tim.v}, \texttt{tb\_clk.v}, \texttt{tb\_sync.v}, \texttt{tb\_ev.v}, \texttt{tb\_dual.v}, \texttt{tb\_clkctl.v}, \texttt{tb\_prot.v}, \texttt{tb\_host.v}; protocol models \texttt{uart\_model.v}, \texttt{spi\_master\_model.v}, \texttt{spi\_slave\_model.v}, \texttt{i2c\_master\_model.v}, \texttt{i2c\_slave\_model.v}, \texttt{i2c\_sensor.v}, \texttt{ws2812\_model.v}, \texttt{usb\_host.v}, \texttt{eth\_model.v}, \texttt{stress.v}; \texttt{osc\_model.v}; \texttt{stub\_core.v} (scripted bus user for the arbiter model test) \\
-\texttt{rsys/tb/ihp/} & Verilog model of the SRAM macro from the IHP Open PDK \\
-\texttt{rsys/tb/old/} & host link before the mailbox fix, used by one test that shows the fault \\
-\texttt{rsys/fw/} & firmware in C and assembly, the register header \texttt{rpe.h}, build scripts \texttt{build*.sh} \\
-\texttt{rsys/model/} & behavioural models in Python: \texttt{timers.py}, \texttt{events.py}, \texttt{dual.py}, \texttt{clkctl.py}, \texttt{prot.py}, \texttt{host.py} \\
-\texttt{rsys/tests/} & test scripts and suites (table below) \\
-\texttt{rsys/syn/} & logic synthesis script and the black box of the SRAM macro \\
-\texttt{rdual/rtl/}, \texttt{tb/}, \texttt{model/}, \texttt{tests/} & two-core block: \texttt{rdual.v}, \texttt{rcore8d.v}; testbench \texttt{tb\_dual.v}; cycle models \texttt{rmodel.py}, \texttt{rmodel\_d.py}; tests \\
-\texttt{linecells/rtl/}, \texttt{tb/}, \texttt{model/}, \texttt{tests/} & line cells: \texttt{rlinecells.v}; testbenches \texttt{tb\_lc.v}, \texttt{tb\_lc2.v}; model \texttt{linecell.py} with its own cases in \texttt{test\_cell.py}; tests \\
+\texttt{src/rsoc8/} (package rsys) & whole chip; \texttt{README.md} (map, how to run, RTL changes); history of every addition in \texttt{doc/history/} \\
+\texttt{src/rsoc8/rtl/} & RTL of all blocks; top level \texttt{rpe\_top.v} \\
+\texttt{src/rsoc8/tb/} & testbenches: \texttt{tb\_sys.v} (whole chip, all firmware tests), block testbenches \texttt{tb\_tim.v}, \texttt{tb\_clk.v}, \texttt{tb\_sync.v}, \texttt{tb\_ev.v}, \texttt{tb\_dual.v}, \texttt{tb\_clkctl.v}, \texttt{tb\_prot.v}, \texttt{tb\_host.v}; protocol models \texttt{uart\_model.v}, \texttt{spi\_master\_model.v}, \texttt{spi\_slave\_model.v}, \texttt{i2c\_master\_model.v}, \texttt{i2c\_slave\_model.v}, \texttt{i2c\_sensor.v}, \texttt{ws2812\_model.v}, \texttt{usb\_host.v}, \texttt{eth\_model.v}, \texttt{stress.v}; \texttt{osc\_model.v}; \texttt{stub\_core.v} (scripted bus user for the arbiter model test) \\
+\texttt{src/rsoc8/tb/ihp/} & Verilog model of the SRAM macro from the IHP Open PDK \\
+\texttt{src/rsoc8/tb/old/} & host link before the mailbox fix, used by one test that shows the fault \\
+\texttt{src/rsoc8/fw/} & firmware in C and assembly, the register header \texttt{rpe.h}, build scripts \texttt{build*.sh} \\
+\texttt{src/rsoc8/model/} & behavioural models in Python: \texttt{timers.py}, \texttt{events.py}, \texttt{dual.py}, \texttt{clkctl.py}, \texttt{prot.py}, \texttt{host.py} \\
+\texttt{src/rsoc8/tests/} & test scripts and suites (table below) \\
+\texttt{src/rsoc8/syn/} & logic synthesis script and the black box of the SRAM macro \\
+\texttt{src/rsoc8/blocks/dual/} with \texttt{tb/}, \texttt{model/}, \texttt{tests/} (package rdual) & two-core block: \texttt{rdual.v}, \texttt{rcore8d.v}; testbench \texttt{tb\_dual.v}; cycle models \texttt{rmodel.py}, \texttt{rmodel\_d.py}; tests \\
+\texttt{src/rsoc8/blocks/linecells/} with \texttt{tb/}, \texttt{model/}, \texttt{tests/} (package linecells) & line cells: \texttt{rlinecells.v}; testbenches \texttt{tb\_lc.v}, \texttt{tb\_lc2.v}; model \texttt{linecell.py} with its own cases in \texttt{test\_cell.py}; tests \\
+\texttt{test/} & cocotb tests through the Tiny Tapeout pins, for RTL and the routed netlist \\
+\texttt{src/config.json}, \texttt{src/timing.sdc} & flow configuration and timing constraints with the two-cycle exception \\
+\texttt{analog/} & oscillator macro: schematics, layout generator, results, report \\
 \bottomrule
 \end{tabularx}
-\caption{Folder structure of the three packages.}
+\caption{Folder structure in the repository.}
 \end{table}
 
 \begin{table}[H]
@@ -364,7 +408,10 @@ I2C slave with bus condition flags and start at the shift edge (test 20) & \text
 
 \section{How to run the tests again}
 
-All commands are run in the top directory of the package named in the first column.
+All commands are run in the folder of the package named in the first column: rsys in \texttt{src/rsoc8}, rdual in
+\texttt{src/rsoc8/blocks/dual}, linecells in \texttt{src/rsoc8/blocks/linecells}. \texttt{sh src/rsoc8/tests/ci.sh} runs
+the base regression of all three and compares the output with \texttt{tests/expected/}; the workflow
+\texttt{regression} runs it on every push.
 
 \begin{table}[H]
 \centering\small
@@ -384,10 +431,40 @@ linecells & \texttt{sh tests/run\_all.sh} & line cells against the model \\
 \bottomrule
 \end{tabularx}
 \caption{Test suites. The base regression takes about 20 minutes\est{} on two processor cores, the arbitration
-matrix about 1.5 hours, the others 2 to 25 minutes each.}
+matrix about 45 minutes, the others 2 to 25 minutes each.}
 \end{table}
 
-\section{State of the regression}
+\section{State of the regression}\label{sec:state}
+
+On the RTL of draft 0.37 (25 November 2026, commit \texttt{c7f1d06} with the test additions of this issue) these
+suites were run and pass:
+
+\begin{itemize}
+\item the base regression: line cell suite, two-core suite, five block models, firmware suite; output equal to
+\texttt{tests/expected/} except for the cycle count of the extended clocking testbench, which was stored anew;
+\item the UART suite: 67 lines as expected, 0 failures of expectation;
+\item all six parts of the SPI and I2C suite: 99 lines ok, 0 FAIL;
+\item the wait test at core dividers 1, 2 and 3: 2\,376 runs, 0 failing;
+\item the 10BASE-T suite: the scenario sets at core dividers 1, 2 and 3 pass, divider 4 fails as documented,
+and the seven fault insertions fail as they must;
+\item the arbitration tests of the two-core block (\texttt{run\_arb.sh}, 43 minutes): matrix 5\,766 runs, the
+further sweeps at dividers 1 to 3, the interrupt and code memory cases, the random stress and the 100-seed
+suite, all with 0 failing or 0 mismatching.
+\end{itemize}
+
+One part of the arbitration tests reports failures: the exact-timing check (rule U5) has 2 failing of 62
+checks, for the class \texttt{sbisc\_tick} with the partner classes \texttt{in\_tick} and \texttt{sbisc\_tick}. The
+result is the same on the RTL as first committed to the repository (\texttt{dda59b4}), so it does not come from
+the changes of draft 0.37. In this class the core with priority tests bit 0 of the testbench register
+\texttt{0x00F}, which counts the reads of both cores. A partner that reads the same register changes the tested
+value, and with it the skip decisions of the core with priority. The difference is therefore caused by data
+that the testbench shares between the cores, and it is not a dependence through the arbiter. The check should
+exclude these two partner classes for this class; this is not done yet.
+
+Not run on this RTL: the stress tests with two protocols at once; the tolerance sweeps of the 10BASE-T suite
+after the first duty cycle value (bit time error tolerated from $-16.4$ to $+49.7\,\%$, as in issue 2).
+
+\paragraph{State at issue 2.}
 
 On the RTL of draft 0.36 (21 November 2026, line cells with \texttt{LCX} and \texttt{LCEC}) these suites were run
 and pass: the line cell suite (48 cases, 400 random configurations, directed tests), the base regression, the

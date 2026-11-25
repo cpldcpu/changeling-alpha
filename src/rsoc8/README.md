@@ -58,7 +58,7 @@ latexmk -pdf rpe_spec.tex rpe_datasheet.tex rpe_verification.tex
 The timing diagrams and settings tables in `doc/figs/` are generated from simulation logs by
 `tests/gen_waves.py` and `tests/gen_lcex.py` (see `doc/history/change_log.md`, last section).
 
-## RTL changes after specification draft 0.36
+## RTL changes after specification draft 0.36 (described in draft 0.37)
 
 The specification and the verification report describe draft 0.36. Changes made in this repository since:
 
@@ -74,6 +74,7 @@ The specification and the verification report describe draft 0.36. Changes made 
 | The read that restores a code memory output after a host access takes place only in a cycle with the core clock enable | `rtl/rdual.v` | the restored output is then stable for a full core period before a core takes it |
 | `dq` of the cores takes the data memory output in the cycle after a read without regard to `cen` | `rtl/rcore8d.v` | removes the path from the code memory through `cen` to `dq`; the value the core uses is unchanged |
 | Keep attribute on `state`, `ir` of the cores and on the injection registers | `rtl/rcore8d.v`, `rtl/rdual.v` | names for the timing constraints; the state encoding stays binary |
+| `RELAXEN` (bit 7 of `CLKCTL`), input `clk_slow` with synchroniser, `REFSEL` = 3, debug signal 15; second enable and second clock output at the oscillator | `rtl/rclock.v`, `rtl/rpe_top.v`, `rtl/rpe_osc_stub.v` | relaxation oscillator of the macro `rpe_clk_analog` as a reference of the trim counter (specification draft 0.37) |
 
 Side effect of the change of the output register: the clock output and the debug signal, whose enables belong to the clocking
 block, are no longer forced low while the core reset is set.

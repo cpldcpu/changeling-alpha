@@ -30,6 +30,6 @@ Address & Name & Access & Reset & Function \\
 Register & Bits & Meaning \\
 \midrule
 \reg{MBSTAT} & \reg{RXF}, \reg{TXE} & A byte from the host is waiting; the host has taken the last byte written \\
-\reg{DBGSEL} & \reg{EN}, \reg{SEL} & Enables the debug pin and selects its signal: 0 and 1 sample point of receive cell 0 and 1, 2 and 3 transmitted bit of transmit cell 0 and 1, 4 and 5 accepted edge of receive cell 0 and 1, 6 and 7 reference event of receive cell 0 and 1, 8 and 9 clock enable of core 0 and 1, 10 a core is held by the bus arbiter, 11 peripheral clock enable, 12 core clock enable, 13 trim measurement waiting or running, 14 valid measurement. The pin shows the signal one clock cycle later \\
+\reg{DBGSEL} & \reg{EN}, \reg{SEL} & Enables the debug pin and selects its signal: 0 and 1 sample point of receive cell 0 and 1, 2 and 3 transmitted bit of transmit cell 0 and 1, 4 and 5 accepted edge of receive cell 0 and 1, 6 and 7 reference event of receive cell 0 and 1, 8 and 9 clock enable of core 0 and 1, 10 a core is held by the bus arbiter, 11 peripheral clock enable, 12 core clock enable, 13 trim measurement waiting or running, 14 valid measurement, 15 output of the relaxation oscillator after the synchroniser. The pin shows the signal one clock cycle later \\
 \bottomrule
 \end{tabularx}\par}
