@@ -89,3 +89,9 @@ Line, branch and toggle coverage of the line cell suite with Verilator. Icarus V
 5. Mutation testing.
 6. Core instruction proofs.
 7. Gate-level simulation with random start values, when the netlist exists.
+
+## Status, 25 November 2026
+
+Not in the plan above and done first, because the timing closure depends on it: a formal check of the
+two-cycle timing exception on the two-core block (`src/rsoc8/formal/`, method, assumptions and findings in its
+README). The items of the plan itself are not started.

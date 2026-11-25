@@ -14,6 +14,7 @@ test scripts, firmware and the documents. Another flow needs this folder, a top 
 | `blocks/linecells/` | line cells alone: behavioural model `model/linecell.py`, testbenches, `tests/run_all.sh` |
 | `blocks/dual/` | two-core block alone: cycle model, lockstep random tests, arbitration tests, `tests/run_all.sh`, `tests/run_arb.sh` |
 | `syn/` | synthesis script for an area estimate with yosys |
+| `formal/` | formal check of the two-cycle timing exception on `rdual.v` with both cores: [formal/README.md](formal/README.md) |
 | `doc/` | LaTeX sources of specification, datasheet and verification report, generators, `pdf/` built documents, `history/` records of the development |
 
 All scripts change into their own package directory, so they can be started from anywhere. Generated files

@@ -40,3 +40,4 @@ analog/report/*.out
 analog/report/*.fls
 analog/report/*.fdb_latexmk
 analog/report/*.toc
+src/rsoc8/formal/build
