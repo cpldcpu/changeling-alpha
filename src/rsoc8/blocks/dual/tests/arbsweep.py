@@ -411,8 +411,15 @@ def irqmix(arb, variant, cdiv=1, tag="i"):
     accumulate_cov(cov, arb)
     return errs, a
 
+# Classes whose control flow depends on a testbench register that the other core changes by its own accesses.
+# sbisc_tick skips on bit 0 of register 0x00F, which counts the reads of both cores; a partner that reads it
+# changes the skip decisions of the core under test through data, not through the arbiter. Such partners are
+# left out of the exact-timing check of that class. The matrix runs still cover these pairs against the model.
+SHARED_DATA = {"sbisc_tick": ("in_tick", "sbisc_tick")}
+
 def timing_check(nameA, arb, others, variant=0, N=48, cdiv=1):
     """U5: the core named by ARB has the same instruction start cycles whatever the other core executes"""
+    others = [o for o in others if o not in SHARED_DATA.get(nameA, ())]
     w = 0 if arb == 1 else 1
     ref = None; errs = []
     for nameB in others:
@@ -453,7 +460,7 @@ def main():
             for arb in (1, 2):
                 errs, n = timing_check(nameA, arb, ["ld_Xp", "pushpop", "rcall2", "in_tick", "sbisc_tick", "sts", "st_Zm", "icall", "out_wc"], 0, a.n, a.cdiv); runs += 1
                 if errs: bad += 1; print("FAIL timing %s arb %d:" % (nameA, arb)); [print("   ", e) for e in errs[:4]]
-        print("arbsweep timing (U5): %d checks, %d failing" % (runs, bad))
+        print("arbsweep timing (U5): %d checks, %d failing; partners left out because of shared testbench data: %s" % (runs, bad, ", ".join("%s against %s" % (k, "/".join(v)) for k, v in SHARED_DATA.items())))
         return 1 if bad else 0
     names = list(CLASSES) if a.classes == "all" else a.classes.split(",")
     vs = {"self": None, "all": list(CLASSES)}.get(a.vs, None) or a.vs.split(",")

@@ -26,7 +26,7 @@ package before the move into this repository; partly superseded by this file).
 | Clocking block test (`tb/tb_clk.v`), with single measurement and loop against the relaxation oscillator | passes; three inserted faults are detected |
 | cocotb tests through the pins (`test/`): load through the host link and UART echo; internal oscillators | pass on RTL and on the gate-level netlist |
 | Document build (specification, datasheet, verification report) | passes |
-| Long suites (`run_uart.sh`, `spii2c.sh`, `run_eth.sh`, `run_waitirq.sh`, `blocks/dual/tests/run_arb.sh`) | rerun on 25 November, pass. The exact-timing check in `run_arb.sh` reports 2 of 62 failing; this is a property of the testbench and is the same on the first committed RTL (verification report, section "State of the regression") |
+| Long suites (`run_uart.sh`, `spii2c.sh`, `run_eth.sh`, `run_waitirq.sh`, `blocks/dual/tests/run_arb.sh`) | rerun on 25 November, pass. The exact-timing check in `run_arb.sh` passes with 62 checks after a correction of the check itself (verification report, section "State of the regression") |
 
 Not rerun since the RTL changes in this repository: the stress tests (`tests/stress_*.py`).
 

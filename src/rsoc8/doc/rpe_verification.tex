@@ -452,14 +452,16 @@ further sweeps at dividers 1 to 3, the interrupt and code memory cases, the rand
 suite, all with 0 failing or 0 mismatching.
 \end{itemize}
 
-One part of the arbitration tests reports failures: the exact-timing check (rule U5) has 2 failing of 62
-checks, for the class \texttt{sbisc\_tick} with the partner classes \texttt{in\_tick} and \texttt{sbisc\_tick}. The
-result is the same on the RTL as first committed to the repository (\texttt{dda59b4}), so it does not come from
-the changes of draft 0.37. In this class the core with priority tests bit 0 of the testbench register
-\texttt{0x00F}, which counts the reads of both cores. A partner that reads the same register changes the tested
-value, and with it the skip decisions of the core with priority. The difference is therefore caused by data
-that the testbench shares between the cores, and it is not a dependence through the arbiter. The check should
-exclude these two partner classes for this class; this is not done yet.
+The exact-timing check of the arbitration tests (rule U5) passes with 62 checks. Before a correction of the
+check on 25 November it reported 2 failing, for the class \texttt{sbisc\_tick} with the partner classes
+\texttt{in\_tick} and \texttt{sbisc\_tick}, also on the RTL as first committed to the repository (\texttt{dda59b4}).
+In this class the core with priority tests bit 0 of the testbench register \texttt{0x00F}, which counts the
+reads of both cores. A partner that reads the same register changes the tested value, and with it the skip
+decisions of the core with priority: a dependence through data that the testbench shares, not through the
+arbiter. The check now leaves out these two partners for this class and prints that it does so
+(\texttt{SHARED\_DATA} in \texttt{tests/arbsweep.py}); the other seven partners remain, and the matrix runs still
+compare these pairs with the model. With a fault inserted into the arbiter (priority of core 0 removed from
+the grant) the check fails for this class as it must.
 
 Not run on this RTL: the stress tests with two protocols at once; the tolerance sweeps of the 10BASE-T suite
 after the first duty cycle value (bit time error tolerated from $-16.4$ to $+49.7\,\%$, as in issue 2).
