@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Line cells (receive cell, transmit cell) against the behavioural model: protocol cases and random configurations.
 usage: lc_test.py [number of random cases]"""
 import os, random, subprocess, sys

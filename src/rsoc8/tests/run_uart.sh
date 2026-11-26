@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # UART against the independent model (tb/uart_model.v), mailbox bridge, UART to WS2812 bridge (tb/ws2812_model.v).
 # usage: sh tests/run_uart.sh [limits]    (about 8 minutes; "limits" adds the fine sweeps that find the tolerance limits)
 # Every line ends with PASS or FAIL. "expected FAIL" marks a test that shows a known weakness or a deliberate fault

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Self-checking C tests for rcore8. Exit code 0 = pass, otherwise the number of the failing test. */
 #include "ctest_data.h"
 

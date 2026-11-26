@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Firmware tests on the system testbench. Needs: iverilog, avr-gcc with avr-libc, python3.
 cd "$(dirname "$0")/.."
 mkdir -p build

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; stress test, same source for both cores (@CORE@ = 0 or 1): calls, returns, loads, pops and
 ; register accesses in a loop, so that every cycle of the multi-cycle instructions meets collisions
         .text

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Block test of rprot. stimulus (hex): addr[3] we wd host unlock cm0_addr[3] cm1_addr[3] cm0_we cm1_we wo0 wo1 cm_host
 // output: rd prot cm0_we_ok cm1_we_ok
 `timescale 1ns/1ps

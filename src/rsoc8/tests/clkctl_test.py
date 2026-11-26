@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """rclk_ctl (control part of the clocking block): directed checks of the model against the specification and
 random comparison of RTL and model.  usage: clkctl_test.py [first_seed last_seed]
 Environment: RTLDIR, TAG, NODIRECTED, FIRST, COV; SKIP=name,name excludes stimulus of known deviations

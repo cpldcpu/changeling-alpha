@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 7, one core: clocking block. Core and peripheral divider, measurement of the clock
    against a reference on input pin 4 (testbench: +ref=<half period in ps>), window, status, clock
    output and debug signal. The testbench has the external clock only. Exit code 0 = pass. */

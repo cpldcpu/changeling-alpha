@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 15: SPI master with transmit cell 0 and receive cell 0 against the slave model (+spislv).
    Defines: MODE (0-3), HB (half bit time B in clock cycles, bit time 2 HB), NB (bytes per transfer), NX (transfers),
    CSDLY (clock cycles from chip select to the first data write), CSHOLD (cycles from end of transfer to chip select high).

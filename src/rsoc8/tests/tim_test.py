@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Tests of the timer, PWM and CRC unit: known answers on the model, then model against RTL."""
 import os, random, subprocess, sys, zlib
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'model'))

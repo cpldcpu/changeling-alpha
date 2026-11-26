@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Tests 1 (b) and 1 (c).
  b: core 0 UART echo (pins 2/3) + core 1 I2C firmware master against the stretching slave model
  c: core 0 SPI slave (master model drives it) + core 1 WS2812 frames

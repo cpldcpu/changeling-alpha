@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Export flattened GDS polygons via KLayout and render vector layout PDFs + 300-DPI PNG figures."""
 from __future__ import annotations
 import json

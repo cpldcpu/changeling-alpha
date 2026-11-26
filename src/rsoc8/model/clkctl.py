@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the synchronous control part of the clocking block (rclk_ctl): registers, presence
 check, source request, dividers, trim counter with window and loop, clock output, debug signal.
 Written from the specification: section Clocking, Clocking registers (CLKCTL ... CLKOUT, DBGSEL, CLKSTAT),

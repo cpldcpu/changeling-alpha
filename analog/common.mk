@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Shared Makefile definitions for changeling-alpha analog blocks
 
 PDK_ROOT ?= /home/tim/.ciel/ciel/ihp-sg13/versions/89d42ee6d2fd9b50b86a1aada6fee6673c3e6008

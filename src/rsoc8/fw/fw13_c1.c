@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 13, image of core 1: USB low-speed host (stimulus and checks) */
 #include "fw13.h"
 #include "rpe_core1.h"

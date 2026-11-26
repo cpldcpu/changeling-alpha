@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Arbitration sweep for rdual: both cores run a kernel of one instruction class on private cells with
 different pad lengths between the instances, so that the accesses of the two cores meet in every cycle of
 every instruction.  For each run:

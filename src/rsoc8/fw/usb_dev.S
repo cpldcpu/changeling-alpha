@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; USB low-speed device: receive loop and answer path in assembly (reduced AVR core).
 ;
 ; Before a call the sync byte waits in the transmit buffer of cell T0 with the transmitter off

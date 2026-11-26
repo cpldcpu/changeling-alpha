@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Runs the check of exc_top with the SAT solver of Yosys and lists every violated check.
 
 usage: run_exc.py bmc <depth>    bounded check from reset

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Generate unified analog clock macro schematics & symbols (analog/clk_macro): rpe_clk_analog = bias + osc_ring_cc + relax_core (SVaricap M=10)."""
 
 import sys

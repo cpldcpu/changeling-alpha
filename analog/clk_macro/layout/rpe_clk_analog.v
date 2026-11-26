@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Blackbox stub for unified custom analog clock macro (rpe_clk_analog)
 (* blackbox *)
 module rpe_clk_analog (

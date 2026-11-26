@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Tests 2, 4, 5 and the bus hog experiment, and the fault insertions.
 usage: python3 -I tests/stress_t4.py extras|hog|host|ws|fwd|faults [args]"""
 import sys, os

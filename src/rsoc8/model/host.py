@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the host link (rhost) at the level of SPI bytes in and bus/control actions out.
 Written from the specification: section Host link and debug, rules L1-L14, command table, status table, mailbox
 registers MBSTAT and MBDATA. No timing inside a transaction is modelled; the host clock is slow enough that every

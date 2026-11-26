@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Fault insertion for the host link, the program protection and the host logic of rdual.
 Each fault is one changed line; the three system runs below must give a different result.
 Usage: python3 tests/mut_host.py <word address of tick in fwh>   (run tests/run_fw.sh first)"""

@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the line cell, one call of step() per time unit.
 Used to check the rules of the specification, not cycle-accurate RTL."""
 class Cell:

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 3, one core with both pairs: a 10BASE-T frame at 6 clock cycles per bit.
    Transmit cell 0 sends Manchester code on pin 0; receive cell 1 samples the same pin on both
    clock edges, finds the start-of-frame delimiter and delivers the bytes. The core feeds the

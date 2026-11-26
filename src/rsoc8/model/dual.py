@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the register-side behaviour of rdual: bus arbiter, locks, wait masks, core
 enable and wait state, ARB. Written from the specification: rules U1-U9 (shared bus), C5-C10 (locks),
 H1-H9 (core control, wait, sleep, break, halt), register map entries LOCK 0x05, CORECTL 0x0E,

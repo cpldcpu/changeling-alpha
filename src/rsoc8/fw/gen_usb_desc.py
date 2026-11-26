@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Builds the USB descriptors of the HID device as ready-made data packets.
 
 Every packet is stored as: number of bytes to send, packet identifier, data bytes, CRC-16 (low, high).

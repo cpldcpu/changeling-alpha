@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Receive tolerance of the ping firmware against the Ethernet model: for each clock duty cycle find by bisection the
 largest bit time error (ppm, both signs) and the largest edge jitter (ps peak, testbench time scale) at which
 +ethm=5 passes. usage: eth_sweep.py <tb.vvp> <image.hex> [duty ...]    (run from the rsys directory)"""

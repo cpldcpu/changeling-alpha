@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Random two-core stress with more seeds and more collisions (task: arbitration).
 Runs randtest_d.py (RTL against the cycle model, every instruction start and the final memories) in several
 configurations and reports the number of collisions and held cycles of the model for each.

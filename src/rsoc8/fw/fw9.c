@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 9, one core: oscillator. Needs the oscillator model (tb/osc_model.v) and a reference
    of 100 kHz on input pin 4 (+ref=5000000). The firmware switches to the oscillator, lets the loop
    trim it to 15 MHz (600 cycles in 4 reference periods), and puts the clock divided by 2 on output

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* shared between the two images of firmware test 2 */
 #include "rpe.h"
 #define EXIT(c) do { _IO8(0x1F) = (c); for (;;) ; } while (0)

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress test 4b: the chip as a WS2812 LED with forwarding (as fw10.c). Receive cell 0 on pin WSIN keeps the first three bytes of
    a frame; transmit cell 0 forwards every further bit on pin WSOUT with its own pulse widths (T1H 48, T0H 24, minimum period WS_OPER).
    The idle flag of the receive cell (150 clock cycles without an edge after the last bit) ends the frame: the forward cell is

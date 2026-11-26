@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """rdual register side (locks, wait masks, core enable, ARB, bus arbiter) with scripted bus users:
 directed checks of the model against the specification, then random comparison of RTL and model.
 usage: dual_test.py [first_seed last_seed]    Environment: RTLDIR, TAG, NODIRECTED, FIRST, COV"""

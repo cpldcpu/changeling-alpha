@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Pin synchronisers of rlcports: the falling-edge sample given to the line cells must be the one
 // taken half a clock period before the rising-edge sample given in the same cycle.
 `timescale 1ns/1ps

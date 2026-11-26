@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test A (UART against an independent model, tb/uart_model.v), one core: echo.
    UART on pin 4 (receive) and pin 5 (transmit); 8 data bits (or 7 data bits and a parity bit: the frame
    is always 8 bits wide and is passed on unchanged), 1 stop bit.

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Model of a sensor with I2C interface and interrupt output, included in tb_sys.v.
 // Pins: 4 SDA, 5 SCL, 6 interrupt (active low, open drain). Address 0x29.
 // Register 0 is a status byte, registers 1 to 6 hold the sample. sens_event produces a new sample

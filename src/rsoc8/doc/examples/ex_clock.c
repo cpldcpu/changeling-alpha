@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Switch to the internal oscillator, trim it to 60 MHz with a reference signal on the reference pin, and
    then hold it with the relaxation oscillator as the reference.
    The reference pin has a period of 10 us; four periods are 2400 cycles of a 60 MHz clock.

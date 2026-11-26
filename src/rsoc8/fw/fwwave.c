@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Scenarios for the timing diagrams of the datasheet. Build with -DSCEN=n, run with +wave=<file>.
    The rates are chosen low in clock cycles per bit so that single clock cycles are visible.
    1 UART, 8 cycles per bit: transmit cell 0 on pin 0, receive cell 0 on the same pin

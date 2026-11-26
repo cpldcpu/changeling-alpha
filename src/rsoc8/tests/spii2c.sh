@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # SPI and I2C against independent testbench models (tb/spi_slave_model.v, tb/spi_master_model.v, tb/i2c_slave_model.v,
 # tb/i2c_master_model.v; firmware fw/fw15_spim.c, fw16_spis.c, fw17_i2cm.c, fw18_i2cs.c, fw19_arb.c, fw/i2cm.h).
 # Usage: tests/spii2c.sh [part ...]   parts: spim spis i2cm i2cs arb fault (default: all). One simulation at a time.

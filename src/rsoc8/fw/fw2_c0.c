@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 2, image of core 0: starts core 1, receives the bytes core 1 sends through the
    line cells of pair 1, checks the hand-over through shared memory and software flags, and
    increments a shared counter under a lock at the same time as core 1. Exit code 0 = pass. */

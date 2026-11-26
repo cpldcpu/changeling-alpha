@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* USB low-speed device on pair 0: definitions shared by firmware files */
 #ifndef USB_H
 #define USB_H

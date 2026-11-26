@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 19: two masters. The chip is a master (fw/i2cm.h, with the arbitration check) and starts a write at the same
    time as the master model (+i2cm +i2cm_arb). Pins 4 SDA, 5 SCL, 6 GO (output of the chip: it rises one instruction before the
    chip pulls SDA low; the model starts i2cm_arbd cycles after it), 7 DONE (input, driven by the model).

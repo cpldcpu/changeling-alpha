@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Testbench of revents: one stimulus line per clock cycle, outputs of each cycle written to a file.
 // stimulus (hex): ptick addr[3] core re we wd wm pc capt oca ocb ovf trim mbx lc own ack0[4] ack1[4]
 // output (hex):   rdata evt[8] irq0[4] irq1[4]

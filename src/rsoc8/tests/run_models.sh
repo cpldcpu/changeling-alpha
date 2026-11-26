@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Runs the model-based random tests of the blocks without a firmware test: events, dual (locks, wait, ARB), clkctl, prot, host.
 # usage: tests/run_models.sh [first_seed last_seed]   (default 0 100). Set LITERAL=1 to follow the specification text literally
 # where the RTL deviates (clkctl, host), FAULTS=1 to run the fault insertion lists afterwards.

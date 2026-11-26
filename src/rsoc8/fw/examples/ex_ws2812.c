@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* WS2812 controller on pin 0: 8 LEDs, 1.25 us per bit (75 clock cycles at 60 MHz).
    The transmit cell works in compare mode: the output is high for A cycles for a one and for
    C cycles for a zero, and one bit lasts B cycles. */

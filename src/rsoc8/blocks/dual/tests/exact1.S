@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; exact timing test, image of core 1: a loop that uses the shared bus in most instructions
         .text
         .org 0

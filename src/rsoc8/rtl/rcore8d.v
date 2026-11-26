@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rcore8d - rcore8 for the two-core arrangement (reduced AVR instruction set).
 //
 // Differences to the single-core rcore8:

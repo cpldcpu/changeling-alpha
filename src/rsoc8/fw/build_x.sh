@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # build_x.sh source out core "defines"   builds fw/source.c with the defines into build/out.hex (core 0 or core 1 image)
 # example: sh fw/build_x.sh fwx_c0 x_echo 0 "-DROLE_ECHO -DTWO"
 set -e

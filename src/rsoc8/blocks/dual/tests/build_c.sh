@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # usage: build_c.sh <part>   -> build/c<part>.hex (16-bit words)
 set -e
 P=$1

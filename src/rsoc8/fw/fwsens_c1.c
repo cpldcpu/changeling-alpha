@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* USB-to-I2C sensor bridge, image of core 1: I2C master in firmware, started by the interrupt pin
    of the sensor (active low, level). Pins: 4 SDA, 5 SCL, 6 interrupt. */
 #include "sens.h"

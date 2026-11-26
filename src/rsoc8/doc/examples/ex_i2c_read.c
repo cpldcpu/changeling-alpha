@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* I2C master in firmware (fw/i2cm.h): read 6 bytes from register 0x01 of a device at address 0x29.
    SDA pin 4, SCL pin 5, open drain through the direction register, about 250 kHz. */
 #define SDA 0x10

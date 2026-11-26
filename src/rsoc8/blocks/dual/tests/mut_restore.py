@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Faults in the re-read of the code memory after a host access (rule L6), checked with the random
 test with host stimulus. Run from the package directory after tests/run_all.sh."""
 import os, subprocess

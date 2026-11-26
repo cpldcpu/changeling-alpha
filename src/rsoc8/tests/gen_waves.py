@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Timing diagrams of the datasheet, drawn from simulation.
 Input: build/wave/w1.txt .. w5.txt of the rsys package (firmware fw/fwwave.c, testbench option +wave=).
 Output: figs/wave_1.tex .. wave_5.tex (TikZ). Usage: gen_waves.py <dir with the logs> <output dir>"""

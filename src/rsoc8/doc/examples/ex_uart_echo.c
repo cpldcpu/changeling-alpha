@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* UART echo at 115200 baud, 8N1, with a 60 MHz clock. Receive on pin 4, transmit on pin 5.
    One bit is 520 clock cycles. The cell timers have 8 bits, so both cells use prescaler 4
    (PRE = 2): one bit is 130 time units. */

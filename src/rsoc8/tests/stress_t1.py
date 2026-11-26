@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Test 1 (a): core 0 UART echo + core 1 SPI master. Sweeps of the rates with ARB and core divider.
 usage: python3 -I tests/stress_t1.py alone|together|base [cdivs] [arbs]"""
 import sys, os

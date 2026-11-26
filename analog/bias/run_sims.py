@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Run ngspice corner, VDD sweep, temperature sweep, and startup sims for analog/bias."""
 
 import csv

@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Verification of the line cells. Needs: iverilog, python3.
 set -e
 cd "$(dirname "$0")/.."

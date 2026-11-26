@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # OSCDEF="-DOSC_PROBE" OUT=fwusbop sh fw/build_usbo.sh builds a variant with markers for the testbench (fast I/O 0x1C)
 # USB HID device on the internal oscillator (15 MHz, 10 clock cycles per bit): build/${OUT:-fwusbo}.hex
 set -e

@@ -59,4 +59,5 @@
 Apache-2.0, see [LICENSE](LICENSE). The SRAM integration (`src/pdn_cfg.tcl`, `librelane_plugin_sram_pdn.py`,
 `odb_stripes.py` and the SRAM section of `src/config.json`) is taken from the Tiny Tapeout example
 [ttcodebot/ttihp-cmos5l-sram-example](https://github.com/ttcodebot/ttihp-cmos5l-sram-example), which is adapted
-from Ken Pettit's CMOS5L SRAM design. The behavioural SRAM models are from the IHP Open PDK.
+from Ken Pettit's CMOS5L SRAM design. The behavioural SRAM models are from the IHP Open PDK. Files from other projects and the notices for
+the compiled firmware images are listed in [NOTICE](NOTICE). Source files of this project carry an SPDX tag.

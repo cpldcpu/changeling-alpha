@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Testbench of rclock: two unrelated source clocks, an oscillator model with trim, register bus tasks.
 // Self-checking; prints PASS or the failed checks.
 `timescale 1ps/1ps

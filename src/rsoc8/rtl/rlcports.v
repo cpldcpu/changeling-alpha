@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rlcports - pins and line cells on the register bus.
 //
 // Contains the two pairs of line cells, the bidirectional port, the input and output pins, the pin

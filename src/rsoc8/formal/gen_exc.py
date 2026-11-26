@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Builds the formal check of the two-cycle timing exception for rdual with both cores.
 
 Input:  a flattened Verilog netlist of rdual written by Yosys (flat.ys), in which every flip-flop is

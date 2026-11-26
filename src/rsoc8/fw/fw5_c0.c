@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 5, image of core 0: receives the 10BASE-T frame that core 1 sends (6 clock cycles
    per bit). One core per direction, for the case that the cores run at half the clock rate. */
 #include "rpe.h"

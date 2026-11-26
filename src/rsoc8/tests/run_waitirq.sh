@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Interrupt during a wait, system testbench. About 25 minutes.
 cd "$(dirname "$0")/.."
 mkdir -p build

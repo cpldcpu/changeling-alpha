@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Timing constraints of Changeling-alpha for the Tiny Tapeout flow (PNR_SDC_FILE and SIGNOFF_SDC_FILE).
 #
 # 1. The constraints of the flow (clock on clk with CLOCK_PERIOD, input and output delays, loads).

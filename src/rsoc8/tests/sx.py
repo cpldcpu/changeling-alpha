@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Helpers for the stress tests: build images, run the simulation, parse the summary lines.
 usage from a script:  import sx; r = sx.run(...)"""
 import subprocess, re, os, sys

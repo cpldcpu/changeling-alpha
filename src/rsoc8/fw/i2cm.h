@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* I2C master in firmware, open drain through the direction register (PORT bit = 0, DDR bit = 1 pulls the pin low),
    extended from the master of firmware test 12 (fw12_c1.c) and the sensor bridge (fwsens_c1.c):
    - clock stretching: after SCL is released it is read back, and the code waits until the pin is high; the high time

@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # usage: arbfault.sh name 'sed-expression' file   -> build/fault/<name>.vvp from a temporary copy of the RTL
 set -e
 cd "$(dirname "$0")/.."

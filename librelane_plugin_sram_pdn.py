@@ -1,3 +1,5 @@
+# Source: https://github.com/ttcodebot/ttihp-cmos5l-sram-example (Apache-2.0), unchanged.
+# SPDX-License-Identifier: Apache-2.0
 """
 LibreLane plugin: extend the tile's Metal4 power stripes over the IHP SRAM
 macro (see odb_stripes.py for what the step does and why).

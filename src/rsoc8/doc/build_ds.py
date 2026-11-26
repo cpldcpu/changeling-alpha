@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Builds the register tables and the instruction table of the datasheet.
 Sources: the register map section of rpe_spec.tex (bit tables and field tables), and the lists in this file.
 Output: ds_gen/*.tex, included by the chapter files of the datasheet. Run in the directory of the documents."""

@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # builds one image: spii2c_build.sh <source name without .c> <output name> [defines...]  (core 0, one image)
 cd "$(dirname "$0")/.."
 N=$1; O=$2; shift 2

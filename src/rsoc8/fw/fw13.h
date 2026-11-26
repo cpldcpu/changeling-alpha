@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* shared between the two images of firmware test 13: USB low-speed at 40 clock cycles per bit.
    Core 1 with pair 1 plays the host on pins 2 (D+) and 3 (D-). Core 0 with pair 0 is the device on
    pins 0 (D+) and 1 (D-). The testbench wires 0 to 2 and 1 to 3 and pulls D+ low (+short=0213 +pd=05),

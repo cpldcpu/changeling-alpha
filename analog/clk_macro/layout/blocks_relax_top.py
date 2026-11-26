@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Custom compacted layout builders for comp_lay, relax_core_lay, and top-level rpe_clk_analog."""
 
 from __future__ import annotations

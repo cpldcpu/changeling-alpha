@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 5, image of core 1: sends a 10BASE-T frame through transmit cell 1 on pin 0 */
 #include "rpe.h"
 #define NPAY 24

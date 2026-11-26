@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Fault insertion on a temporary copy of the RTL.  usage: fault_run.py <block> [first_seed last_seed]
 Each fault is one textual substitution in a copy of rtl/ (build/mut/); the random test of the block is run
 against the copy. A fault counts as detected if the test script returns non-zero."""

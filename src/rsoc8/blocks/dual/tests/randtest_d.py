@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Random-program lockstep test for rdual: RTL trace versus the two-core reference model.
 usage: randtest_d.py first_seed last_seed cycles"""
 import zlib, random, subprocess, sys, os

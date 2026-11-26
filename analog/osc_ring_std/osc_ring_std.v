@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rpe_osc - Ring Oscillator A (60 MHz standard-cell tap-selected delay line)
 // Matches analog/osc_ring_std/osc_ring_std.sch cell-for-cell.
 // Higher trim[7:0] selects a shorter delay chain (higher frequency).

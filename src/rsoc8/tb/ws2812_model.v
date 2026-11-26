@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Independent WS2812 receiver model, included in tb_sys.v. Enabled by +ws. Reads pin 6 (output of the chip).
 // Written from the data format of the WS2812 (one wire, return-to-zero): a bit starts with a rising edge; the
 // high time is short for a zero (T0H) and long for a one (T1H); the bit period is the same for both. A low

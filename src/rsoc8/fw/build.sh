@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # build.sh name [core]   builds fw/name.c into build/name.hex (16-bit words, one per line)
 # EXTRA="fw/file.S ..." adds further source files
 set -e

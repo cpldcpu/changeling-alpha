@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Generate clean hierarchical xschem schematics and symbols for Ring Oscillator A (analog/osc_ring_std)."""
 
 import sys

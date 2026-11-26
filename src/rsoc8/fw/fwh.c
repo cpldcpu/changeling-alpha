@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware for the host link test: a counter in RAM that the host watches, a mailbox echo, and a
    variable through which the host ends the test. */
 #include "rpe.h"

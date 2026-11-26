@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Test 3: one core serves UART echo (pair 0, pins 6/7) and an SPI slave (pair 1, pins 0-4) in one loop (fw/fwx_one.c).
 For each UART bit time the smallest SPI half period without any loss, at core dividers 1 and 2.
 usage: python3 -I tests/stress_t3.py [cdivs] [cpbs]    (cpb 0 = no UART, hp 0 = no SPI)"""

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 4: receive a 10BASE-T frame from the testbench generator on pin 1.
    The settings come from the build: -DLCA_VAL, -DLCB_VAL in half clock periods.
    60 MHz clock: 12 samples per bit, A = 9, B = 24.   30 MHz clock: 6 samples per bit, A = 4, B = 12. */

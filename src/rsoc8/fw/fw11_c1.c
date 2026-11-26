@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 11, image of core 1: SPI master with pair 1, chip select through the port register */
 #include "fw11.h"
 #include "rpe_core1.h"

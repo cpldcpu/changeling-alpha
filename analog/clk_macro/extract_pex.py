@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Run Magic 8.3.677 true hierarchical parasitic extraction (PEX) on compacted rpe_clk_analog.gds."""
 
 import os

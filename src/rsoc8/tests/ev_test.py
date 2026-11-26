@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Event flags, interrupt masks, time base, wake-up time: directed checks of the model against the
 specification, then random comparison of RTL and model.   usage: ev_test.py [first_seed last_seed]
 Environment: RTLDIR (default rtl) selects the RTL, TAG names the build files."""

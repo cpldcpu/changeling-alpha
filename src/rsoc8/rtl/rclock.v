@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rclock - clock source selection, reset, dividers, trim counter, clock output and debug signal.
 //
 // Follows the rules K1-K12 of the architecture specification.

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rtimers - 16-bit timer with capture and two compare registers, three PWM channels, CRC unit.
 //
 // Follows the rules B1-B7 and F1-F7 of the architecture specification.

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress tests (two protocols at once): common definitions. Results of the two cores are left in the shared data memory
    at fixed addresses, the testbench (tb/stress.v) reads them at the end. */
 #ifndef FWX_H

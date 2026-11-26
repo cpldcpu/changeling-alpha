@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 10, one core: WS2812 as controller and as LED with forwarding.
    Transmit cell 1 is the controller on pin 0 and sends two pixels of three bytes.
    Receive cell 0 is the first LED on pin 0: it keeps the first three bytes, then transmit cell 0

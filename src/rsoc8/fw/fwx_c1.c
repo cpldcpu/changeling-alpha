@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress tests, image of core 1 (build with core 1). Role chosen by -D:
      ROLE_SPIM  SPI master on pair 1, pins 0 MOSI, 1 SCK, 2 MISO, 3 CS (port register); endless transfers of NB bytes without a
                 pause (HB: half bit time in clock cycles, MODE, CSDLY, CSHOLD, XGAP: cycles from CS high to the next CS low)

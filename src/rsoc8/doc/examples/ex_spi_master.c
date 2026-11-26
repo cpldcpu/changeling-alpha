@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* SPI master, mode 0, 16 clock cycles per bit (3.75 MHz at 60 MHz). MOSI pin 0, SCK pin 1,
    MISO pin 2, chip select pin 3 from the port register. */
 #include "rpe.h"

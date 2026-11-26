@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # builds the two images of the USB-to-I2C sensor bridge: build/fwsens_c0.hex, build/fwsens_c1.hex
 # The core 1 image is built first: it holds the descriptor packets (-DDESC_C1), which core 0 reads from code memory 1
 # (link symbols taken from the core 1 image); without this, core 0 with the HID class requests does not fit into 2048 bytes.

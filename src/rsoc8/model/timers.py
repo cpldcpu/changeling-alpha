@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the timer, PWM and CRC unit (rules B1-B7, F1-F7 of the specification).
 step() advances one clock cycle; the inputs of the cycle are passed in, the outputs seen in the
 cycle (read data, event pulses, PWM outputs) are returned."""

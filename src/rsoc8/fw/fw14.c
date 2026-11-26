@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 14, one core: frame check of a 10BASE-T frame with the CRC unit.
    The testbench sends a frame with its check sequence and the idle pulse behind it on pin 1
    (+eth=60000 +ethfcs). The CRC unit takes the bits of receive cell 0 behind the start-of-frame

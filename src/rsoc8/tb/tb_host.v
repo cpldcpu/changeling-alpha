@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Block test of rhost: SPI transactions, environment changes and firmware accesses to the mailbox registers.
 // Input file, one line per item, 32 hex fields: type args...
 //   type 0 (env):  h_quiet inj_busy inj_fail brk[2] en[2] wait[2] pc0 pc1

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // System testbench: the Tiny Tapeout top level rpe_chip with the simulation model of the
 // IHP SRAM macro (tb/ihp, compile with -DFUNCTIONAL). Runs firmware built with avr-gcc. A model of
 // the SPI host releases the core reset.

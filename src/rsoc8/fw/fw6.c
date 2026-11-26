@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 6, one core: 16-bit timer (compare interrupt, capture of line cell edges), PWM,
    CRC unit (bytes from software, bits of a transmit cell, bits of a receive cell). Exit code 0 = pass. */
 #include "rpe.h"

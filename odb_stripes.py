@@ -1,4 +1,8 @@
 # Source: https://github.com/kdp1965/ihp-um-janestreet-prism (Apache-2.0, (c) Ken Pettit)
+# Taken from https://github.com/ttcodebot/ttihp-cmos5l-sram-example.
+# Modified for Changeling-alpha (commit c7f1d06): the power pins of a macro are also found under the
+# names VDD and VSS, for the clock macro rpe_clk_analog.
+# SPDX-License-Identifier: Apache-2.0
 #
 # Extend the tile's vertical power stripes across every hard macro, and
 # power the IHP SRAM macro from stripes on its own tracks (both bit-cell

@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Regression for continuous integration. Runs four suites and compares their output with the expected
 # output in tests/expected/. Any difference fails. The suites use fixed seeds, so the output is the same on
 # every run with the same tools (Icarus Verilog 12, gcc-avr 7.3.0, avr-libc as in Ubuntu 24.04).

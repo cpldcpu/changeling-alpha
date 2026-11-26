@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress test 3: one core serves two protocols in one loop (wait_for with the event flags of both pairs).
    Pair 0: UART echo (receive pin RXP, transmit pin TXP, CPB clock cycles per bit).
    Pair 1: SPI slave (pins 0 MOSI, 1 SCK, 2 MISO, 3 CS, 4 ready), NBS bytes per transfer, mode SMODE. The master model sends

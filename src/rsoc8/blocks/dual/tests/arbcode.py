@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Access to the other core's code memory (rule U7) and core 0 executing from code memory 1 (rule M5).
 
   steal    the owner core runs a kernel (alu: no bus access; mix: loads from its own code memory, stack, calls,

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 11, image of core 0: SPI slave with pair 0 */
 #include "fw11.h"
 static uint8_t st[15] = { 0xA0, 0x01, 0x50, 0x20, 0x41, 1, 1, 1, 0x00, 0xF0, 0xE0, 0, 0, 0x00, 0x70 };

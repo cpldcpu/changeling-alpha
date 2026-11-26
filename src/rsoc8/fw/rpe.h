@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Register definitions for the rcore8 protocol emulator.
  * Matches the register map section (label sec:map) of the architecture specification, draft 0.36.
  * Pin positions in PINB and PORTC are provisional. */

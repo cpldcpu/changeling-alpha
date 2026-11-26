@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Instruction-level reference model of the reduced AVR instruction set as implemented by rcore8.
 
 Written independently of the RTL: flags follow the boolean formulas of the AVR instruction set

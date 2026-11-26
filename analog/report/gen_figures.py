@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Generate publication-grade vector PDF plots from verified analog/results/*.csv and crop schematic PDFs."""
 from __future__ import annotations
 import csv

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Shared between the two images of the USB-to-I2C sensor bridge.
    Core 0: USB low-speed HID device (fwusb.c built with -DSENSOR).
    Core 1: I2C master (fwsens_c1.c). It waits for the interrupt pin of the sensor, reads a sample

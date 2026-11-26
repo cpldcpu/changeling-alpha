@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 17: I2C master in firmware (fw/i2cm.h) against the slave model (+i2cs). One core, pins 4 SDA, 5 SCL.
    SCEN selects what the model is expected to do; the firmware exits with 0 if the outcome is the expected one:
      0 normal: write of 3 bytes, read of 4 bytes, write of 1 byte + repeated start + read of 2 bytes; also with stretching

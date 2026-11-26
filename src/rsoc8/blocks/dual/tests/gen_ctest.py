@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Generate self-checking C tests. Expected values are computed here in Python, so a wrong
 flag or instruction in the core shows up as a mismatch against compiler-generated code."""
 import random

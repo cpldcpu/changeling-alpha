@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Run fast foundry-calibrated active-loop sweeps + full-netlist golden cross-check for Ring Oscillator A."""
 
 import concurrent.futures

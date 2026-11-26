@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 1, one core: UART through a pair of line cells on one pin, time base and wake-up,
    pin change interrupt, software event flags. Exit code 0 = pass. */
 #include "rpe.h"

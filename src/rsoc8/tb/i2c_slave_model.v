@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Model of an I2C slave with clock stretching, included in tb_sys.v. Written from the I2C definition (NXP UM10204),
 // not from the line cell code. Enabled by +i2cs. Pins: 4 SDA, 5 SCL, both open drain (the model pulls low through xl_a).
 // The chip is the master. The model acknowledges its address, takes the bytes of a write and returns bytes on a read.

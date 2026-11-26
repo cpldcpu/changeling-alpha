@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rhost - host link: SPI slave, loader, debug access, mailbox, core reset.  rprot - program protection.
 //
 // Follows the rules L1-L10 of the architecture specification. The three SPI pins are sampled with the

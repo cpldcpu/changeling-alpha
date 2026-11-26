@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Behavioral simulation model of the hardened analog dual-oscillator macro (rpe_clk_analog).
 // Matches post-layout Magic PEX characteristics (tt, 1.20 V, 25 C):
 //   - clk:      52.78 MHz at trim=128, 59.92 MHz at trim=155 (~0.2645 MHz/LSB linear around mid-trim)

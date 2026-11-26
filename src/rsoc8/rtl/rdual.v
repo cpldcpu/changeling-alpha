@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rdual - two rcore8d cores with private code memories and a shared bus.
 //
 // Contains: the two cores, the arbiter for the shared bus (data memory and register bus), the

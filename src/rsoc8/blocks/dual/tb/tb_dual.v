@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Testbench for rdual: three memories, register bus model, trace of instruction starts.
 `timescale 1ns/1ps
 module tb_dual;

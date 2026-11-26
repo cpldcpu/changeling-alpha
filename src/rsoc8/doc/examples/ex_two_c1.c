@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Two cores, image of core 1. */
 #include "ex_shared.h"
 #include "rpe_core1.h"                             /* stack and start-up of an image for core 1 */

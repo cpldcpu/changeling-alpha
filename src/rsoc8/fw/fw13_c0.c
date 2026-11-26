@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 13, image of core 0: USB low-speed device. The receive loop and the answer path
    are in assembly (usb_dev.S); set-up, transmit data and checks are in C. */
 #include "fw13.h"

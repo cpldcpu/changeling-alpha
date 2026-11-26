@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Clock of the USB device from the internal oscillator (see fwusb.c). Shared by the images:
    osc_adjust and osc_loop_on are used by the lock tracking on core 0; osc_start is compiled where
    OSC_WITH_START is defined (core 0 in the one-core build, core 1 in the two-core build). */

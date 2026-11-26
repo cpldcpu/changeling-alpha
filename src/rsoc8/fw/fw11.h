@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* shared between the two images of firmware test 11: SPI master (core 1, pair 1) and SPI slave
    (core 0, pair 0) on pins 0 MOSI, 1 SCK, 2 MISO, 3 chip select; modes 0 and 1; 16 clock cycles per bit */
 #include "rpe.h"

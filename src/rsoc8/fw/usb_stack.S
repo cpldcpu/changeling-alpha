@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; USB low-speed device: one call handles one token and its transaction (reduced AVR core).
 ;
 ;   uint8_t usb_poll(struct usb_state *s)

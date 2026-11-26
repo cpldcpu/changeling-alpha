@@ -1,3 +1,5 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
 \documentclass[10pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -309,7 +311,7 @@ is measured although other events lie in between. Each valid measurement sets th
 \reg{LOOP} set, each valid measurement also moves \reg{OSCTRIM} by one step towards the target. The host can do
 the same through the host link before any firmware runs.
 
-\lstinputlisting{examples/ex_clock.c}
+\lstinputlisting[firstline=3]{examples/ex_clock.c}
 
 The frequency of the relaxation oscillator differs from chip to chip (84 to 116\,kHz over the simulated
 corners) and changes little with supply and temperature. The example therefore trims the ring against an
@@ -1108,7 +1110,7 @@ the CRC5 of USB.
 still be correct, so both are checked. There is one unit; a core claims it with \reg{OWNER} while the unit is
 disabled, and the other core then reads zero.
 
-\lstinputlisting{examples/ex_crc.c}
+\lstinputlisting[firstline=3]{examples/ex_crc.c}
 
 The example was compiled (385 bytes) and not simulated in this form; both uses are part of simulated firmware.
 
@@ -1248,41 +1250,41 @@ def load(image0, image1=b""):
 
 Simulated against an independent UART model at bit time errors of $-3$, 0 and $+3\,\%$; 196 bytes of code.
 
-\lstinputlisting{examples/ex_uart_echo.c}
+\lstinputlisting[firstline=3]{examples/ex_uart_echo.c}
 
 \subsection{Example: SPI master}
 
 The cell settings are those of the tested SPI master firmware; the example itself was compiled (240 bytes) and
 not simulated.
 
-\lstinputlisting{examples/ex_spi_master.c}
+\lstinputlisting[firstline=3]{examples/ex_spi_master.c}
 
 \subsection{Example: WS2812 controller}
 
 The cell settings are those of the tested WS2812 firmware; compiled (251 bytes), not simulated in this form.
 
-\lstinputlisting{examples/ex_ws2812.c}
+\lstinputlisting[firstline=3]{examples/ex_ws2812.c}
 
 \subsection{Example: PWM and a periodic timer event}\label{sec:expwm}
 
 Compiled (148 bytes), not simulated in this form.
 
-\lstinputlisting{examples/ex_pwm_timer.c}
+\lstinputlisting[firstline=3]{examples/ex_pwm_timer.c}
 
 \subsection{Example: two cores with a lock and a software flag}\label{sec:ex2c}
 
 Three files: a header with the shared variable and one image per core. The pattern is that of the tested
 two-core firmware; compiled (124 and 136 bytes), not simulated in this form.
 
-\lstinputlisting{examples/ex_shared.h}
-\lstinputlisting{examples/ex_two_c0.c}
-\lstinputlisting{examples/ex_two_c1.c}
+\lstinputlisting[firstline=3]{examples/ex_shared.h}
+\lstinputlisting[firstline=3]{examples/ex_two_c0.c}
+\lstinputlisting[firstline=3]{examples/ex_two_c1.c}
 
 \subsection{Example: I2C master read, started by an interrupt line}
 
 Uses the tested I2C master library \texttt{i2cm.h}; compiled (816 bytes), not simulated in this form.
 
-\lstinputlisting{examples/ex_i2c_read.c}
+\lstinputlisting[firstline=3]{examples/ex_i2c_read.c}
 
 \subsection{Further firmware}
 

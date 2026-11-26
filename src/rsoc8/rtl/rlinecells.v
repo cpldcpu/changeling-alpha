@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Line cells of the rcore8 protocol emulator: receive cell rlc_rx, transmit cell rlc_tx.
 //
 // The cells follow the rules of the architecture specification (section "Line cell behaviour").

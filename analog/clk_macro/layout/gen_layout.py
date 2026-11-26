@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Top-level entry point to build rpe_clk_analog.gds, .lef, and .v using KLayout."""
 
 import sys

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Model of a USB low-speed host, included in tb_sys.v. Device on pins 0 (D+) and 1 (D-).
 // It sends packets with NRZI coding, bit stuffing and CRC, receives the answers of the device and
 // measures the answer time. usb_test enumerates the device the way a PC does and then polls the

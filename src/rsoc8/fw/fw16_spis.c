@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 16: SPI slave with transmit cell 0 and receive cell 0 (clocked by the pin, chip select by the cell)
    against the master model (+spimst). Both cells are set up again for every transfer.
    Defines: MODE (0-3), NB (bytes per transfer), NX (transfers), ABORT1 (first transfer is aborted by the model after

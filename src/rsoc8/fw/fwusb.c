@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* USB low-speed HID device, core 0: enumeration and one interrupt endpoint.
    Token and packet handling with the answer deadlines is in usb_stack.S; this file decodes the
    requests and selects the packets. Descriptors are stored as complete data packets (usb_desc.h).

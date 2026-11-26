@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 12, image of core 0: I2C slave */
 #include "fw12.h"
 /*                              CTRL  PIN   OUT   CLK   TIM   A  B  C  DEC   ENC   SH    MATCH RUN EVM   CS */

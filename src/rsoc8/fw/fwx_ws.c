@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress test 4a: the chip as WS2812 controller. Transmit cell 0 on pin WSP sends frames of NLED LEDs (3 NLED bytes, data ws_pat(k)
    as in tb/uart_model.v) without a gap between the bytes; between the frames the line is low for GAPC clock cycles (more than the
    reset time of 3000). One core, endless. Rounds (frames) are counted at R_XFERS.

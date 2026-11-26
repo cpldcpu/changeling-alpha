@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test B (tb/uart_model.v, scenarios 10 to 14), one core: bridge between the mailbox of the host link
    and a UART (pin 4 receive, pin 5 transmit, 8N1, CPB clock cycles per bit, -DCPB=n).
    A byte from the host (MBSTAT.RXF) goes to the UART transmitter when it can take a frame (LT0STAT.TXE).

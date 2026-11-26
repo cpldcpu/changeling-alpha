@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Independent UART model and test scenarios, included in tb_sys.v. Enabled by +uart.
 // Written from the definition of the asynchronous serial format, not from the line cell code:
 //   idle level high; a character is a start bit (low), N data bits least significant bit first,

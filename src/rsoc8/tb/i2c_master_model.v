@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Model of an I2C master, included in tb_sys.v. Written from the I2C definition (NXP UM10204), not from the line cell
 // code. Enabled by +i2cm. Pins: 4 SDA, 5 SCL, open drain (the model pulls low through xl_b), 6 DONE (driven by the model:
 // low during the test, high when it is over, for the firmware of the chip), 6 is also read as GO in the arbitration test.

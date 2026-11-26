@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # build_u.sh source out "defines"   builds fw/source.c with the defines into build/out.hex (core 0 image)
 # example: sh fw/build_u.sh fwu_echo echo60 "-DCPB=60"
 set -e

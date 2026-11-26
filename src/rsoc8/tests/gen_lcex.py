@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Register settings of the configuration examples of the datasheet, read from the simulation recordings
 (comment lines '# R0 ...', '# T0 ...' written by the testbench option +wave=). Output: figs/lcex_<n>.tex.
 Usage: gen_lcex.py <dir with w1.txt..w5.txt> <output dir>"""

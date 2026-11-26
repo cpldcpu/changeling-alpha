@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # usage: waitfault.sh name 'sed-expression'   -> build/fault/<name>.vvp: tb_sys with a temporary copy of rdual.v carrying a fault
 set -e
 cd "$(dirname "$0")/.."

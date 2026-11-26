@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Replacement for rcore8d in the block test of rdual (tb_dual.v): a scripted user of the register bus.
 // Ops come from a file (hex, one 32-bit word per op: kind[29:26] unlock[25] addr[24:16] wdata[15:8] wmask[7:0]),
 // kinds: 0 NOP, 1 READ, 2 WRITE, 3 SLEEP, 4 BREAK, 5 set I flag, 6 clear I flag.

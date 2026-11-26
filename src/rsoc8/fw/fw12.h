@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* shared between the two images of firmware test 12: I2C. Core 1 is a master in firmware (open
    drain through the direction register). Core 0 is a slave: pin change event for start and stop,
    receive cell 0 clocked by SCL for the eight bits, transmit cell 0 for the bits of a read, the

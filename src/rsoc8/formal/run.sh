@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Formal check of the two-cycle timing exception (timing.sdc) on rdual with both cores.
 # usage: run.sh [directory with rdual.v and rcore8d.v]     default: ../rtl
 # Needs Yosys (YOSYS=command, default yosys). Results on standard output; exit status 1 on a violation.

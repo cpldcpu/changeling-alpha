@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Block test of rclk_ctl: one stimulus line per clock cycle, outputs of each cycle to a file.
 // stimulus (hex): strap addr[3] re we wd unlock host tglE tglO openO refh refp refevt[2b] smp[2b] acc[2b] txs[2b] ccen[2b] hold
 // output (hex): rd prot sel osc_en trim[2] cke ptick trim_evt cko_en cko dbg_en dbg

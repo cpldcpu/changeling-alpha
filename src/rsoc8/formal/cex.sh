@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # usage: cex.sh <case> <n> signal...   prints the counterexample of the induction step of length n for one case
 cd "$(dirname "$0")/build/$1"; N=$2; shift; shift
 SETS=$(for t in $(seq 1 $((N-1))); do printf -- "-set-at $t fail_any 0 "; done)

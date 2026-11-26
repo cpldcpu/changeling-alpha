@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Model of an SPI slave (the chip is the master), included in tb_sys.v. Written from the definition of SPI,
 // not from the line cell code. Enabled by +spislv.
 // Pins: 0 MOSI (input of the model), 1 SCK, 2 MISO (driven by the model while CS is low), 3 CS (active low).

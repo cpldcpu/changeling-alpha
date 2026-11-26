@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 include common.mk
 
 BLOCKS := bias osc_ring_std osc_ring_cc osc_relax clk_macro

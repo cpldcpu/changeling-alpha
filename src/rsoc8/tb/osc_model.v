@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Behavioural model of the oscillator macro for simulation (compile in place of rtl/rpe_osc_stub.v).
 // 15 MHz at trim 128 times ERR, 0.5 % per trim step. The output is low while en is low.
 `timescale 1ns/1ps

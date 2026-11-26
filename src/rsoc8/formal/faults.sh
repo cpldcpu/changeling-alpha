@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Inserts known faults into copies of the RTL and runs the exception check on each. Every fault must be detected.
 # The first two are the RTL as it was before the corrections for the physical implementation (draft 0.37).
 # Two further changes were tried and are not violations of the exception, so the check does not report them:

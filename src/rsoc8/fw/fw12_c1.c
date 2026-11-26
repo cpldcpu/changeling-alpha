@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 12, image of core 1: I2C master in firmware, about 200 kHz at a 60 MHz core clock */
 #define MASTER
 #include "fw12.h"

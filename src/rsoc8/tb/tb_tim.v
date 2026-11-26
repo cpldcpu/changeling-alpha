@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Testbench of rtimers: applies one stimulus line per clock cycle and writes the outputs of each cycle.
 // stimulus line (hex): ptick addr[3] core host re we wd[2] pins[2] acc ref rxs rxb txs txb rxf
 `timescale 1ns/1ps

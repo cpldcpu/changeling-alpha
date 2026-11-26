@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Directed tests with two pairs of line cells on a common pin bus: SPI master and slave in modes 0
 // and 1, WS2812 forwarding within a pair, UART with prescaler, filter and glitches, holding
 // register overflow, status clearing, enable. Self-checking.

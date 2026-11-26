@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 18: I2C slave with line cells (the slave of fw12_c0.c, extended) against the master model (+i2cm).
    One core. Pins: 4 SDA, 5 SCL (open drain, the model is the master), 6 DONE (driven by the model, rises at the end of the
    test). Receive cell 0 is clocked by SCL and takes the eight bits of a byte, transmit cell 0 shifts out the bits of a read,

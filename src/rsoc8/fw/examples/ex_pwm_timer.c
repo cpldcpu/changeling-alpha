@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* PWM on output pins 5 to 7 and a periodic event from the 16-bit timer. */
 #include "rpe.h"
 

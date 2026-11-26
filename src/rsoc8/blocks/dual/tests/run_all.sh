@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # Verification of rdual (two rcore8d cores). Needs: iverilog, python3, avr-gcc with avr-libc.
 set -e
 cd "$(dirname "$0")/.."

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Run fast parallel ngspice sweeps for Ring Oscillator B (analog/osc_ring_cc)."""
 
 import concurrent.futures

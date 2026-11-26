@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Stress tests: two protocols at once, monitors for bus holds and service times, PWM and timer checks.
 // Included in tb_sys.v. Enabled by +stress=<scenario>; see tests/stress.sh for the command lines.
 //   scenarios  1 UART echo (core 0, models on pins 4/5) + SPI master (core 1, slave model on pins 0-3)

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Host link (rhost): SPI bytes in, bus and control actions out. Directed checks of the model, then random comparison of
 RTL and model.  usage: host_test.py [first_seed last_seed]
 Environment: RTLDIR, TAG, NODIRECTED, FIRST, COV; LITERAL=1 selects the literal text of the specification for the

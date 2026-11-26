@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // rpe_top - top level of the protocol emulator.
 //
 //   rpe_chip            chip level with 8 inputs, 8 outputs and 8 bidirectional pins (the pin set of a Tiny Tapeout

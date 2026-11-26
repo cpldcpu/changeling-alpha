@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 2, image of core 1 */
 #include "fw2.h"
 /* the start-up code sets the stack pointer for the ATtiny40; core 1 gets its own stack */

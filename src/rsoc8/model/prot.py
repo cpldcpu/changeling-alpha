@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the program protection (PMCR, PMLIM, write enables of the code memories).
 Written from the specification: section Memory / Code memory protection, system registers table
 (PMCR, PMLIM), conventions (protected registers: unlock by the same core within four instructions, host link

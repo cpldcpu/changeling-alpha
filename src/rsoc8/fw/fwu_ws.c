@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test C (tb/uart_model.v scenarios 20 and 21, tb/ws2812_model.v), one core: UART to WS2812.
    Receive cell 0 receives the UART on pin 4 (8N1, CPB clock cycles per bit, -DCPB=n). Transmit cell 1 sends the
    WS2812 stream on pin 6 (bit period 75 cycles, T0H 24, T1H 48, as in fw10.c).

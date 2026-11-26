@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // (LCX at offset 15: lines 15 and 31; +txq holds 9-bit words, bit 8 is the ninth data bit of the frame)
 // Testbench for one pair of line cells (receive cell and transmit cell), driven from files written by tests/lc_test.py.
 //   +cfg=file    configuration: lines 0..14 receive cell, 16..30 transmit cell (LCCTRL first)

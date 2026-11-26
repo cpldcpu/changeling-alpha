@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // revents - event flags, interrupt enable masks, time base and wake-up times.
 //
 // Follows the rules D1-D4 and E1-E5 of the architecture specification, and Q4 for the flags that

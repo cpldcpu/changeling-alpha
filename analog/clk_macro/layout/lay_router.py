@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """2D interval-aware Manhattan channel router on M2 (horizontal) and M3 (vertical)."""
 
 from __future__ import annotations

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Stress tests, image of core 0. The role is chosen by -D:
      ROLE_ECHO  UART echo on pair 0 (receive pin RXP, transmit pin TXP, CPB clock cycles per bit), no use of pair 1
      ROLE_IDLE  start core 1 and sleep

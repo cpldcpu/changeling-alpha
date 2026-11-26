@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Independent 10BASE-T model, included in tb_sys.v (the old generator behind +eth= is unchanged).
 //
 //   Transmitter: drives input pin 1 (em_on / em_pin). Sends complete frames: preamble 7 x 0x55, SFD 0xD5, the

@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test (UART with the additional frame bit of the line cells, register LCX, against tb/uart_model.v), one core.
    UART on pin 4 (receive) and pin 5 (transmit), 8 data bits, an additional bit, 1 stop bit. One receive cell, one transmit cell.
    -DPAR=1 (odd) or 2 (even): the cells generate and check the parity. Every character is sent back; after a character

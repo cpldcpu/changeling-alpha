@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # compiles the testbench into build/tb_sys.vvp (plusargs select everything else)
 cd "$(dirname "$0")/.."
 mkdir -p build

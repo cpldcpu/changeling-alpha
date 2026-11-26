@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+// SPDX-License-Identifier: Apache-2.0
 // Block test of rdual with scripted bus users instead of cores (stub_core.v).
 // stimulus per cycle (hex): cke evt0[4] evt1[4] irq0[4] irq1[4] halt[2 bits] brk_clr[2 bits]
 // output per cycle: cen[2] hold wt[2] en[2] brk[2] rb[8]   (hex fields)

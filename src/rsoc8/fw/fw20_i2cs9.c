@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 20: the I2C slave of fw18_i2cs.c with the bus condition detector of the receive cell (LCX_BCD) and the
    start of the transmit cell at the shift edge (LCX_ESTR). Against the master model (+i2cm), same transfers as test 18.
    Pins: 4 SDA, 5 SCL (open drain, the model is the master), 6 DONE.

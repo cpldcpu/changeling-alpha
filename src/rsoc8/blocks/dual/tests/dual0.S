@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; directed test, image of core 0: arbitration mode, start of core 1, lock, software flags and
 ; wait, read and write of the other core's code memory, own code memory as data, SLEEP ended
 ; by an interrupt that core 1 raises

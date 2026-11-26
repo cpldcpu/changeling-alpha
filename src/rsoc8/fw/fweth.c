@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 15: 10BASE-T ping endpoint, one core (core 0) for both directions.
    Fixed MAC 02:C0:FF:EE:00:01 and IPv4 address 192.168.4.2. Answers an ARP request for its address and an ICMP
    echo request. Frames for other MAC addresses, with a wrong FCS, or with wrong checksums are ignored.

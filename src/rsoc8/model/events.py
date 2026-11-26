@@ -1,3 +1,5 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Behavioural model of the event flags, interrupt enable masks, time base and wake-up times.
 Written from the specification text: sections Events and timers, register map (IFR, IER, DLY),
 rules D1-D4 (time base and wake-up time), E1-E5 (event flags), Q1 and Q4 (interrupt request, flags

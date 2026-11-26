@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 ; exact timing test, image of core 0, variant a: core 1 gets priority and is started; then core 0
 ; either uses the shared bus continuously (a) or waits for a flag that is never set (b)
         .text

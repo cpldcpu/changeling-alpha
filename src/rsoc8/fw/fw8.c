@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Firmware test 8, one core: program protection. Stores to the code memories with PMCR and PMLIM. */
 #include "rpe.h"
 #define EXIT(c) do { _IO8(0x1F) = (c); for (;;) ; } while (0)

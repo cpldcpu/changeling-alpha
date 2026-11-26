@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Two cores, image of core 0: starts core 1; both cores add to one counter under a lock;
    core 1 reports with a software event flag. */
 #include "ex_shared.h"

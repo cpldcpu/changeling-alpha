@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Interrupt during a wait (system testbench, both cores, core clock divider 1, 2, 3).
 
 Specified behaviour (spec sections corebeh H4-H6, Q1-Q4, intro of 'Interrupts and waiting', comm C4):

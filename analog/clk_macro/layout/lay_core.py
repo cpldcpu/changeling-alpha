@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 """Reusable DRC-aware KLayout layout primitives for IHP SG13CMOS5L custom analog blocks."""
 
 from __future__ import annotations

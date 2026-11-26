@@ -1,4 +1,6 @@
 #!/bin/sh
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
 # USB-to-I2C sensor bridge on the 15 MHz oscillator (two cores): build/fwsenso_c0.hex, build/fwsenso_c1.hex
 # Core 1 image is built first: it holds the descriptor packets and the oscillator start; core 0 takes the
 # addresses of the packets from it (link symbols).

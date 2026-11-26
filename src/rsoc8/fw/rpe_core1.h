@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+ * SPDX-License-Identifier: Apache-2.0 */
 /* Start-up code for an image that runs on core 1. Include it once in the image and link with
    fw/build.sh name 1.
    - The stack pointer is set to 0x043F.
