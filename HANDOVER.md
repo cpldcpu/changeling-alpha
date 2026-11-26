@@ -37,7 +37,7 @@ Not rerun since the RTL changes in this repository: the stress tests (`tests/str
 |---|---|
 | Process, library | `ihp-sg13cmos5l`, `sg13cmos5l_stdcell`; LibreLane 3.1.0.dev4 |
 | Area | 8x4 tiles, die 1724.16 x 710.64 µm, core area 1.208 mm² |
-| Macros | three `RM_IHPSG13_1P_1024x16_c2_bm_bist` (236.8 x 336.46 µm each) in a row at the bottom edge at x = 3.36 (code 0), 599.08 (data), 1194.8 µm (code 1); `rpe_clk_analog` (171.5 x 137 µm) at x = 1514.88 µm |
+| Macros | three `RM_IHPSG13_1P_1024x16_c2_bm_bist` (236.8 x 336.46 µm each) in a row at the bottom edge at x = 700.24 (code 0), 947.52 (data), 1194.8 µm (code 1); `rpe_clk_analog` (171.5 x 137 µm) at x = 1514.88 µm. Until 26 November: code 0 at 3.36, data at 599.08 |
 | Standard cells | 27,439 cells, 403,463 µm², 43 % of the area outside the macros |
 | Routing layers | Metal2 to Metal4 |
 | Clock | 60 MHz (16.67 ns). Peripherals in every cycle, cores in every second cycle by clock enable (reset value of `CLKCDIV`). Second clock `clk_osc` at the macro pin, asynchronous to `clk`; false paths through `clk_slow`, the enables and the trim pins |
@@ -68,6 +68,17 @@ All runs in GitHub Actions on branch `integration`. Slack values are setup, afte
 | 45146827928 | data memory between the code memories, timing-driven placement (commits `f4fb731`, `fe8c981`, by Tim S. B.) | failed; not analysed in this file |
 | 45253505420 | calibrated `LAYERS_RC`, wire length limit, `ca_flops` walks back through buffers to the flip-flop (`d00342a`) | failed; not analysed in this file |
 | 45510873906 | oscillator macro integrated (`c7f1d06`) | passes. Slow +1.75 ns, typical +5.38 ns, fast +5.19 ns; overflow 0; wire length 1.32 m; 55 setup and 36 hold buffers in the last repair step |
+| 45851982161 | `jbusy` and `jto` corrections in `rdual.v` (`6ad43b1`), floorplan unchanged | ended by the six-hour limit of GitHub in detailed routing (357 violations, not decreasing). Placement wire length 1.12 m against 1.07 m; first global routing with overflow 1,347 on Metal3 (passing run: 0); design repair after global routing 70 min, timing repair 2 h 10 min with 697 violating endpoints, ended at −1.05 ns |
+| next | macros moved: code memory 0 to x = 700.24, data memory to x = 947.52, 10.48 µm apart, next to code memory 1 | see below |
+
+Floorplan change of 26 November. Metal3 is the only horizontal routing layer (Metal2 and Metal4 are vertical).
+In the layout of the passing run, Metal3 carries wires on 50 to 60 % of all tracks in the strip above the
+memories and on 15 to 35 % in the two pockets between the memories; the traffic between the pockets has to
+pass through that strip, which is half as high as the die. The run on `6ad43b1` placed slightly worse and
+overflowed on Metal3. The three memories now stand side by side from x = 700 to 1432, so the logic has one
+block of 690 by 703 µm at the left, under the pins (all 43 signal pins are at the top edge between x = 30 and
+191), plus the strip above the memories. Spacing and positions follow the grid of runs 2 and 3
+(x = 3.36 + n · 11.24, macros 10.48 µm apart), for which the power grid was correct.
 
 Failing start points in run D: `cores.jst[1]` (264 endpoints, −5.87 ns), `core1.pm_we` (17, −2.48 ns),
 code memory 0 to `dq` (16, −2.47 ns), `cores.jst[0]` (29, −1.35 ns), `ports.t0.TRIG[1]` to `timers.val`

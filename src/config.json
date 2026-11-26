@@ -77,8 +77,8 @@
   "MACROS": {
     "RM_IHPSG13_1P_1024x16_c2_bm_bist": {
       "instances": {
-        "chip.u.m_code0.u_mem": { "location": [3.36, 3.78], "orientation": "FS" },
-        "chip.u.m_data.u_mem":  { "location": [599.08, 3.78], "orientation": "FS" },
+        "chip.u.m_code0.u_mem": { "location": [700.24, 3.78], "orientation": "FS" },
+        "chip.u.m_data.u_mem":  { "location": [947.52, 3.78], "orientation": "FS" },
         "chip.u.m_code1.u_mem": { "location": [1194.8, 3.78], "orientation": "FS" }
       },
       "gds": ["pdk_dir::libs.ref/sg13cmos5l_sram/gds/RM_IHPSG13_1P_1024x16_c2_bm_bist.gds"],
