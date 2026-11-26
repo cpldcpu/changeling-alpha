@@ -23,7 +23,7 @@ package before the move into this repository; partly superseded by this file).
 |---|---|
 | Base regression (`sh src/rsoc8/tests/ci.sh`: line cells, two cores, models, firmware) | passes, output equal to `tests/expected/` |
 | Host link test (halt, memory access, step, inject, break) | passes at core dividers 1, 2 and 3 |
-| Formal check of the two-cycle exception (`sh src/rsoc8/formal/run.sh`, needs Yosys) | passes with one waived finding; four inserted faults are detected |
+| Formal check of the two-cycle exception (`sh src/rsoc8/formal/run.sh`, needs Yosys) | passes, nothing waived; four inserted faults are detected |
 | Clocking block test (`tb/tb_clk.v`), with single measurement and loop against the relaxation oscillator | passes; three inserted faults are detected |
 | cocotb tests through the pins (`test/`): load through the host link and UART echo; internal oscillators | pass on RTL and on the gate-level netlist |
 | Document build (specification, datasheet, verification report) | passes |
@@ -93,11 +93,10 @@ draft 0.36". In short:
 Implementation:
 
 1. The two-cycle exception is proved on the RTL of the two-core block for core dividers 2 to 4
-   (`src/rsoc8/formal/`, 25 November). The proof found two paths that the constraints treat wrongly:
-   `jst` to `h_quiet` and `inj_busy` into the host link (needs one clock cycle in `src/timing.sdc` for paths
-   that end in the host link), and the time-out counter `jto` (needs an update only in cycles with `cke` in
-   `rdual.v`). Neither is corrected yet; both need a new hardening run. Not covered by the proof: the routed
-   netlist (gate-level simulation with delays), `rhost.v`, `rclock.v`, the core reset, dividers above 4.
+   (`src/rsoc8/formal/`). The proof found two violations (status for the host link, time-out counter of the
+   injection); both are corrected in `rdual.v` on 26 November, and the hardening run on that commit has to
+   confirm timing. Not covered by the proof: the routed netlist (gate-level simulation with delays),
+   `rhost.v`, `rclock.v`, the core reset, dividers above 4.
 2. Core divider 1 (`CLKCDIV` = 0) is not covered by the timing above a system clock of 30 MHz. Nothing in
    the hardware prevents the setting.
 3. The ring oscillator reaches 84 MHz (typical) to 97 MHz (fast corner) at trim 255; the logic is timed for

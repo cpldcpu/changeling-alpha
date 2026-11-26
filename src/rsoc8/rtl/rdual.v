@@ -148,7 +148,11 @@ module rdual #(
     wire [1:0] hsub  = {jsub & jcore, jsub & ~jcore};
     wire [1:0] jmask = {(jst != J_IDLE) & (jmode != 2'd3) & jcore, (jst != J_IDLE) & (jmode != 2'd3) & ~jcore};
     wire       jact  = (jst != J_IDLE);
-    assign inj_busy = jact | (|jreq);
+    // jbusy is set with the step out of J_IDLE and cleared one enabled cycle after the return to it. The status
+    // for the host link comes from this register and from jreq, not from jst: the host link samples it in any
+    // cycle, and paths from jst have two clock cycles (timing.sdc).
+    reg        jbusy;
+    assign inj_busy = jbusy | (|jreq);
     assign inj_fail = jact & (jto == 6'd63) & cke;
     assign h_quiet  = (&(~en | brkf | halt_req)) & ~inj_busy;
 
@@ -272,16 +276,17 @@ module rdual #(
         else if (h_acc) begin hk <= {h_io, h_dm, h_cm1}; hb <= h_addr[0]; hio <= rb; end
     end
     always @(posedge clk or negedge rst_n) begin
-        if (!rst_n) begin dirty <= 2'b00; lastr0 <= 10'd0; lastr1 <= 10'd0; jst <= J_IDLE; jmode <= 2'd0; jcore <= 1'b0; jword <= 16'd0; jto <= 6'd0; bclr <= 2'b00; jreq <= 2'd0; end
+        if (!rst_n) begin dirty <= 2'b00; lastr0 <= 10'd0; lastr1 <= 10'd0; jst <= J_IDLE; jmode <= 2'd0; jcore <= 1'b0; jword <= 16'd0; jto <= 6'd0; bclr <= 2'b00; jreq <= 2'd0; jbusy <= 1'b0; end
         else begin
             dirty <= (dirty & ~rest) | {h_cm1, h_cm0};
             bclr  <= cke ? 2'b00 : (bclr | brk_clr);
             if (cr0 & ~hhold) lastr0 <= ca0;
             if (cr1 & ~hhold) lastr1 <= ca1;
             jreq  <= cke ? 2'd0 : jcmd;
+            if (cke) jbusy <= jact;
             if (cke) case (jst)
                 J_IDLE:  if (jcmd != 2'd0 && en[inj_core] && !wt[inj_core]) begin
-                             jst <= J_ALIGN; jmode <= jcmd; jcore <= inj_core; jword <= inj_word;
+                             jst <= J_ALIGN; jmode <= jcmd; jcore <= inj_core; jword <= inj_word; jbusy <= 1'b1;
                          end
                 J_ALIGN: if (jat) jst <= J_X;
                 J_X:     if (cen[jcore] & jat) jst <= J_X2;
@@ -289,7 +294,7 @@ module rdual #(
                 J_R:     if (cen[jcore] & jat) jst <= J_R2;
                 default: if (jat) jst <= J_IDLE;
             endcase
-            if (!jrun | cen[jcore]) jto <= 6'd0; else if (cke) jto <= jto + 6'd1;
+            if (cke) jto <= (!jrun | cen[jcore]) ? 6'd0 : jto + 6'd1;     // only in enabled cycles, like jst
             if (inj_fail) jst <= J_IDLE;        // inj_fail contains cke
         end
     end

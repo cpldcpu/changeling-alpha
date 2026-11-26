@@ -77,13 +77,13 @@ COND = [("cm0_re | cm0_we", ["cm0_addr"]), ("cm0_we", ["cm0_wsel", "cm0_wdata", 
         ("cm1_re | cm1_we", ["cm1_addr"]), ("cm1_we", ["cm1_wsel", "cm1_wdata", "cm1_wother"]),
         ("dm_re | dm_we", ["dm_addr"]), ("dm_we", ["dm_wdata"]),
         ("io_re | io_we", ["io_addr", "io_core"]), ("io_we", ["io_wdata", "io_wmask"])]
-# Outputs that only the host link (rhost.v) uses. Its registers are constrained to one clock cycle from every
-# start point (timing.sdc), so these outputs are outside the exception. With HOSTSTRICT=1 in the environment
-# the status outputs are checked like the others, which shows why that constraint is needed.
+# Read data to the host link, captured by its registers one cycle after a host access: constrained to one clock
+# cycle in timing.sdc and therefore outside the exception. The status outputs h_quiet and inj_busy are checked
+# like every other output.
 import os
-HOSTDATA   = ["h_rdata"]                # read data, captured one cycle after a host access
-HOSTSTATUS = ["h_quiet", "inj_busy"]    # sampled when a command byte is complete, at any time
-if os.environ.get("HOSTSTRICT"): STRICT += HOSTSTATUS; HOSTSTATUS = []
+HOSTDATA   = ["h_rdata"]
+HOSTSTATUS = []
+STRICT += ["h_quiet", "inj_busy"]
 assert set(STRICT + [s for _, l in COND for s in l] + HOSTDATA + HOSTSTATUS) == set(outs)
 
 # ------------------------------------------------------------------ wrapper
@@ -159,12 +159,13 @@ REG = dict((rtlname[n], n) for n in regs)
 dirty = REG["dirty"]
 CHK.append(("q%d != 2'd0 && hgap > {1'b0, cgap}" % idx[dirty], "I2: a restore read is pending although a cycle with core clock enable has passed since the host access"))
 CHK.append(("q%d != 2'd0 && hgap > {1'b0, cgap}" % idx[REG["bclr"]], "I3: a break clear is pending although a cycle with core clock enable has passed since the host command"))
+CHK.append(("q%d != 3'd0 && !q%d" % (idx[REG["jst"]], idx[REG["jbusy"]]), "I5: an injection runs (jst is not J_IDLE = 0) and jbusy is not set"))
 for c in ("core0", "core1"):       # S_RET2 = 3, S_RET3 = 4, S_LD2 = 5 take a byte from the data memory (rcore8d.v)
     st, rf, dv = idx[REG[c + ".state"]], idx[REG[c + ".rd_first"]], idx[REG[c + ".dq_v"]]
     CHK.append(("(q%d == 4'd3 || q%d == 4'd4 || q%d == 4'd5) && !q%d && !q%d" % (st, st, st, rf, dv),
                 "I4: %s waits for a byte from the data memory and neither its read is one cycle old nor dq holds the byte" % c))
 # Known violations, see README.md in this folder. They are reported and do not fail the run.
-WAIVED = ["P2: register jto depends on"]
+WAIVED = []
 K = len(CHK)
 A("  wire [%d:0] viol;" % (K - 1))
 for k, (e, d) in enumerate(CHK): A("  assign viol[%d] = (step == 2'd3) && (%s);   // %s" % (k, e, d))

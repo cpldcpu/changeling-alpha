@@ -4241,6 +4241,11 @@ for that:
 \item The injection sequencer changes state only in cycles with the core clock enable. A command of the host
 in another cycle is held until the next one. With a divider of $n$ an injection, execution or step starts up
 to $n-1$ clock cycles later than before.
+\item The time-out counter of the injection also changes only in cycles with the core clock enable.
+\item The status \texttt{inj\_busy} for the host link, and with it \texttt{h\_quiet}, comes from a register of its
+own (\texttt{jbusy}) and from the held command, not from the state of the sequencer. It is set with the start
+of an injection and cleared one enabled cycle after its end. The host link samples the status in any cycle, so
+it must not come from a register whose paths have two clock cycles.
 \item After a host access to a code memory, the read that restores the memory output for the core takes place
 in a cycle with the core clock enable.
 \item The register that holds a data memory output for a core (\texttt{dq}) no longer depends on the core
@@ -4249,7 +4254,11 @@ enable. The values a core reads are unchanged.
 output of the host link works while the cores are held in reset.
 \end{itemize}
 
-The exception is not verified at gate level with delays, and no formal property covers its condition yet.
+The condition of the exception is proved on the RTL of the two cores with their arbiter, for core dividers 2
+to 4: the start registers change only in enabled cycles, and in the cycle after a start register or a memory
+output changed, no register and no output takes a value that depends on it (folder \texttt{src/rsoc8/formal},
+with the assumptions listed there). The last two changes of the list above come from this proof. The exception
+is not verified at gate level with delays.
 
 \paragraph{C7, C8, C9: implemented.} The additional frame bit (C7), the start of a clocked transmit cell at the shift edge (C8) and the bus condition detector (C9) were specified in draft 0.35 and are implemented since draft 0.36. Their rules are in section~\ref{sec:lcx}. Differences to the text of draft 0.35: \reg{FERR} reports a wrong parity only, because the trailer check of C3 is not implemented; the additional bit is counted for bit stuffing; the edge count has 4 bits; \reg{ESTR} is not needed for SPI slaves in modes 1 and 3, which \reg{CPHA} covers already (the check table of draft 0.35 was wrong in this row).
 

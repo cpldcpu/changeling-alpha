@@ -14,8 +14,9 @@ For the two-core block, from any state that satisfies the listed assumptions:
 |---|---|
 | P1 | The 62 start flip-flops change only at the end of a clock cycle with the core clock enable `cke`. |
 | P2 | In the cycle after bits of a start flip-flop changed, the next value of every register and every output of the block is the same for any value of those bits. |
-| P3 | In the cycle after an access to a memory, the next value of every register and every output is the same for any value of that memory's output. Excepted: `dq` of the cores for the data memory, and the read data to the host link. Both are constrained to one cycle in `timing.sdc`. |
+| P3 | In the cycle after an access to a memory, the next value of every register and every output is the same for any value of that memory's output. Excepted: `dq` of the cores for the data memory, and the read data to the host link (`h_rdata`). Both are constrained to one cycle in `timing.sdc`. |
 | I2, I3 | A pending restore read or break clear ends with the next cycle with `cke` (helper invariants). |
+| I5 | While an injection runs, `jbusy` is set (helper invariant). |
 | I4 | A core that waits for a byte from the data memory has read it one cycle ago or holds it in `dq` (helper invariant). |
 
 Outputs with an enable (memory address and data, register bus address and data) are compared only while their
@@ -39,20 +40,21 @@ length.
 | Injection commands only for a halted, enabled core while no injection runs | `rhost.v`: `inj_cmd` is a register loaded from `core_ok` |
 | Host events (access, injection command, break clear, change of the halt requests) are 8 clock cycles apart or more, and an access or an injection command does not coincide with another event | `rhost.v`: one action per received byte; a byte takes 8 periods of the host clock. Not proved on `rhost.v` |
 
-## Findings on the RTL of commit 7fe556b
+## Findings and their correction
 
-1. **`h_quiet` and `inj_busy` depend on `jst` in the cycle after it changed.** The host link samples both when a
-   command byte is complete, which can be any cycle. `timing.sdc` gives these paths two cycles, which is not
-   justified. They are short paths. Proposed correction: one clock cycle for all paths that end at a register
-   of the host link. The check excludes the two outputs on that understanding (`HOSTSTATUS` in `gen_exc.py`);
-   `HOSTSTRICT=1 sh run.sh` shows the violation.
-2. **`jto` (time-out counter of the injection) depends on the state of the core under injection in the cycle
-   after that state changed**, if the core was restarted by the other core while an injection into it was
-   running. The effect is a time-out that is one count wrong. Proposed correction in `rdual.v`: update `jto`
-   only in cycles with `cke`. Until then the check reports this as waived.
-3. The restore read after a host access can coincide with the next host access if the core divider is larger
-   than the distance between host events. The proof therefore covers dividers 2 to 4 only. With the reset
-   value 2 the case cannot occur.
+The first run, on the RTL of commit 7fe556b, found two violations. Both are corrected in `rdual.v`, and the
+check now passes without a waiver and with all outputs checked.
+
+1. **`h_quiet` and `inj_busy` depended on `jst` in the cycle after it changed.** The host link samples both when
+   a command byte is complete, which can be any cycle. Correction: the status comes from a register of its own
+   (`jbusy`) and from `jreq`. Helper invariant I5 states that `jbusy` is set while an injection runs.
+2. **`jto` (time-out counter of the injection) depended on the state of the core under injection in the cycle
+   after that state changed**, if the other core restarted that core during an injection. Correction: `jto`
+   changes only in cycles with `cke`.
+
+Still open: the restore read after a host access can coincide with the next host access if the core divider is
+larger than the distance between host events. The proof therefore covers dividers 2 to 4 only. With the reset
+value 2 the case cannot occur.
 
 ## Is the check able to fail?
 

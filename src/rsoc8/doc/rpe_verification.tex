@@ -230,7 +230,9 @@ The same test with three faults inserted into copies of \texttt{rclock.v}: refer
 Model of the clocking block with \reg{RELAXEN} and reference selection 3 & \texttt{model/clkctl.py}, \texttt{tests/run\_models.sh} & 0 mismatching; the testbench of the comparison holds the slow clock at 0 \\
 Whole chip through the Tiny Tapeout pins: load through the host link, read back, UART echo & \texttt{test/test.py}, \texttt{test\_load\_and\_uart\_echo}, on RTL and on the routed netlist & pass \\
 Internal oscillators through the pins: slow clock visible on the debug pin, ring detected, switch to the ring and back & \texttt{test/test.py}, \texttt{test\_internal\_osc\_and\_relax}, with \texttt{test/rpe\_clk\_analog\_model.v}, on RTL and on the routed netlist & pass \\
-Static timing after routing, 16.67\,ns, with the two-cycle exception & flow run 45510873906 & set-up slack $+1.75$\,ns slow, $+5.38$\,ns typical, $+5.19$\,ns fast; hold $+0.21$\,ns \\
+Condition of the two-cycle timing exception on the RTL of the two-core block: 62 start registers and three memories, 139 checks, from reset to depth 8 and by an induction step of length 3; core dividers 2 to 4 & \texttt{formal/run.sh} (SAT pass of Yosys); method and assumptions in \texttt{formal/README.md} & pass, no check waived. The first run found two violations, corrected in \texttt{rdual.v} (status for the host link, time-out counter) \\
+The same check with four faults inserted, two of them the RTL before draft 0.37 (restore read and injection sequencer in any cycle) & \texttt{formal/faults.sh} & each fault detected \\
+Static timing after routing, 16.67\,ns, with the two-cycle exception & flow run 45510873906, on the RTL before the two corrections & set-up slack $+1.75$\,ns slow, $+5.38$\,ns typical, $+5.19$\,ns fast; hold $+0.21$\,ns \\
 Layout: design rules, comparison with the netlist, antenna rules, Tiny Tapeout precheck & same run & no error. The comparison treats the four macros as black boxes \\
 Oscillator macro: design rules, comparison of layout and schematic, simulation of the extracted layout at three corners & \texttt{analog/results/}, work by Tim S.\ B. & no violation, netlists match; values in the table of section 11.1 of the specification \\
 \bottomrule
@@ -239,9 +241,8 @@ Oscillator macro: design rules, comparison of layout and schematic, simulation o
 delays.}
 \end{table}
 
-Not tested: the two-cycle exception with gate delays; the restore read after a host access in a cycle without
-core clock enable as a directed case (the host test covers host access to a running core at dividers 2 and 3,
-and it was not checked that this case occurs); a core divider of 1 on the routed netlist; the macro file
+Not tested: the two-cycle exception with gate delays (the restore read in a cycle without core clock enable is
+covered by the formal check, which reports it when the correction is removed); a core divider of 1 on the routed netlist; the macro file
 \texttt{rpe\_clk\_analog\_tt.gds} with the full rule deck (the records are for \texttt{rpe\_clk\_analog.gds}).
 
 \section{Fault insertion}
@@ -294,9 +295,10 @@ specification.
 
 \begin{enumerate}
 \item \textbf{Physical.} Static timing passes only with the two-cycle exception for the paths from the
-memories and from the core state. Its condition, that the capture enables are low in cycles without core clock
-enable on the synthesised netlist, is not checked by a gate-level simulation with delays or by a formal
-property. The both-edge input sampling was simulated without pin delays.
+memories and from the core state. Its condition is proved on the RTL of the two-core block under assumptions
+about the host link and the clock divider that are taken from the code and not proved themselves. It is not
+checked on the synthesised netlist: a gate-level simulation with delays is missing. The both-edge input
+sampling was simulated without pin delays.
 \item \textbf{Oscillator.} The macro is verified by circuit simulation of the extracted layout at three
 corners, without mismatch analysis in the result files. The protocol tests on the internal oscillator (USB,
 UART) ran with a model at 15\,MHz and are not repeated at 60\,MHz. Noise is not covered.
