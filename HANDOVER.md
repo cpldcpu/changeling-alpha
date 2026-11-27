@@ -9,10 +9,11 @@ package before the move into this repository; partly superseded by this file).
 
 ## 1. Summary
 
-- The design is hardened with the oscillator macro. Run 45510873906 on commit `c7f1d06` passed all jobs:
-  `gds`, `precheck`, `gl_test`, `viewer`.
-- Setup slack at 16.67 ns: +1.75 ns at the slow corner, +5.38 ns typical, +5.19 ns fast. Hold +0.21 ns.
-  No DRC, LVS, antenna, slew or capacitance violation.
+- The design is hardened with the oscillator macro. Run 45905736124 on commit `cca98f4` (27 November) passed
+  all jobs: `gds`, `precheck`, `gl_test`, `viewer`. It contains the RTL corrections from the formal check and
+  the floorplan with the three memories side by side.
+- Setup slack at 16.67 ns: +2.76 ns at the slow corner, +5.62 ns typical, +5.36 ns fast. Hold +0.15 ns
+  (fast corner). No DRC, LVS, antenna, slew or capacitance violation.
 - The cores run at half the system clock (reset value of the core divider). Timing depends on a two-cycle
   exception that is not yet verified at gate level with delays (section 6).
 - Specification (draft 0.37), datasheet (revision 0.4) and verification report (issue 3) describe this state.
@@ -38,12 +39,12 @@ Not rerun since the RTL changes in this repository: the stress tests (`tests/str
 | Process, library | `ihp-sg13cmos5l`, `sg13cmos5l_stdcell`; LibreLane 3.1.0.dev4 |
 | Area | 8x4 tiles, die 1724.16 x 710.64 µm, core area 1.208 mm² |
 | Macros | three `RM_IHPSG13_1P_1024x16_c2_bm_bist` (236.8 x 336.46 µm each) in a row at the bottom edge at x = 700.24 (code 0), 947.52 (data), 1194.8 µm (code 1); `rpe_clk_analog` (171.5 x 137 µm) at x = 1514.88 µm. Until 26 November: code 0 at 3.36, data at 599.08 |
-| Standard cells | 27,439 cells, 403,463 µm², 43 % of the area outside the macros |
+| Standard cells | 28,251 cells, 409,044 µm² |
 | Routing layers | Metal2 to Metal4 |
 | Clock | 60 MHz (16.67 ns). Peripherals in every cycle, cores in every second cycle by clock enable (reset value of `CLKCDIV`). Second clock `clk_osc` at the macro pin, asynchronous to `clk`; false paths through `clk_slow`, the enables and the trim pins |
 | Constraints | `src/timing.sdc`: two clock cycles from the three memories and from 62 core and injection flip-flops; 32 flip-flops excluded |
 | Flow settings | `src/config.json`: slow corner as default corner, target density 40, timing-driven placement, design and timing repair after global routing, setup margin 1 ns, hold margin 0.3 ns, maximum wire length 200 µm in the repair steps, calibrated `LAYERS_RC` |
-| Run time | `gds` job 2 h 55 min, of which 1 h 15 min timing repair after global routing (GitHub limit: 6 h) |
+| Run time | `gds` job 2 h 37 min, of which 1 h 07 min timing repair after global routing (GitHub limit: 6 h) |
 
 Timing facts at the slow corner (1.08 V, 125 °C): memory access 7.6 ns; decode, ALU and register file write
 about 20 ns from a flip-flop; code memory to register file 27.1 ns in run 3. At the typical corner the long
@@ -69,7 +70,7 @@ All runs in GitHub Actions on branch `integration`. Slack values are setup, afte
 | 45253505420 | calibrated `LAYERS_RC`, wire length limit, `ca_flops` walks back through buffers to the flip-flop (`d00342a`) | failed; not analysed in this file |
 | 45510873906 | oscillator macro integrated (`c7f1d06`) | passes. Slow +1.75 ns, typical +5.38 ns, fast +5.19 ns; overflow 0; wire length 1.32 m; 55 setup and 36 hold buffers in the last repair step |
 | 45851982161 | `jbusy` and `jto` corrections in `rdual.v` (`6ad43b1`), floorplan unchanged | ended by the six-hour limit of GitHub in detailed routing (357 violations, not decreasing). Placement wire length 1.12 m against 1.07 m; first global routing with overflow 1,347 on Metal3 (passing run: 0); design repair after global routing 70 min, timing repair 2 h 10 min with 697 violating endpoints, ended at −1.05 ns |
-| next | macros moved: code memory 0 to x = 700.24, data memory to x = 947.52, 10.48 µm apart, next to code memory 1 | see below |
+| 45905736124 | macros moved (`cca98f4`): code memory 0 to x = 700.24, data memory to x = 947.52, 10.48 µm apart, next to code memory 1 | passes, 2 h 37 min. Slow +2.76 ns, typical +5.62 ns, fast +5.36 ns, hold +0.15 ns; global routing overflow 0; placement wire length 1.13 m, routed 1.37 m; 28,251 cells, 409,044 µm² |
 
 Floorplan change of 26 November. Metal3 is the only horizontal routing layer (Metal2 and Metal4 are vertical).
 In the layout of the passing run, Metal3 carries wires on 50 to 60 % of all tracks in the strip above the
@@ -79,6 +80,11 @@ overflowed on Metal3. The three memories now stand side by side from x = 700 to 
 block of 690 by 703 µm at the left, under the pins (all 43 signal pins are at the top edge between x = 30 and
 191), plus the strip above the memories. Spacing and positions follow the grid of runs 2 and 3
 (x = 3.36 + n · 11.24, macros 10.48 µm apart), for which the power grid was correct.
+
+Result: the run passed. The expected relief is not visible in the numbers, though. Metal3 is still used on
+50 to 61 % of all tracks in the strip above the memories (the placer puts much logic there, near the memory
+pins) and on 20 to 55 % in the left block; total wire length is 4 % higher than in the passing run with the
+old floorplan. One passing run does not show that this floorplan is less sensitive to small netlist changes.
 
 Failing start points in run D: `cores.jst[1]` (264 endpoints, −5.87 ns), `core1.pm_we` (17, −2.48 ns),
 code memory 0 to `dq` (16, −2.47 ns), `cores.jst[0]` (29, −1.35 ns), `ports.t0.TRIG[1]` to `timers.val`
@@ -105,9 +111,9 @@ Implementation:
 
 1. The two-cycle exception is proved on the RTL of the two-core block for core dividers 2 to 4
    (`src/rsoc8/formal/`). The proof found two violations (status for the host link, time-out counter of the
-   injection); both are corrected in `rdual.v` on 26 November, and the hardening run on that commit has to
-   confirm timing. Not covered by the proof: the routed netlist (gate-level simulation with delays),
-   `rhost.v`, `rclock.v`, the core reset, dividers above 4.
+   injection); both are corrected in `rdual.v`, and run 45905736124 confirms timing with them. Not covered by
+   the proof: the routed netlist (gate-level simulation with delays), `rhost.v`, `rclock.v`, the core reset,
+   dividers above 4.
 2. Core divider 1 (`CLKCDIV` = 0) is not covered by the timing above a system clock of 30 MHz. Nothing in
    the hardware prevents the setting.
 3. The ring oscillator reaches 84 MHz (typical) to 97 MHz (fast corner) at trim 255; the logic is timed for
@@ -115,7 +121,9 @@ Implementation:
 4. The layout that passed DRC and LVS in `analog/results/` is `rpe_clk_analog.gds`. The flow integrates
    `rpe_clk_analog_tt.gds` (marker layers removed, no-fill shapes added). Its only DRC record is the
    precheck. The flow LVS treats the macro as a black box.
-5. Each hardening trial takes about three hours in GitHub Actions.
+5. Each hardening trial takes about three hours in GitHub Actions. The result is sensitive to small netlist
+   changes: the same configuration passed on `c7f1d06` and ran into the six-hour limit on `6ad43b1`
+   (one register and a few gates more). Metal3, the only horizontal layer, is the limit.
 
 Clocking:
 

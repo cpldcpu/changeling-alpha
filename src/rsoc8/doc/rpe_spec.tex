@@ -4223,11 +4223,12 @@ time base repeats after 17.9\,s at 60\,MHz. A write to \reg{TBCTL} restarts the 
 shared by both cores, so one core sets the prescaler for both.
 
 \paragraph{Draft 0.37: changes for the physical implementation.}\label{sec:impl037}
-The design is hardened in the Tiny Tapeout flow for IHP SG13CMOS5L on 8 by 4 tiles: 27\,439 standard cells
-(403\,463\,$\mu$m$^2$), three memory macros and the oscillator macro. Set-up slack at 16.67\,ns is $+1.75$\,ns at
-the slow corner (1.08\,V, 125\,$^\circ$C), $+5.38$\,ns at the typical and $+5.19$\,ns at the fast corner; the
-design rule check, the layout comparison and the antenna check report no error, and the gate-level test
-passes (run 45510873906 of the repository).
+The design is hardened in the Tiny Tapeout flow for IHP SG13CMOS5L on 8 by 4 tiles: 28\,251 standard cells
+(409\,044\,$\mu$m$^2$), three memory macros side by side and the oscillator macro. Set-up slack at 16.67\,ns is
+$+2.76$\,ns at the slow corner (1.08\,V, 125\,$^\circ$C), $+5.62$\,ns at the typical and $+5.36$\,ns at the fast
+corner; the smallest hold slack is $+0.15$\,ns. The design rule check, the layout comparison and the antenna
+check report no error, and the gate-level test passes (run 45905736124 of the repository, commit
+\texttt{cca98f4}, with all RTL changes listed below).
 
 At the slow corner a memory access takes 7.6\,ns and the path through decoder, ALU and register file about
 20\,ns. The cores therefore run at half the clock rate, and the constraints give two clock cycles to the paths
