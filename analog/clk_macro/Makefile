@@ -5,7 +5,7 @@ include ../common.mk
 BLOCK := clk_macro
 KLAYOUT ?= /nix/store/cw81fji9f4zsggnpi3h42c3smyzj4iq7-klayout-0.30.12/bin/klayout
 
-.PHONY: all gen netlist lvs_netlist sim layout drc drc_antenna lvs pex sim_pex svg pdf clean
+.PHONY: all gen netlist lvs_netlist sim layout drc drc_antenna lvs pex sim_pex sim_mc svg pdf clean
 
 all: gen netlist lvs_netlist sim svg pdf
 
@@ -59,6 +59,12 @@ pex: layout
 
 sim_pex: pex
 	python3 run_pex_sims.py
+
+build/pex/rpe_clk_analog_pex.spice:
+	python3 extract_pex.py
+
+sim_mc: build/pex/rpe_clk_analog_pex.spice
+	python3 run_mc_sims.py
 
 svg: dirs
 	$(XSCHEM) -q -x --svg --plotfile $(SVG_DIR)/relax_core.svg relax_core.sch

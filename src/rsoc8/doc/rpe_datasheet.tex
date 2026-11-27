@@ -184,16 +184,16 @@ Output low / high level at \tbd\,mA & $V_{OL}$, $V_{OH}$ & \tbd & & \tbd & V \\
 Input sampling: delay to the first synchroniser stage & & & \tbd & & ns \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{Internal oscillators (simulation of the extracted layout, three corners)}} \\
-Ring, \reg{OSCTRIM} = 128 (reset value) & $f_{OSC}$ & 52.8 & 52.8 & 58.5 & MHz \\
-Ring, \reg{OSCTRIM} = 155 & & 59.1 & 59.9 & 66.9 & MHz \\
-Ring, \reg{OSCTRIM} = 255 & & 78.1 & 83.8 & 96.9 & MHz \\
-Ring, \reg{OSCTRIM} = 0 & & & 15.8 & & MHz \\
-Ring, trim step near 60\,MHz & & & 0.4 & & \% \\
-Relaxation oscillator & $f_{SLOW}$ & 83.6 & 98.5 & 115.5 & kHz \\
+Ring, \reg{OSCTRIM} = 128 (reset value) & $f_{OSC}$ & 44.5 & 44.5 & 49.5 & MHz \\
+Ring, \reg{OSCTRIM} = 201 & & 57.7 & 60.0 & 68.4 & MHz \\
+Ring, \reg{OSCTRIM} = 255 & & 65.8 & 70.5 & 81.7 & MHz \\
+Ring, \reg{OSCTRIM} = 0 & & & 13.4 & & MHz \\
+Ring, trim step near 60\,MHz & & & 0.34 & & \% \\
+Relaxation oscillator & $f_{SLOW}$ & 83.6 & 98.6 & 115.4 & kHz \\
 Relaxation oscillator over supply, 1.08 to 1.32\,V (schematic) & & $-1.4$ & & $+1.5$ & \% \\
 Relaxation oscillator over temperature, $-40$ to 125\,$^\circ$C (schematic) & & $-3.3$ & & $+1.7$ & \% \\
-Supply current, ring at 60\,MHz & & & 61.5 & & $\mu$A \\
-Supply current, relaxation oscillator & & & 4.1 & & $\mu$A \\
+Supply current, ring at 60\,MHz & & & 72.2 & & $\mu$A \\
+Supply current, relaxation oscillator & & & 4.2 & & $\mu$A \\
 \midrule
 \multicolumn{6}{@{}l}{\textit{Host link}} \\
 Host clock frequency & $f_{HCK}$ & & & $f_{SYS}/8$ & \\
@@ -268,14 +268,14 @@ to the first host access, and brown-out behaviour: \tbd.
 \begin{itemize}
 \item \textbf{External clock}, up to 60\,MHz.
 \item \textbf{Internal ring oscillator} for 60\,MHz, with an 8-bit trim value (\reg{OSCTRIM}); a higher value gives
-a higher frequency, from about 16 to 84\,MHz at the typical corner. At a fixed trim value the frequency changes
+a higher frequency, from about 13 to 71\,MHz at the typical corner. At a fixed trim value the frequency changes
 strongly with temperature, so the ring is used with the trim loop (section~\ref{sec:trim}).
 \item \textbf{Internal relaxation oscillator}, about 100\,kHz, enabled with \reg{RELAXEN}. It is a reference for
 the trim loop. It is not a source of the system clock.
 \end{itemize}
 
-\textbf{The system clock must not exceed 60\,MHz.} The ring oscillator can: trim values above about 155 give
-more than 60\,MHz at the typical corner. The reset value of \reg{OSCTRIM} gives 53 to 59\,MHz. If the chip stops
+\textbf{The system clock must not exceed 60\,MHz.} The ring oscillator can: trim values above 201 give
+more than 60\,MHz at the typical corner. The reset value of \reg{OSCTRIM} gives 44.5 to 49.5\,MHz. If the chip stops
 because of too high a trim value, apply reset with the strap pin low.
 
 After reset the strap pin selects the source (low: external clock). Firmware or the host requests the other

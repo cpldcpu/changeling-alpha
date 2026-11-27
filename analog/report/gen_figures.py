@@ -127,7 +127,7 @@ def plot_ring_trim() -> None:
     sch_38_f = float(tt_near["freq_MHz"])
     sch_128_f = next(float(r["freq_MHz"]) for r in r_b if r["corner"] == "tt" and int(r["trim"]) == 128)
     pex_ff_128 = next(float(r["ring_MHz"]) for r in r_pex_t if r["corner"] == "ff" and int(r["trim"]) == 128)
-    pex_tt_nom = min([r for r in r_pex_t if r["corner"] == "tt" and int(r["trim"]) in (151, 155)], key=lambda r: abs(float(r["ring_MHz"]) - 60.0))
+    pex_tt_nom = min([r for r in r_pex_t if r["corner"] == "tt"], key=lambda r: abs(float(r["ring_MHz"]) - 60.0))
     pex_tt_max = next(float(r["ring_MHz"]) for r in r_pex_t if r["corner"] == "tt" and int(r["trim"]) == 255)
     axes[1].annotate(
         f"Pre-emphasized for PEX:\n"
@@ -309,14 +309,23 @@ def plot_pex_comparison() -> None:
     ax.plot(tx_p, fy_p, "s-", ms=3.4, lw=1.8, color="#d62728", label="Magic PEX Hier. (tt, 1.20 V, 25 °C)")
     ax.axhline(60.0, color="#333333", ls="--", lw=1.0, label="60 MHz SoC Target")
     ax.axvline(best_trim, color="#7f7f7f", ls=":", lw=1.0)
+    all_sch_trim = read_csv("osc_ring_cc_trim.csv")
+
+    def _sch_ring_at(corner: str, trim_val: int) -> float:
+        hits = [r for r in sch_modes if r["mode"] == "ring_only" and r["corner"] == corner and int(r["trim"]) == trim_val]
+        if hits:
+            return float(hits[0]["ring_MHz"])
+        pts = sorted([(int(r["trim"]), float(r["freq_MHz"])) for r in all_sch_trim if r["corner"] == corner])
+        return float(np.interp(trim_val, [p[0] for p in pts], [p[1] for p in pts]))
+
     f_p_best = next(float(r["ring_MHz"]) for r in pex_trim_tt if int(r["trim"]) == best_trim)
     f_p_128 = next(float(r["ring_MHz"]) for r in pex_trim_tt if int(r["trim"]) == 128)
     f_p_255 = next(float(r["ring_MHz"]) for r in pex_trim_tt if int(r["trim"]) == 255)
-    f_s_best = next(float(r["ring_MHz"]) for r in sch_modes if r["mode"] == "ring_only" and r["corner"] == "tt" and int(r["trim"]) == best_trim)
-    ax.annotate(f"Sch @{best_trim}: {f_s_best:.2f} MHz", xy=(best_trim, f_s_best), xytext=(45, 148),
+    f_s_best = _sch_ring_at("tt", best_trim)
+    ax.annotate(f"Sch @{best_trim}: {f_s_best:.2f} MHz", xy=(best_trim, f_s_best), xytext=(22, 168),
                 fontsize=7.0, color="#1f77b4", arrowprops=dict(arrowstyle="->", color="#1f77b4", lw=0.8))
     ax.annotate(f"PEX @{best_trim}: {f_p_best:.2f} MHz\nPEX @128: {f_p_128:.2f} MHz\nPEX @255: {f_p_255:.2f} MHz",
-                xy=(best_trim, f_p_best), xytext=(158, 10),
+                xy=(best_trim, f_p_best), xytext=(148, 8),
                 fontsize=6.9, color="#d62728",
                 bbox=dict(boxstyle="round,pad=0.22", fc="#fff5f5", ec="#d62728", lw=0.6),
                 arrowprops=dict(arrowstyle="->", color="#d62728", lw=0.8))
@@ -332,7 +341,7 @@ def plot_pex_comparison() -> None:
     ax2 = ax1.twinx()
     ax2.spines["top"].set_visible(False)
     corners = ["tt", "ss", "ff"]
-    ring_sch = [float(next(r["ring_MHz"] for r in sch_modes if r["mode"] == "ring_only" and r["corner"] == c and int(r["trim"]) == best_trim)) for c in corners]
+    ring_sch = [_sch_ring_at(c, best_trim) for c in corners]
     ring_pex = [float(next(r["ring_MHz"] for r in pex_modes if r["mode"] == "ring_only" and r["corner"] == c and int(r["trim"]) == best_trim)) for c in corners]
     rel_sch = [float(next(r["relax_kHz"] for r in sch_modes if r["mode"] == "sleep_relax" and r["corner"] == c)) for c in corners]
     rel_pex = [float(next(r["relax_kHz"] for r in pex_modes if r["mode"] == "sleep_relax" and r["corner"] == c)) for c in corners]
@@ -348,17 +357,64 @@ def plot_pex_comparison() -> None:
     ax1.set_xticks(list(xr) + list(xl), [f"Ring\n{c}" for c in corners] + [f"Relax\n{c}" for c in corners], fontsize=7.2)
     ax1.set_ylabel(f"Ring Frequency @ trim={best_trim} (MHz)", color="#154c79")
     ax2.set_ylabel("Relax Frequency (kHz)", color="#8d4e00")
-    ax1.set_ylim(0, 175)
-    ax2.set_ylim(0, 175)
+    ax1.set_ylim(0, 205)
+    ax2.set_ylim(0, 205)
     ax1.set_title("(b) PVT Corners: Schematic vs. Hierarchical PEX")
     for b in list(b1) + list(b2):
-        ax1.text(b.get_x() + b.get_width()/2, b.get_height() + 2.0, f"{b.get_height():.1f}", ha="center", va="bottom", fontsize=6.4)
+        ax1.text(b.get_x() + b.get_width()/2, b.get_height() + 2.2, f"{b.get_height():.1f}", ha="center", va="bottom", fontsize=6.4)
     for b in list(b3) + list(b4):
-        ax2.text(b.get_x() + b.get_width()/2, b.get_height() + 2.0, f"{b.get_height():.1f}", ha="center", va="bottom", fontsize=6.4)
+        ax2.text(b.get_x() + b.get_width()/2, b.get_height() + 2.2, f"{b.get_height():.1f}", ha="center", va="bottom", fontsize=6.4)
     ax1.legend(loc="upper right", frameon=True, fontsize=7.0)
 
     fig.tight_layout()
     fig.savefig(FIG_DIR / "fig_pex_comparison.pdf")
+    plt.close(fig)
+
+
+def plot_mc_mismatch() -> None:
+    """Plot 40-seed post-layout Magic PEX Monte Carlo mismatch distributions."""
+    mc_rows = read_csv("clk_macro_mc.csv")
+    best_trim = int(mc_rows[0]["best_trim"])
+    f128 = np.array([float(r["ring_t128_MHz"]) for r in mc_rows])
+    fbest = np.array([float(r["ring_best_MHz"]) for r in mc_rows])
+    dstep = np.array([float(r["step_191_192_MHz"]) for r in mc_rows])
+    frel = np.array([float(r["relax_kHz"]) for r in mc_rows])
+
+    fig, axes = plt.subplots(1, 3, figsize=(11.4, 3.15))
+
+    ax = axes[0]
+    ax.hist(f128, bins=10, color="#ff7f0e", alpha=0.78, edgecolor="#222222", lw=0.6,
+            label=f"Boot @128: {f128.mean():.2f}±{f128.std(ddof=1):.2f} MHz")
+    ax.hist(fbest, bins=10, color="#1f77b4", alpha=0.78, edgecolor="#222222", lw=0.6,
+            label=f"Nom @{best_trim}: {fbest.mean():.2f}±{fbest.std(ddof=1):.2f} MHz")
+    ax.axvline(60.0, color="#d62728", ls="--", lw=1.1, label="60.0 MHz SoC Target")
+    ax.set_title("(a) Ring Frequency Mismatch (PEX tt)")
+    ax.set_xlabel("Frequency (MHz)")
+    ax.set_ylabel("Samples (out of 40)")
+    ax.legend(frameon=True, fontsize=6.4, loc="upper center")
+
+    ax = axes[1]
+    ax.hist(dstep, bins=10, color="#2ca02c", alpha=0.82, edgecolor="#222222", lw=0.6)
+    ax.axvline(0.0, color="#d62728", ls="--", lw=1.0, label="Monotonicity limit (0)")
+    ax.axvline(dstep.mean(), color="#111111", ls=":", lw=1.1,
+               label=f"$\\mu={dstep.mean():+.3f}$, $\\sigma={dstep.std(ddof=1):.3f}$ MHz")
+    mono = int(np.sum(dstep > 0.0))
+    ax.set_title(f"(b) IDAC Carry Step 191→192 ({mono}/{len(dstep)} Mono.)")
+    ax.set_xlabel("$\\Delta f_{191\\to 192}$ (MHz)")
+    ax.set_ylabel("Samples (out of 40)")
+    ax.legend(frameon=True, fontsize=6.5, loc="upper left")
+
+    ax = axes[2]
+    ax.hist(frel, bins=10, color="#9467bd", alpha=0.82, edgecolor="#222222", lw=0.6)
+    ax.axvline(frel.mean(), color="#111111", ls=":", lw=1.1,
+               label=f"$\\mu={frel.mean():.2f}$, $\\sigma={frel.std(ddof=1):.2f}$ kHz")
+    ax.set_title("(c) Relax Frequency Mismatch (sleep_relax)")
+    ax.set_xlabel("Frequency (kHz)")
+    ax.set_ylabel("Samples (out of 40)")
+    ax.legend(frameon=True, fontsize=6.5, loc="upper right")
+
+    fig.tight_layout()
+    fig.savefig(FIG_DIR / "fig_mc_mismatch.pdf")
     plt.close(fig)
 
 
@@ -401,8 +457,9 @@ def main() -> None:
     plot_relax_options()
     plot_macro_waveforms()
     plot_pex_comparison()
+    plot_mc_mismatch()
     crop_schematics()
-    print("Generated all 6 vector plots and cropped schematic PDFs.")
+    print("Generated all 7 vector plots and cropped schematic PDFs.")
 
 
 if __name__ == "__main__":

@@ -116,18 +116,21 @@ Implementation:
    dividers above 4.
 2. Core divider 1 (`CLKCDIV` = 0) is not covered by the timing above a system clock of 30 MHz. Nothing in
    the hardware prevents the setting.
-3. The ring oscillator reaches 84 MHz (typical) to 97 MHz (fast corner) at trim 255; the logic is timed for
+3. The ring oscillator reaches 70.5 MHz (typical) to 81.7 MHz (fast corner) at trim 255; the logic is timed for
    60 MHz. Nothing in the hardware limits the trim value.
-4. The layout that passed DRC and LVS in `analog/results/` is `rpe_clk_analog.gds`. The flow integrates
-   `rpe_clk_analog_tt.gds` (marker layers removed, no-fill shapes added). Its only DRC record is the
-   precheck. The flow LVS treats the macro as a black box.
+4. Both `rpe_clk_analog.gds` (KLayout `main`, `main antenna`, and strict-port LVS) and `rpe_clk_analog_tt.gds`
+   (KLayout `main` DRC: 0 violations, forbidden marker layers absent) pass standalone verification in
+   `analog/results/`. Post-layout Monte Carlo mismatch (`N=40` seeds, `mm_ok=1` on active devices and `rppd`/`SVaricap`;
+   `cap_cmomf` mismatch unmodeled by IHP PDK) gives boot `trim=128` `43.68 ± 3.73 MHz` (max `53.87 MHz <= 60 MHz`),
+   nominal `trim=201` `58.92 ± 4.71 MHz`, `40/40` monotonic `191->192` carry step (`+0.183 ± 0.083 MHz`), and `sleep_relax`
+   `97.60 ± 5.62 kHz` (`analog/results/clk_macro_mc.csv`). The flow LVS treats the macro as a black box.
 5. Each hardening trial takes about three hours in GitHub Actions. The result is sensitive to small netlist
    changes: the same configuration passed on `c7f1d06` and ran into the six-hour limit on `6ad43b1`
    (one register and a few gates more). Metal3, the only horizontal layer, is the limit.
 
 Clocking:
 
-6. The relaxation oscillator spans 83.6 to 115.5 kHz over the simulated corners. It is a reference only
+6. The relaxation oscillator spans 83.6 to 115.4 kHz over the simulated corners. It is a reference only
    after one measurement per chip against an external signal (datasheet section "Trimming the oscillator").
 7. The system tests with the internal oscillator (USB, UART) used the model `tb/osc_model.v` at 15 MHz. They
    are not repeated with a model of the ring at 60 MHz. `test/rpe_clk_analog_model.v` exists for the pin test.

@@ -20,8 +20,8 @@ PDK LVS Netlist Normalizations (documented in analog/report):
   2. Normalized xschem rppd.sym LVS strings (adding ps=0.18e-6 and effective extracted lengths 21.125u / 41.055u matching IHP rppd.cdl unit test).
 
 Log Excerpt:
-  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : Devices to compare: layout=580 schematic=118 (schematic counted before alignment, both per circuit definition)
-  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : Starting SG13CMOS5L LVS Comparison in strict port mode.
-  2026-11-24 15:45:14 +0100: Memory Usage (452836K) : flag_missing_ports enabled: missing/mislabeled top-level ports are treated as errors.
-  2026-11-24 15:45:14 +0100: Memory Usage (452964K) : INFO : Congratulations! Netlists match.
-  2026-11-24 15:45:14 +0100: Memory Usage (452964K) : LVS Total Run time 1.751521 seconds
+  2026-11-27 09:56:20 +0100: Memory Usage (441980K) : Devices to compare: layout=580 schematic=118 (schematic counted before alignment, both per circuit definition)
+  2026-11-27 09:56:20 +0100: Memory Usage (441980K) : Starting SG13CMOS5L LVS Comparison in strict port mode.
+  2026-11-27 09:56:20 +0100: Memory Usage (441980K) : flag_missing_ports enabled: missing/mislabeled top-level ports are treated as errors.
+  2026-11-27 09:56:20 +0100: Memory Usage (442108K) : INFO : Congratulations! Netlists match.
+  2026-11-27 09:56:20 +0100: Memory Usage (442108K) : LVS Total Run time 4.041787 seconds

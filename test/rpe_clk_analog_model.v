@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Behavioral simulation model of the hardened analog dual-oscillator macro (rpe_clk_analog).
 // Matches post-layout Magic PEX characteristics (tt, 1.20 V, 25 C):
-//   - clk:      52.78 MHz at trim=128, 59.92 MHz at trim=155 (~0.2645 MHz/LSB linear around mid-trim)
-//   - clk_slow: 98.54 kHz (half-period 5074.2 ns) when en_relax == 1
+//   - clk:      44.55 MHz at trim=128, 60.02 MHz at trim=201 (~0.2119 MHz/LSB linear around mid-trim)
+//   - clk_slow: 98.60 kHz (half-period 5070.8 ns) when en_relax == 1
 // Both outputs are held low when their enable input is not 1.
 `timescale 1ns/1ps
 module rpe_clk_analog (
@@ -40,7 +40,7 @@ module rpe_clk_analog (
     // Ring oscillator (idle low when en_ring != 1)
     always begin
         if (en_ring === 1'b1) begin
-            freq_mhz = (52.7764 + 0.264522 * ($itor(trim) - 128.0)) * err0;
+            freq_mhz = (44.5478 + 0.211911 * ($itor(trim) - 128.0)) * err0;
             if (freq_mhz < 5.0) freq_mhz = 5.0;
             half_ns = 500.0 / freq_mhz;
             #(half_ns);
@@ -51,10 +51,10 @@ module rpe_clk_analog (
         end
     end
 
-    // Dual-slope relaxation oscillator (98.538 kHz -> half-period 5074.2 ns)
+    // Dual-slope relaxation oscillator (98.604 kHz -> half-period 5070.8 ns)
     always begin
         if (en_relax === 1'b1) begin
-            #(5074.2);
+            #(5070.8);
             if (en_relax === 1'b1) clk_slow = ~clk_slow; else clk_slow = 1'b0;
         end else begin
             clk_slow = 1'b0;

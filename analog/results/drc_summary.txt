@@ -4,8 +4,9 @@ GDS File   : /home/tim/ttapeout/changeling-alpha/analog/clk_macro/layout/rpe_clk
 Top Cell   : rpe_clk_analog (171.500 x 137.000 um PR boundary = 23495.5 um^2)
 PDK Runset : ihp-sg13cmos5l.drc (KLayout 0.30.12)
 
-Run 1 (tables=main)        : 0 failing categories, 0 total violations (2026-11-24 15:44:57 +0100: KLayout DRC run for tables 'main' completed in 3.82 seconds)
-Run 2 (tables=main antenna): 0 failing categories, 0 total violations (2026-11-24 15:45:08 +0100: KLayout DRC run for tables 'main antenna' completed in 6.94 seconds)
+Run 1 (tables=main)        : 0 failing categories, 0 total violations (2026-11-27 09:53:06 +0100: KLayout DRC run for tables 'main' completed in 11.12 seconds)
+Run 2 (tables=main antenna): 0 failing categories, 0 total violations (2026-11-27 09:53:21 +0100: KLayout DRC run for tables 'main antenna' completed in 11.69 seconds)
+Run 3 (integrated _tt GDS) : 0 failing categories, 0 total violations on rpe_clk_analog_tt.gds (2026-11-27 09:53:37 +0100: tables 'main' completed in 11.41 seconds; forbidden marker layers 51/0, 99/40, 160/0 verified absent)
 Checks Enabled             : FEOL, BEOL, OFFGRID, ANGLE, PIN, FORBIDDEN, RECOMMENDED, CONNECTIVITY_RULES, ANTENNA
 
 PEX-Re-Centered & Compacted Subblock Dimensions (vs. v1 baseline 40592.0 um^2):

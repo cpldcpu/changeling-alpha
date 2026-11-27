@@ -2348,11 +2348,11 @@ The ring is therefore used with the trim loop. The relaxation oscillator changes
 range and by $+1.7$ to $-3.3\,\%$ over the temperature range in the schematic simulation, and by $-15$ to
 $+17\,\%$ between the corners of table~\ref{tab:oscsim}. Its frequency on a given chip is not known in advance:
 it is a reference after one measurement against an external signal (section~\ref{sec:trim}).
-\item \textbf{Interaction.} Enabling the relaxation oscillator lowers the ring frequency by about 5\,\% (59.9 to
-57.1\,MHz at the typical corner). With the loop running this is corrected by the trim value.
+\item \textbf{Interaction.} Enabling the relaxation oscillator lowers the ring frequency slightly in simulation
+(60.0 to 58.3\,MHz measured after settling at 18\,$\mu$s, converging toward 59.4\,MHz by 20\,$\mu$s at the typical corner). With the loop running this is corrected by the trim value.
 \item \textbf{Frequencies above 60\,MHz.} The logic is timed for a period of 16.67\,ns. With trim values above
-about 155 at the typical corner the ring is faster than that. Firmware, the host and the loop target have to
-keep the system clock at or below 60\,MHz. The reset value of \reg{OSCTRIM} gives at most 58.5\,MHz at the three
+201 at the typical corner the ring is faster than that. Firmware, the host and the loop target have to
+keep the system clock at or below 60\,MHz. The reset value of \reg{OSCTRIM} (128) gives at most 49.5\,MHz at the three
 simulated corners. A chip that stops because the trim value is too high is restarted with the reset pin and
 the strap low.
 \item \textbf{Drafts up to 0.36} specified one relaxation oscillator at 15\,MHz and no ring oscillator. The
@@ -2368,14 +2368,14 @@ competition chip.
 \toprule
 Value & typical, 1.20\,V, 25\,$^\circ$C & slow, 1.08\,V, 125\,$^\circ$C & fast, 1.32\,V, $-40\,^\circ$C \\
 \midrule
-Ring, \reg{OSCTRIM} = 0 & 15.8\,MHz & & \\
-Ring, \reg{OSCTRIM} = 128 (reset value) & 52.8\,MHz & 53.0\,MHz & 58.5\,MHz \\
-Ring, \reg{OSCTRIM} = 155 & 59.9\,MHz & 59.1\,MHz & 66.9\,MHz \\
-Ring, \reg{OSCTRIM} = 255 & 83.8\,MHz & 78.1\,MHz & 96.9\,MHz \\
-Ring, step of \reg{OSCTRIM} near 60\,MHz & 0.25\,MHz (0.4\,\%) & & \\
-Relaxation oscillator & 98.5\,kHz & 83.6\,kHz & 115.5\,kHz \\
-Supply current, ring at trim 155 & 61.5\,$\mu$A & 57.6\,$\mu$A & 78.4\,$\mu$A \\
-Supply current, relaxation oscillator only & 4.1\,$\mu$A & 4.2\,$\mu$A & 5.1\,$\mu$A \\
+Ring, \reg{OSCTRIM} = 0 & 13.4\,MHz & 14.6\,MHz & 14.4\,MHz \\
+Ring, \reg{OSCTRIM} = 128 (reset value) & 44.5\,MHz & 44.5\,MHz & 49.5\,MHz \\
+Ring, \reg{OSCTRIM} = 201 & 60.0\,MHz & 57.7\,MHz & 68.4\,MHz \\
+Ring, \reg{OSCTRIM} = 255 & 70.5\,MHz & 65.8\,MHz & 81.7\,MHz \\
+Ring, step of \reg{OSCTRIM} near 60\,MHz & 0.20\,MHz (0.34\,\%) & & \\
+Relaxation oscillator & 98.6\,kHz & 83.6\,kHz & 115.4\,kHz \\
+Supply current, ring at trim 201 & 72.2\,$\mu$A & 67.4\,$\mu$A & 91.3\,$\mu$A \\
+Supply current, relaxation oscillator only & 4.2\,$\mu$A & 4.2\,$\mu$A & 5.4\,$\mu$A \\
 Supply current, both disabled & 6\,nA & 69\,nA & 8\,nA \\
 \bottomrule
 \end{tabularx}
@@ -2386,7 +2386,11 @@ on silicon.}
 \end{table}
 
 With the ring trimmed to 60\,MHz the example settings in sections~\ref{sec:lcreg} and~\ref{sec:ex} apply to both
-sources.
+sources. In 40-seed post-layout Monte Carlo mismatch simulations at the typical corner (with \texttt{mm\_ok=1} on
+MOSFETs, \texttt{rppd} resistors and \texttt{SVaricap}; \texttt{cap\_cmomf} mismatch is unmodeled in the IHP PDK),
+the reset trim 128 stays below 60\,MHz ($43.68 \pm 3.73$\,MHz, max 53.87\,MHz), trim 201 gives $58.92 \pm 4.71$\,MHz,
+the \texttt{191}$\to$\texttt{192} carry step is $40/40$ monotonic, and the relaxation oscillator spreads over
+$97.60 \pm 5.62$\,kHz.
 
 \subsection{Source selection and switching}
 
