@@ -1,0 +1,484 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=24mm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[section]{placeins}
+\usepackage{float}
+\usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{accent}{HTML}{1D5C8A}
+\definecolor{fillA}{HTML}{E6EEF5}
+\definecolor{fillB}{HTML}{F3EDE2}
+\definecolor{fillC}{HTML}{E8F1E6}
+\definecolor{fillD}{HTML}{F0F0F0}
+\color{ink}
+
+\setlist{itemsep=1pt,topsep=3pt,leftmargin=1.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{14pt}{4pt}
+\titlespacing*{\subsection}{0pt}{9pt}{2pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\small rcore8 protocol emulator: verification report}
+\fancyhead[R]{\small Issue 3, for specification draft 0.37}
+\fancyfoot[C]{\small\thepage}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\est}{\textsuperscript{e}}
+\newcommand{\reg}[1]{\texttt{#1}}
+
+\tikzset{
+  blk/.style={draw=ink,line width=0.5pt,rounded corners=1.5pt,align=center,font=\small,inner sep=4pt,minimum height=8mm},
+  ar/.style={-{Stealth[length=2mm]},line width=0.5pt},
+  dar/.style={{Stealth[length=2mm]}-{Stealth[length=2mm]},line width=0.5pt},
+  lbl/.style={font=\scriptsize,align=center}
+}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{accent} rcore8 protocol emulator}\\[4pt]
+{\large Verification report}\\[8pt]
+Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
+{\small Issue 3, 25 November 2026, for specification draft 0.37 and the RTL in the repository \texttt{cpldcpu/changeling-alpha}, branch \texttt{integration}. Drafted with Claude (Anthropic).}
+\end{center}
+
+\vspace{2pt}
+\noindent\fcolorbox{accent}{fillA}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+\textbf{Summary.} All digital blocks of the chip exist as RTL and are verified by simulation: block by block
+against behavioural models and directed tests, and on the top level with firmware in C against protocol models
+that were written independently of the RTL. UART, SPI, I2C, WS2812, USB low-speed and 10BASE-T all run on the
+top level. The base regression and the long suites named in section~\ref{sec:state} pass on the RTL of this date.
+Since issue 3 the design is placed and routed with the oscillator macro; static timing at three corners, the
+layout checks and a gate-level test through the pins pass (section~\ref{sec:v037}). Not verified: the
+two-cycle timing exception at gate level with delays; the protocols on the internal oscillator at 60\,MHz;
+operation against real partners; anything on silicon. The hardware changes specified in section 18.5 of the specification are not
+implemented and therefore not verified.}}
+
+\section{Scope}
+
+The report covers the RTL in \texttt{src/rsoc8/rtl} of the repository. The three packages of issue 2 are now
+folders: \texttt{rsys} is \texttt{src/rsoc8}, \texttt{rdual} is \texttt{src/rsoc8/blocks/dual} and \texttt{linecells}
+is \texttt{src/rsoc8/blocks/linecells}; the two block folders use the RTL in \texttt{src/rsoc8/rtl}. The tables of
+section~\ref{sec:where} keep the package names in this sense. The specification is the
+reference for expected behaviour; rule numbers in this report are those of the specification. The report states
+what was tested, with what result, how each test can be run again, and what is not covered. Details of single
+tests are in the verification subsections of the specification and in the \texttt{README.md} of each package.
+
+\section{Method}
+
+\begin{itemize}
+\item \textbf{Behavioural models.} A model in Python is written from the rules of the specification. A script
+generates a stimulus file, a Verilog testbench applies it to the RTL and writes the results, and the script
+compares them with the model cycle by cycle. Blocks with a model: the cores and the two-core block, the line
+cells, timer with PWM and CRC unit, event flags and time base, locks with wait and arbiter, clock control,
+program protection, host link commands.
+\item \textbf{Random and directed stimulus.} Each model comparison has a directed part for the cases named in the
+rules and a random part with many seeds.
+\item \textbf{Firmware on the top level.} Programs in C, built with avr-gcc for the ATtiny40 class, run on the
+complete chip with the SRAM model of the foundry. A test ends by writing an exit code that the testbench
+prints.
+\item \textbf{Independent protocol models.} For every protocol a model in the testbench was written from the
+protocol definition and not from the RTL: UART, SPI master and slave, I2C master and slave, WS2812 receiver
+with timing check, USB low-speed host, Ethernet transmitter and receiver, an I2C sensor with interrupt line.
+\item \textbf{Fault insertion.} For each block small faults are put into a copy of the RTL, one at a time, and the
+tests are run. A fault that no test finds leads to an added test.
+\item \textbf{Second round by separate tasks.} Eight verification tasks were carried out in separate copies of the
+design, each with the rule that a new test has to be shown to fail once and that the RTL is not changed to make
+a test pass. Their results were reviewed and run again on the merged tree.
+\end{itemize}
+
+\textbf{Limits of the method.} For the cores, the line cells and the timer block, model and RTL were written by
+the same author from the same rules, so a misreading of a rule can be in both. The models of the second round
+were written by a different task than the RTL and found three RTL faults and about 25 gaps in the text. All
+tests are simulations without delays; there is no gate-level simulation and no formal proof.
+
+\section{Environment}
+
+\begin{itemize}
+\item Icarus Verilog (\texttt{iverilog -g2005}), Python 3, avr-gcc with avr-libc for \texttt{attiny40}.
+\item SRAM: the behavioural Verilog model of the IHP macro \texttt{RM\_IHPSG13\_1P\_1024x16\_c2\_bm\_bist}.
+\item The system testbench runs the external clock with a period of 10\,ns. Results on the external clock are
+counted in clock cycles; one cycle is 16.7\,ns on the chip at 60\,MHz. Tests on the oscillator model use real
+time.
+\item The oscillator is a model with 15\,MHz, 0.5\,\% per trim step and no jitter.
+\end{itemize}
+
+\section{Results by block}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLL@{}}
+\toprule
+Block & Tests & Result \\
+\midrule
+Cores and two-core block & Random programs on both cores against the cycle model, 360 seeds of 4\,000 cycles, also with the core clock enabled every second and third cycle; directed tests of locks, flags, waits; exact timing; compiled C tests. Second round: 31 by 31 instruction classes with a competing access in every cycle, three arbiter settings; code memory of the other core; interrupt during a wait; 300 more seeds & no difference in 1.16 million instruction starts; second round 5\,766 + 270 + 2\,376 runs, none failing \\
+Line cells & 48 protocol cases against the model, 20 of them for the additional frame bit (draft 0.36); 27 directed checks of the bus condition detector, the edge count and the start at the shift edge; 28 protocol cases of the earlier drafts (UART, USB, 10BASE-T, WS2812, transmit and receive, clock offsets 3 to 20\,\%); 600 random receive and 600 random transmit configurations; SPI pair loop; forwarding; overflow and status & all equal to the model \\
+Pins, synchronisers, event flags & Firmware tests 1 to 3; synchroniser order with random pin changes. Second round: model of flags and time base, 100 seeds, 420\,000 cycles & pass; no mismatch \\
+Timer, PWM, CRC unit & Model comparison, 300 seeds of 3\,000 cycles; CRC known answers for seven polynomials; CRC from each line cell strobe; firmware test 6 & no difference; published check values \\
+Clocking & Directed testbench with two unrelated clocks: start by strap, 60 switches at random times, shortest clock phase, dividers, measurements, window, loop, line reference with events in between. Second round: model of the control part, 100 seeds, 600\,000 cycles & pass; shortest phase 8\,333\,ps; no mismatch \\
+Host link, program protection & Random programs with halts, reads and injections through the host port, 100 seeds; load of one and two images through the SPI pins; host test with status, mailbox, halt, memory and register access, step, inject, break; firmware test 8. Second round: models of command decoder and protection, 100 seeds each & pass; no mismatch \\
+Top level & All firmware tests on the complete chip; firmware test 9 on the oscillator model with strap low and high & same results as on the blocks; trim loop reaches 0.5\,\% \\
+\bottomrule
+\end{tabularx}
+\caption{Block-level verification.}
+\end{table}
+
+\section{Results by protocol}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLL@{}}
+\toprule
+Protocol & Tests on the top level & Result and limits \\
+\midrule
+UART & Both ends on the chip (tests 1, 2). Independent model: echo, tolerance sweep, framing error, glitch, parity, two stop bits from the partner, overrun; bridge host link to UART; bridge UART to WS2812 & pass, 61 checks. Tolerance $\pm 5.3\,\%$ at 16 cycles per bit and above; 2 cycles per bit at no error. Stop bit and start level are not checked by one cell (workaround with the second cell) \\
+SPI & Both ends on the chip (test 11). Independent master and slave models, modes 0 to 3, chip select, late transmit byte, aborted transfer & pass. Master 8 cycles per bit; slave data out down to 12, data in down to 2 cycles per bit. No underrun indication \\
+I2C & Slave with line cells against a firmware master (test 12). Independent master and slave models: stretching, missing acknowledge, stuck bus and recovery, time-out, two masters & pass. Slave at 100 and 400\,kHz for core dividers 1 and 2; acknowledge 71 cycles before the clock edge at 400\,kHz \\
+WS2812 & Controller, LED with forwarding, second LED (test 10). Independent timing checker: 100 LEDs, forwarding with bit time errors of $\pm 10\,\%$ and jitter & pass. High times 24 and 48, period 75 cycles, no gap up to core divider 16. Forwarding keeps the input period \\
+USB low-speed & Host and device on the chip (test 13). Host model: enumeration as a PC does it, faults, HID class requests with OUT data stage, control endpoint robustness (tests 15, 16). On the oscillator with 1\,ms frames: start errors of $-20$ to $+18\,\%$, drift, frequency steps, suspend (test 17) & pass at 60, 30 and 15\,MHz core clock; fails at 10\,MHz. On the oscillator the frequency stays within 0.62\,\% after lock; recovery 4 frames after a step of $-3\,\%$ \\
+10BASE-T & Frame transmit and receive (tests 3, 4, 5), frame check with the CRC unit (test 14). Ethernet model: ARP and ping endpoint, 27 scenarios, frames up to 1\,518 bytes, tolerance and duty cycle sweep, link pulses & pass at core dividers 1 to 3. Receive tolerance $-16$ to $+47\,\%$. The idle pulse at the frame end is made by a firmware workaround and only single-ended; no link pulses \\
+Several at once & UART with SPI, UART with I2C, SPI slave with WS2812 on the two cores, with PWM and timer compare, with host link access & no data error; rate limits as alone except next to a core that polls the bus \\
+I2C sensor to USB & Sensor model with interrupt line, core 1 reads, core 0 reports (test 16), also on the oscillator & pass; every sample delivered or counted as dropped \\
+\bottomrule
+\end{tabularx}
+\caption{Protocol-level verification. Test numbers are those of the specification.}
+\end{table}
+
+\section{Line cell functions added in draft 0.36}\label{sec:v036}
+
+Draft 0.36 adds the register \texttt{LCX} to both cell types and \texttt{LCEC} to the receive cell
+(specification section ``Additional frame bit, start at the shift edge and bus conditions''). With both
+registers at zero the cells have to behave as before.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLL@{}}
+\toprule
+What & Test & Result \\
+\midrule
+Unchanged behaviour with \texttt{LCX} = 0 & line cell suite with the earlier 28 cases; base regression; UART suite; SPI and I2C suite & all pass as before \\
+Additional bit against the model (rules N1 to N4 in \texttt{linecell.py}) & UART transmit and receive with even parity, odd parity and ninth data bit; receiver clock offsets $-3$, 0, $+4\,\%$; inverted parity bit; strobe counts; 200 random receive and 200 random transmit configurations, three in five with \texttt{PAR} not 0 & 20 cases equal; 0 of 400 random cases differ \\
+Bus conditions, edge count & \texttt{tb\_lc2.v}: start, stop, repeated start in a frame, flags cleared one by one, data edge together with a clock edge, edge count with clearing by a clock edge, detector off & 0 errors \\
+Start at the shift edge & \texttt{tb\_lc2.v}: frame written while the clock is high, with \texttt{ESTR} = 0 and 1 & 0 errors \\
+\bottomrule
+\end{tabularx}
+\caption{Functions of draft 0.36: line cells alone.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLL@{}}
+\toprule
+What & Test & Result \\
+\midrule
+UART with parity on the chip & \texttt{fwu\_par.c} against \texttt{uart\_model.v}: even and odd at 60 cycles per bit, even at 8 cycles per bit, 16 characters back to back at $-3$, 0, $+3\,\%$; two characters with a wrong parity bit are marked by the firmware & pass \\
+Ninth data bit on the chip & the firmware copies the ninth bit from the receive cell to the transmit cell; the model sends even parity with two wrong bits and gets the same bits back & pass \\
+Two stop bits on transmit & ninth bit fixed at 1; 16 characters back to back; the model checks two stop bits & pass; the firmware with one stop bit fails this check (12 of 16 received) \\
+I2C slave with \texttt{BCD} and \texttt{ESTR} & \texttt{fw20\_i2cs9.c} against \texttt{i2c\_master\_model.v}: all transfers at SCL periods of 600 and 150 clock cycles, core divider 1 and 2 & pass; SDA of the chip changes at least 72 cycles before the SCL rise at 150 cycles \\
+Late write of read data, 400\,kHz & first byte written $n$ delay units late (one unit is about 8 clock cycles) & test 18 (start at the write): passes to $n$ = 4, at $n$ = 8 SDA changes while SCL is high. Test 20 (\texttt{ESTR}): passes to $n$ = 12, from $n$ = 16 wrong data, no change while SCL is high \\
+Fastest SCL, core divider 1 & period in clock cycles: write, read of 1 byte, read of 3 bytes, write with repeated start and read & test 18: 32, 56, 56, 56. Test 20: 48, 48, 70, 56 \\
+Fault insertion in the RTL & ten single faults in the new logic (parity sense, data value with the additional bit, stored ninth bit, stop bit after the additional bit, two strobes, clock level in the detector, clearing of the edge count, start at the write, receiver reset by a condition) & all found; the strobe of the receive cell only after a check for it was added \\
+Fault insertion in firmware and model & cells odd and model even; firmware without the additional bit; detector switched off & the tests fail as expected \\
+\bottomrule
+\end{tabularx}
+\caption{Functions of draft 0.36: complete chip, and fault insertion.}
+\end{table}
+
+Not tested: the edge count and the detector in a system test other than I2C; the additional bit together with
+bit stuffing against a protocol partner (only against the model); \texttt{FERR} with an overrun in the same
+frame. Synthesis after the change: 14\,308 cells, 2\,058 flip-flops, 221\,326\,$\mu$m$^2$ (before: 13\,697 cells,
+2\,004 flip-flops, 215\,062\,$\mu$m$^2$).
+
+\section{Changes of draft 0.37 and physical implementation}\label{sec:v037}
+
+Draft 0.37 changes the RTL for the physical implementation (specification, paragraph ``Draft 0.37'' in the
+review section): core divider 2 after reset, injection sequencer and restore read only in cycles with the
+core clock enable, the register \texttt{dq}, the reset of the output register, and the relaxation oscillator
+as a reference of the trim counter.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLL@{}}
+\toprule
+Subject & Test & Result \\
+\midrule
+Host link with the cores at divider 2 and 3: halt, memory and register access, step, inject, break & \texttt{tests/run\_fw.sh}, lines ``the same with the core clock enabled every second / third cycle'' & pass \\
+Cores at half the clock rate, peripherals at the full rate: firmware tests 1, 2, 3, 4, 5, 6 & \texttt{tests/run\_fw.sh} with \texttt{+cdiv=2} & as at divider 1; test 3 fails with 110 as expected \\
+Relaxation oscillator as reference: no measurement while it is disabled; single measurement over 4 periods; loop reaches the target; loop follows a reference that is 5\,\% faster; \reg{RELAXEN} read back and at the macro pin & \texttt{tb/tb\_clk.v}, part 15, in \texttt{tests/run\_fw.sh} & pass: count within 1.5 of the computed value, trim 158 to 170, period within 1\,\% \\
+The same test with three faults inserted into copies of \texttt{rclock.v}: reference selection 3 not decoded; synchroniser of the slow clock not connected; \reg{RELAXEN} stuck at one & by hand, \texttt{sed} on a copy & each fault detected (5, 5 and 4 failed checks) \\
+Model of the clocking block with \reg{RELAXEN} and reference selection 3 & \texttt{model/clkctl.py}, \texttt{tests/run\_models.sh} & 0 mismatching; the testbench of the comparison holds the slow clock at 0 \\
+Whole chip through the Tiny Tapeout pins: load through the host link, read back, UART echo & \texttt{test/test.py}, \texttt{test\_load\_and\_uart\_echo}, on RTL and on the routed netlist (run 45905736124) & pass \\
+Internal oscillators through the pins: slow clock visible on the debug pin, ring detected, switch to the ring and back & \texttt{test/test.py}, \texttt{test\_internal\_osc\_and\_relax}, with \texttt{test/rpe\_clk\_analog\_model.v}, on RTL and on the routed netlist (run 45905736124) & pass \\
+Condition of the two-cycle timing exception on the RTL of the two-core block: 62 start registers and three memories, 139 checks, from reset to depth 8 and by an induction step of length 3; core dividers 2 to 4 & \texttt{formal/run.sh} (SAT pass of Yosys); method and assumptions in \texttt{formal/README.md} & pass, no check waived. The first run found two violations, corrected in \texttt{rdual.v} (status for the host link, time-out counter) \\
+The same check with four faults inserted, two of them the RTL before draft 0.37 (restore read and injection sequencer in any cycle) & \texttt{formal/faults.sh} & each fault detected \\
+Static timing after routing, 16.67\,ns, with the two-cycle exception & flow run 45905736124 (commit \texttt{cca98f4}) & set-up slack $+2.76$\,ns slow, $+5.62$\,ns typical, $+5.36$\,ns fast; hold $+0.15$\,ns \\
+Layout: design rules, comparison with the netlist, antenna rules, Tiny Tapeout precheck & same run & no error. The comparison treats the four macros as black boxes \\
+Oscillator macro: design rules, comparison of layout and schematic, simulation of the extracted layout at three corners & \texttt{analog/results/}, work by Tim S.\ B. & no violation, netlists match; values in the table of section 11.1 of the specification \\
+\bottomrule
+\end{tabularx}
+\caption{Tests for draft 0.37 and results of the physical implementation. The gate-level test runs without
+delays.}
+\end{table}
+
+Not tested: the two-cycle exception with gate delays (the restore read in a cycle without core clock enable is
+covered by the formal check, which reports it when the correction is removed); a core divider of 1 on the routed netlist; the macro file
+\texttt{rpe\_clk\_analog\_tt.gds} with the full rule deck (the records are for \texttt{rpe\_clk\_analog.gds}).
+
+\section{Fault insertion}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}Lrrl@{}}
+\toprule
+Block & Inserted & Detected & Remark \\
+\midrule
+Two-core block, first round & 8 & 6 & the other two act only when the host halts a core \\
+Line cells & 13 & 13 & \\
+Pins and event flags & 10 & 10 & \\
+Timer, PWM, CRC & 22 & 22 & two after an added check each \\
+Clocking & 20 & 20 & \\
+Host link, protection, host port, sequencer & 32 & 32 & nine after added checks or an extended random test \\
+Models of the second round (5 blocks) & 104 & 104 & 103 by the random tests, one by a directed test \\
+Arbitration, second round & 17 & 17 & 16 by the new tests, one by the existing random test with host stimulus \\
+\bottomrule
+\end{tabularx}
+\caption{Faults inserted into copies of the RTL.}
+\end{table}
+
+Every protocol test of the second round was in addition shown to fail with a fault in the firmware or in the
+model. Not shown to fail: the packet-end reference tests of USB on the oscillator, the WS2812 forwarding check
+and the one-core two-protocol loop of the stress task.
+
+\section{Faults found in the RTL by verification}
+
+Faults of the block development are listed in the specification with each block. Since the top level exists,
+these were found and corrected:
+
+\begin{itemize}
+\item A break clear pulse from the host was lost while the core clock was not enabled.
+\item An injection into a core that executes from the other memory never ended; a time-out was added.
+\item The end of a USB packet could not be made without a gap by firmware; the transmit cell got the end-of-packet bit.
+\item The level bit for both pins low was missed by a slow core; the receive cell got a stored bit.
+\item Sync and preamble bits went into the CRC; the CRC strobe now starts behind the match pattern.
+\item The CRC comparison was one cycle late against the busy bit.
+\item The trim counter restarted at every packet end, so a USB bus with traffic gave no measurement.
+\item Second round: the oscillator was not enabled by the source request alone; the mailbox read lost bytes
+under continuous polling; a refused register read repeated an earlier value; a reserved bit read back.
+\end{itemize}
+
+The second round also showed one wrong expectation in a testbench of the first round (the clocking test expected
+the faulty oscillator enable) and several faults in firmware and test models, which are listed in the
+specification.
+
+\section{Known gaps}
+
+\begin{enumerate}
+\item \textbf{Physical.} Static timing passes only with the two-cycle exception for the paths from the
+memories and from the core state. Its condition is proved on the RTL of the two-core block under assumptions
+about the host link and the clock divider that are taken from the code and not proved themselves. It is not
+checked on the synthesised netlist: a gate-level simulation with delays is missing. The both-edge input
+sampling was simulated without pin delays.
+\item \textbf{Oscillator.} The macro is verified by circuit simulation of the extracted layout at three
+corners, without mismatch analysis in the result files. The protocol tests on the internal oscillator (USB,
+UART) ran with a model at 15\,MHz and are not repeated at 60\,MHz. Noise is not covered.
+\item \textbf{Blocks without a model.} The clock switching between two asynchronous sources and the injection
+sequencer have directed tests only. Collisions on the code memories and the host port are covered by the random
+two-core test and not by the second-round model.
+\item \textbf{Real partners.} No test against a PC as USB host, an Ethernet switch, or commercial I2C and SPI
+devices. USB signal levels, the pull-up resistor and the 10BASE-T line driver are outside the digital design.
+\item \textbf{Known limits of the hardware as it is,} each with a tested workaround or a documented restriction:
+no stop-bit and start-level check in one receive cell; no underrun indication; no differential idle pulse and no
+link pulses for 10BASE-T; the trim window can settle on packet ends without the firmware check; a host access
+to memory halts both cores. Section 18.5 of the specification specifies changes for the first four.
+\item \textbf{Not rerun on the final RTL.} The stress tests with two protocols at once and the tolerance sweeps
+of the 10BASE-T suite (section~\ref{sec:state}).
+\item \textbf{Single cases not covered.} USB against a real host timing, GET\_REPORT on the oscillator under a
+frequency step, interrupts from line cell and timer flags during a wait, the one-core build, a 9-bit frame.
+\end{enumerate}
+
+\section{Folder structure and location of the tests}\label{sec:where}
+
+All paths are in the repository. Generated files (simulator images, firmware images, logs) go to
+\texttt{build/} folders, which are not part of the repository.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Path & Content \\
+\midrule
+\texttt{src/rsoc8/} (package rsys) & whole chip; \texttt{README.md} (map, how to run, RTL changes); history of every addition in \texttt{doc/history/} \\
+\texttt{src/rsoc8/rtl/} & RTL of all blocks; top level \texttt{rpe\_top.v} \\
+\texttt{src/rsoc8/tb/} & testbenches: \texttt{tb\_sys.v} (whole chip, all firmware tests), block testbenches \texttt{tb\_tim.v}, \texttt{tb\_clk.v}, \texttt{tb\_sync.v}, \texttt{tb\_ev.v}, \texttt{tb\_dual.v}, \texttt{tb\_clkctl.v}, \texttt{tb\_prot.v}, \texttt{tb\_host.v}; protocol models \texttt{uart\_model.v}, \texttt{spi\_master\_model.v}, \texttt{spi\_slave\_model.v}, \texttt{i2c\_master\_model.v}, \texttt{i2c\_slave\_model.v}, \texttt{i2c\_sensor.v}, \texttt{ws2812\_model.v}, \texttt{usb\_host.v}, \texttt{eth\_model.v}, \texttt{stress.v}; \texttt{osc\_model.v}; \texttt{stub\_core.v} (scripted bus user for the arbiter model test) \\
+\texttt{src/rsoc8/tb/ihp/} & Verilog model of the SRAM macro from the IHP Open PDK \\
+\texttt{src/rsoc8/tb/old/} & host link before the mailbox fix, used by one test that shows the fault \\
+\texttt{src/rsoc8/fw/} & firmware in C and assembly, the register header \texttt{rpe.h}, build scripts \texttt{build*.sh} \\
+\texttt{src/rsoc8/model/} & behavioural models in Python: \texttt{timers.py}, \texttt{events.py}, \texttt{dual.py}, \texttt{clkctl.py}, \texttt{prot.py}, \texttt{host.py} \\
+\texttt{src/rsoc8/tests/} & test scripts and suites (table below) \\
+\texttt{src/rsoc8/syn/} & logic synthesis script and the black box of the SRAM macro \\
+\texttt{src/rsoc8/blocks/dual/} with \texttt{tb/}, \texttt{model/}, \texttt{tests/} (package rdual) & two-core block: \texttt{rdual.v}, \texttt{rcore8d.v}; testbench \texttt{tb\_dual.v}; cycle models \texttt{rmodel.py}, \texttt{rmodel\_d.py}; tests \\
+\texttt{src/rsoc8/blocks/linecells/} with \texttt{tb/}, \texttt{model/}, \texttt{tests/} (package linecells) & line cells: \texttt{rlinecells.v}; testbenches \texttt{tb\_lc.v}, \texttt{tb\_lc2.v}; model \texttt{linecell.py} with its own cases in \texttt{test\_cell.py}; tests \\
+\texttt{test/} & cocotb tests through the Tiny Tapeout pins, for RTL and the routed netlist \\
+\texttt{src/config.json}, \texttt{src/timing.sdc} & flow configuration and timing constraints with the two-cycle exception \\
+\texttt{analog/} & oscillator macro: schematics, layout generator, results, report \\
+\bottomrule
+\end{tabularx}
+\caption{Folder structure in the repository.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLl@{}}
+\toprule
+Test & Files & Run by \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Package rsys, firmware tests on} \texttt{tb/tb\_sys.v}} \\
+1 UART, time base, pin change, flags (one core) & \texttt{fw/fw1.c} & \texttt{tests/run\_fw.sh} \\
+2 UART between the cores, shared memory, lock & \texttt{fw/fw2\_c0.c}, \texttt{fw2\_c1.c}, \texttt{fw2.h} & \texttt{run\_fw.sh} \\
+3, 4, 5 10BASE-T frame; receive from a generator; one core per direction & \texttt{fw/fw3.c}, \texttt{fw4.c}, \texttt{fw5\_c0.c}, \texttt{fw5\_c1.c} & \texttt{run\_fw.sh} \\
+6 timer, PWM, CRC & \texttt{fw/fw6.c} & \texttt{run\_fw.sh} \\
+7 clocking registers & \texttt{fw/fw7.c} & \texttt{run\_fw.sh} \\
+8 program protection & \texttt{fw/fw8.c} & \texttt{run\_fw.sh} \\
+9 oscillator, trim loop, clock output & \texttt{fw/fw9.c}, \texttt{tb/osc\_model.v} & \texttt{run\_fw.sh} \\
+Host link: load, status, mailbox, halt, step, inject & \texttt{fw/fwh.c}; host model inside \texttt{tb/tb\_sys.v} (\texttt{+spiload}, \texttt{+htest=1}) & \texttt{run\_fw.sh} \\
+10 WS2812 & \texttt{fw/fw10.c} & \texttt{run\_fw.sh} \\
+11 SPI, both ends on the chip & \texttt{fw/fw11\_c0.c}, \texttt{fw11\_c1.c} & \texttt{run\_fw.sh} \\
+12 I2C, both ends on the chip & \texttt{fw/fw12\_c0.c}, \texttt{fw12\_c1.c} & \texttt{run\_fw.sh} \\
+13 USB host and device on the chip & \texttt{fw/fw13\_c0.c}, \texttt{fw13\_c1.c}, \texttt{usb\_dev.S} & \texttt{run\_fw.sh} \\
+14 10BASE-T frame check with the CRC unit & \texttt{fw/fw14.c} & \texttt{run\_fw.sh} \\
+15 USB HID device, class requests, control endpoint & \texttt{fw/fwusb.c}, \texttt{usb\_stack.S}, \texttt{usb.h}, \texttt{gen\_usb\_desc.py}; \texttt{tb/usb\_host.v} & \texttt{run\_fw.sh} \\
+16 I2C sensor to USB & \texttt{fw/fwsens\_c1.c}, \texttt{sens.h}, \texttt{fwusb.c} with \texttt{-DSENSOR}; \texttt{tb/i2c\_sensor.v} & \texttt{run\_fw.sh} \\
+17 USB on the oscillator, sensor bridge on the oscillator & \texttt{fw/fwusb.c} with \texttt{-DOSC}, \texttt{oscusb.h}, \texttt{build\_usbo.sh}, \texttt{build\_senso.sh} & \texttt{run\_fw.sh} \\
+UART against the model, mailbox bridge, WS2812 bridge & \texttt{fw/fwu\_echo.c}, \texttt{fwu\_mbx.c}, \texttt{fwu\_ws.c}; \texttt{tb/uart\_model.v}, \texttt{ws2812\_model.v} & \texttt{tests/run\_uart.sh} \\
+SPI and I2C against the models & \texttt{fw/fw15\_spim.c}, \texttt{fw16\_spis.c}, \texttt{fw17\_i2cm.c}, \texttt{fw18\_i2cs.c}, \texttt{fw19\_arb.c}, \texttt{i2cm.h}; the four \texttt{tb/spi\_*}, \texttt{i2c\_*} models & \texttt{tests/spii2c.sh} \\
+10BASE-T endpoint (ARP, ping) & \texttt{fw/fweth.c}, \texttt{fweth\_io.S}; \texttt{tb/eth\_model.v} & \texttt{tests/run\_eth.sh}, \texttt{eth\_sweep.py} \\
+Interrupt during a wait & generated by \texttt{tests/waitirq.py} & \texttt{tests/run\_waitirq.sh} \\
+Two protocols at once, PWM, host access under load & \texttt{fw/fwx\_*.c}, \texttt{fwx.h}; \texttt{tb/stress.v} & \texttt{tests/stress\_t1.py} to \texttt{t4.py} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Package rsys, block tests}} \\
+Timer, PWM, CRC against the model & \texttt{model/timers.py}, \texttt{tb/tb\_tim.v} & \texttt{tests/tim\_test.py} (in \texttt{run\_fw.sh}) \\
+Clock switching, two unrelated clocks & \texttt{tb/tb\_clk.v} & \texttt{run\_fw.sh} \\
+Synchroniser order & \texttt{tb/tb\_sync.v} & \texttt{run\_fw.sh} \\
+Event flags; locks, wait, arbiter; clock control; protection; host commands against their models & \texttt{model/*.py}, \texttt{tb/tb\_ev.v}, \texttt{tb\_dual.v}, \texttt{tb\_clkctl.v}, \texttt{tb\_prot.v}, \texttt{tb\_host.v} & \texttt{tests/run\_models.sh} \\
+Fault insertion for these five blocks & \texttt{tests/fault\_run.py} & by hand, per block \\
+Fault insertion for the host link & \texttt{tests/mut\_host.py} & by hand \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Package rdual}} \\
+Random programs, directed, exact timing, stress loop, C tests & \texttt{tests/randtest\_d.py}, \texttt{directed.py}, \texttt{exact*.S}, \texttt{stress.S}, \texttt{ctest.c} & \texttt{tests/run\_all.sh} \\
+Arbitration matrix, code memory access, more seeds, fault insertion & \texttt{tests/arbsweep.py}, \texttt{arbcode.py}, \texttt{randstress.py}, \texttt{arbfault.sh} & \texttt{tests/run\_arb.sh} \\
+\bottomrule
+\end{tabularx}
+\caption{Where each test is. Test numbers are those of the specification. Paths are relative to the package directory.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}LLl@{}}
+\toprule
+Test & Files & Run by \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Package linecells}} \\
+Protocol cases and random configurations against the model, with the additional frame bit & \texttt{model/linecell.py}, \texttt{tb/tb\_lc.v} & \texttt{tests/run\_all.sh} (\texttt{lc\_test.py}) \\
+Directed tests of two pairs; bus conditions, edge count, start at the shift edge (blocks marked C9 and C8 at the end of the file) & \texttt{tb/tb\_lc2.v} & \texttt{tests/run\_all.sh} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Package rsys, added with draft 0.36}} \\
+UART with parity, ninth bit, two stop bits (tests A10, A11) & \texttt{fw/fwu\_par.c}, \texttt{tb/uart\_model.v} (scenario 9, \texttt{+urnstop}) & \texttt{tests/run\_uart.sh} (\texttt{ONLY="A1[01]"} runs only these) \\
+I2C slave with bus condition flags and start at the shift edge (test 20) & \texttt{fw/fw20\_i2cs9.c}, \texttt{tb/i2c\_master\_model.v} & \texttt{tests/spii2c.sh i2cs} \\
+\bottomrule
+\end{tabularx}
+\caption{Where each test is, continued: line cell package and the tests added with draft 0.36.}
+\end{table}
+
+\section{How to run the tests again}
+
+All commands are run in the folder of the package named in the first column: rsys in \texttt{src/rsoc8}, rdual in
+\texttt{src/rsoc8/blocks/dual}, linecells in \texttt{src/rsoc8/blocks/linecells}. \texttt{sh src/rsoc8/tests/ci.sh} runs
+the base regression of all three and compares the output with \texttt{tests/expected/}; the workflow
+\texttt{regression} runs it on every push.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Package & Command & Content and expected output \\
+\midrule
+rsys & \texttt{sh tests/run\_fw.sh} & base regression: firmware tests 1 to 17, loader, host test, timer model, clocking and synchroniser testbenches. Every line ends with \texttt{EXIT 0}, \texttt{PASS} or \texttt{USB PASS}; one line is expected to end with \texttt{EXIT 110} \\
+rsys & \texttt{sh tests/run\_models.sh} & five models against the RTL, 100 seeds each; \texttt{0 mismatching} per block. One directed line prints \texttt{DEVIATES} for the window rule; the model follows the rule of draft 0.34 \\
+rsys & \texttt{sh tests/run\_uart.sh} & UART, mailbox bridge, WS2812 bridge; last line \texttt{failures of expectation: 0} \\
+rsys & \texttt{sh tests/spii2c.sh <part>} & parts \texttt{spim}, \texttt{spis}, \texttt{i2cm}, \texttt{i2cs}, \texttt{arb}, \texttt{fault}; last line \texttt{0 FAIL} \\
+rsys & \texttt{sh tests/run\_eth.sh} & 10BASE-T endpoint; \texttt{ETHM PASS} per scenario set \\
+rsys & \texttt{sh tests/run\_waitirq.sh} & interrupt during a wait; \texttt{2376 runs, 0 failing} \\
+rsys & \texttt{python3 -I tests/stress\_t1.py together} and \texttt{stress\_t2.py}, \texttt{t3}, \texttt{t4} & two protocols at once; lines marked FAIL are the rates beyond the limit of the sweep \\
+rdual & \texttt{sh tests/run\_all.sh}, \texttt{sh tests/run\_arb.sh} & two-core block against the cycle model; arbitration matrix \\
+linecells & \texttt{sh tests/run\_all.sh} & line cells against the model \\
+\bottomrule
+\end{tabularx}
+\caption{Test suites. The base regression takes about 20 minutes\est{} on two processor cores, the arbitration
+matrix about 45 minutes, the others 2 to 25 minutes each.}
+\end{table}
+
+\section{State of the regression}\label{sec:state}
+
+On the RTL of draft 0.37 (25 November 2026, commit \texttt{c7f1d06} with the test additions of this issue) these
+suites were run and pass:
+
+\begin{itemize}
+\item the base regression: line cell suite, two-core suite, five block models, firmware suite; output equal to
+\texttt{tests/expected/} except for the cycle count of the extended clocking testbench, which was stored anew;
+\item the UART suite: 67 lines as expected, 0 failures of expectation;
+\item all six parts of the SPI and I2C suite: 99 lines ok, 0 FAIL;
+\item the wait test at core dividers 1, 2 and 3: 2\,376 runs, 0 failing;
+\item the 10BASE-T suite: the scenario sets at core dividers 1, 2 and 3 pass, divider 4 fails as documented,
+and the seven fault insertions fail as they must;
+\item the arbitration tests of the two-core block (\texttt{run\_arb.sh}, 43 minutes): matrix 5\,766 runs, the
+further sweeps at dividers 1 to 3, the interrupt and code memory cases, the random stress and the 100-seed
+suite, all with 0 failing or 0 mismatching.
+\end{itemize}
+
+The exact-timing check of the arbitration tests (rule U5) passes with 62 checks. Before a correction of the
+check on 25 November it reported 2 failing, for the class \texttt{sbisc\_tick} with the partner classes
+\texttt{in\_tick} and \texttt{sbisc\_tick}, also on the RTL as first committed to the repository (\texttt{dda59b4}).
+In this class the core with priority tests bit 0 of the testbench register \texttt{0x00F}, which counts the
+reads of both cores. A partner that reads the same register changes the tested value, and with it the skip
+decisions of the core with priority: a dependence through data that the testbench shares, not through the
+arbiter. The check now leaves out these two partners for this class and prints that it does so
+(\texttt{SHARED\_DATA} in \texttt{tests/arbsweep.py}); the other seven partners remain, and the matrix runs still
+compare these pairs with the model. With a fault inserted into the arbiter (priority of core 0 removed from
+the grant) the check fails for this class as it must.
+
+Not run on this RTL: the stress tests with two protocols at once; the tolerance sweeps of the 10BASE-T suite
+after the first duty cycle value (bit time error tolerated from $-16.4$ to $+49.7\,\%$, as in issue 2).
+
+\paragraph{State at issue 2.}
+
+On the RTL of draft 0.36 (21 November 2026, line cells with \texttt{LCX} and \texttt{LCEC}) these suites were run
+and pass: the line cell suite (48 cases, 400 random configurations, directed tests), the base regression, the
+UART suite (67 lines as expected, 0 failures of expectation), all six parts of the SPI and I2C suite, the wait
+test (2\,376 runs, 0 failing), and the scenarios and fault insertions of the 10BASE-T suite. The fault part of
+the SPI and I2C suite selected lines of \texttt{rlinecells.v} by number; it now selects them by their text and
+passes. Not run again on this RTL: the five block models (their blocks did not change), the arbitration
+matrix, the stress tests, the tolerance sweeps of the 10BASE-T suite (stopped after the first duty cycle
+value: bit time error tolerated from $-16.4$ to $+49.7\,\%$; the review log of the earlier run has $-16.4$ to $+47\,\%$, and the difference of the upper value was not examined).
+
+\end{document}

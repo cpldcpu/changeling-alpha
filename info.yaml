@@ -1,56 +1,67 @@
 # Tiny Tapeout project information
 project:
-  title:        ""      # Project title
-  author:       ""      # Your name
+  title:        "Changeling-alpha protocol emulator"      # Project title
+  author:       "Tim S. B. (cpldcpu)"      # Your name
   discord:      ""      # Your discord username, for communication and automatically assigning you a Tapeout role (optional)
-  description:  ""      # One line description of what your project does
+  description:  "Programmable protocol emulator: two 8-bit RISC cores with configurable line cells for UART, SPI, I2C, low-speed USB, 10BASE-T and WS2812"      # One line description of what your project does
   language:     "Verilog" # other examples include SystemVerilog, Amaranth, VHDL, etc
-  clock_hz:     0       # Clock frequency in Hz (or 0 if not applicable)
+  clock_hz:     60000000       # Clock frequency in Hz (or 0 if not applicable)
 
   # How many tiles your design occupies? A single tile is about 202x155 uM.
-  tiles: "1x1"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2, 8x2, 3x4, 4x4, 5x4, 6x4 or 8x4
+  tiles: "8x4"          # Valid values: 1x1, 1x2, 2x2, 3x2, 4x2, 6x2, 8x2, 3x4, 4x4, 5x4, 6x4 or 8x4
 
   # Your top module name must start with "tt_um_". Make it unique by including your github username:
-  top_module:  "tt_um_example"
+  top_module:  "tt_um_cpldcpu_changeling_alpha"
 
   # List your project's source files here.
   # Source files must be in ./src and you must list each source file separately, one per line.
   # Don't forget to also update `PROJECT_SOURCES` in test/Makefile.
   source_files:
-    - "project.v"
+    - "tt_um_cpldcpu_changeling_alpha.v"
+    - "sram_bb.v"
+    - "rsoc8/rtl/rcore8d.v"
+    - "rsoc8/rtl/rdual.v"
+    - "rsoc8/rtl/rlinecells.v"
+    - "rsoc8/rtl/rlcports.v"
+    - "rsoc8/rtl/revents.v"
+    - "rsoc8/rtl/rtimers.v"
+    - "rsoc8/rtl/rclock.v"
+    - "rsoc8/rtl/rhost.v"
+    - "rsoc8/rtl/rpe_top.v"
+    - "rpe_clk_analog_bb.v"
 
 # The pinout of your project. Leave unused pins blank. DO NOT delete or add any pins.
 # This section is for the datasheet/website. Use descriptive names (e.g., RX, TX, MOSI, SCL, SEG_A, etc.).
 pinout:
   # Inputs
-  ui[0]: ""
-  ui[1]: ""
-  ui[2]: ""
-  ui[3]: ""
-  ui[4]: ""
-  ui[5]: ""
-  ui[6]: ""
-  ui[7]: ""
+  ui[0]: "host link clock"
+  ui[1]: "host link chip select (low active)"
+  ui[2]: "host link data in"
+  ui[3]: "clock source strap (0 external clock, 1 internal oscillator)"
+  ui[4]: "reference input"
+  ui[5]: "input 5"
+  ui[6]: "input 6"
+  ui[7]: "input 7"
 
   # Outputs
-  uo[0]: ""
-  uo[1]: ""
-  uo[2]: ""
-  uo[3]: ""
-  uo[4]: ""
-  uo[5]: ""
-  uo[6]: ""
-  uo[7]: ""
+  uo[0]: "host link data out"
+  uo[1]: "clock output"
+  uo[2]: "debug signal"
+  uo[3]: "output 3"
+  uo[4]: "output 4"
+  uo[5]: "output 5 or PWM"
+  uo[6]: "output 6 or PWM"
+  uo[7]: "output 7 or PWM"
 
   # Bidirectional pins
-  uio[0]: ""
-  uio[1]: ""
-  uio[2]: ""
-  uio[3]: ""
-  uio[4]: ""
-  uio[5]: ""
-  uio[6]: ""
-  uio[7]: ""
+  uio[0]: "port pin 0, line cells"
+  uio[1]: "port pin 1, line cells"
+  uio[2]: "port pin 2, line cells"
+  uio[3]: "port pin 3, line cells"
+  uio[4]: "port pin 4, line cells"
+  uio[5]: "port pin 5, line cells"
+  uio[6]: "port pin 6, line cells"
+  uio[7]: "port pin 7, line cells"
 
 # Do not change!
 yaml_version: 6

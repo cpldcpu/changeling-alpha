@@ -1,0 +1,29 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @@VDD @@VSS @@en @@ictrl @@clk @symname"
+template="name=X1"}
+V {}
+S {}
+E {}
+L 4 -100 -60 100 -60 {}
+L 4 100 -60 100 60 {}
+L 4 100 60 -100 60 {}
+L 4 -100 60 -100 -60 {}
+T {cco_core} 100 -75 0 1 0.25 0.25 {}
+T {@name} -100 -75 0 0 0.22 0.22 {}
+L 4 -120 -20 -100 -20 {}
+B 5 -122.5 -22.5 -117.5 -17.5 {name=en dir=in}
+T {en} -94 -25 0 0 0.18 0.18 {}
+L 4 -120 20 -100 20 {}
+B 5 -122.5 17.5 -117.5 22.5 {name=ictrl dir=in}
+T {ictrl} -94 15 0 0 0.18 0.18 {}
+L 4 100 0 120 0 {}
+B 5 117.5 -2.5 122.5 2.5 {name=clk dir=out}
+T {clk} 94 -5 0 1 0.18 0.18 {}
+L 4 0 -80 0 -60 {}
+B 5 -2.5 -82.5 2.5 -77.5 {name=VDD dir=inout}
+T {VDD} 4 -48 0 0 0.16 0.16 {}
+L 4 0 60 0 80 {}
+B 5 -2.5 77.5 2.5 82.5 {name=VSS dir=inout}
+T {VSS} 4 54 0 0 0.16 0.16 {}

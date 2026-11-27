@@ -1,0 +1,71 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x0F} & \reg{CLKSTAT} & R & -- & Clock status \\
+\texttt{0x3F20} & \reg{CLKCTL} & R/W, protected & strap & Source request, oscillator enables, loop, reference selection \\
+\texttt{0x3F21} & \reg{OSCTRIM} & R/W & \texttt{0x80} & Trim value of the oscillator \\
+\texttt{0x3F22} & \reg{CLKCDIV} & R/W, protected & \texttt{0x01} & Core clock divider minus one \\
+\texttt{0x3F23} & \reg{CLKPDIV} & R/W & \texttt{0x00} & Peripheral clock divider minus one \\
+\texttt{0x3F24} & \reg{TRINT} & R/W & \texttt{0x00} & Start of a measurement, reference periods per measurement \\
+\texttt{0x3F25} & \reg{TRCNTL} & R & \texttt{0x00} & Count of the last measurement, low byte \\
+\texttt{0x3F26} & \reg{TRCNTH} & R & \texttt{0x00} & Count of the last measurement, high byte \\
+\texttt{0x3F27} & \reg{TRTGTL} & R/W & \texttt{0x00} & Target count, low byte \\
+\texttt{0x3F28} & \reg{TRTGTH} & R/W & \texttt{0x00} & Target count, high byte \\
+\texttt{0x3F29} & \reg{TRWIN} & R/W & \texttt{0x00} & Window for a valid measurement, in units of 64 counts \\
+\texttt{0x3F2A} & \reg{CLKOUT} & R/W & \texttt{0x00} & Clock output enable and divider \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{CLKSTAT} & \texttt{0x0F} & \texttt{STRAP} & \textcolor{black!45}{--} & \texttt{MVALID} & \texttt{MDONE} & \texttt{TRIMD} & \texttt{EXTP} & \texttt{OSCRUN} & \texttt{SRC} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{CLKCTL} & \texttt{0x3F20} & \texttt{RELAXEN} & \texttt{REFCELL} & \multicolumn{2}{c|}{\texttt{REFSEL}} & \texttt{TRIMD} & \texttt{LOOP} & \texttt{OSCEN} & \texttt{SRC} \\ \hline
+\texttt{OSCTRIM} & \texttt{0x3F21} & \multicolumn{8}{c|}{\texttt{trim value}} \\ \hline
+\texttt{CLKCDIV} & \texttt{0x3F22} & \multicolumn{8}{c|}{\texttt{CDIV}} \\ \hline
+\texttt{CLKPDIV} & \texttt{0x3F23} & \multicolumn{8}{c|}{\texttt{PDIV}} \\ \hline
+\texttt{TRINT} & \texttt{0x3F24} & \texttt{MEAS} & \multicolumn{7}{c|}{\texttt{INT}} \\ \hline
+\texttt{TRCNTL/H} & \texttt{0x3F25/26} & \multicolumn{8}{c|}{\texttt{count, 16 bits, read only}} \\ \hline
+\texttt{TRTGTL/H} & \texttt{0x3F27/28} & \multicolumn{8}{c|}{\texttt{target, 16 bits}} \\ \hline
+\texttt{TRWIN} & \texttt{0x3F29} & \multicolumn{8}{c|}{\texttt{window}} \\ \hline
+\texttt{CLKOUT} & \texttt{0x3F2A} & \texttt{EN} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{DIV}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Field & Reset & Meaning \\
+\midrule
+\reg{SRC} & status & Active source: 0 external, 1 internal \\
+\reg{OSCRUN}, \reg{EXTP} & status & The oscillator is running; edges were seen on the external clock pin \\
+\reg{TRIMD} & status & Copy of \reg{CLKCTL.TRIMD}, set by whoever trimmed the oscillator \\
+\reg{MDONE}, \reg{MVALID} & status & The last measurement is complete; it was inside the window \\
+\reg{STRAP} & status & Level of the clock source strap pin \\
+\reg{SRC} & strap & Requested source: 0 external, 1 internal. The switch is carried out when the target clock is present \\
+\reg{OSCEN} & strap & Enables the internal oscillator. The oscillator is also enabled while it is the requested or the active source \\
+\reg{LOOP} & 0 & After each valid measurement the trim is stepped by one towards the target \\
+\reg{TRIMD} & 0 & Free bit that the trimming code sets when the oscillator has been trimmed \\
+\reg{REFSEL} & 0 & Reference: 0 host link clock, 1 reference pin, 2 line cell reference event, 3 relaxation oscillator \\
+\reg{REFCELL} & 0 & Number of the receive cell that supplies the reference event (0 or 1) \\
+\reg{RELAXEN} & 0 & Enables the relaxation oscillator \\
+\reg{OSCTRIM} & \texttt{0x80} & Trim value of the oscillator. A higher value gives a higher frequency \\
+\reg{CDIV} & 1 & Core divider: the cores are enabled in one of every value+1 cycles of the source clock, 1 to 256. The value 0 is allowed for a source clock of 30\,MHz or less \\
+\reg{PDIV} & 0 & Peripheral divider, in the same way \\
+\reg{INT} & 0 & Reference periods per measurement, minus one. Not used with a line cell reference, where a measurement runs from one event to the next \\
+\reg{MEAS} & 0 & Writing a one starts a single measurement against the host link clock or the reference pin and clears \reg{MDONE}. Reads as one while a measurement waits for its first edge or runs; reads 0 when the reference is a line cell \\
+\reg{TRCNT} & 0 & Source clock cycles counted in the last measurement. Stops at \texttt{0xFFFF}. Reading the low byte latches the high byte; this latch exists once, not per core \\
+\reg{TRTGT} & 0 & Count that corresponds to the nominal frequency \\
+\reg{TRWIN} & 0 & A measurement is valid if it differs from the target by less than 64 times this value. 0 accepts every measurement. With a line cell as reference and a value other than 0, events not later than the target minus the window are not used \\
+\reg{CLKOUT} & 0 & Clock output enable, and divider: source clock divided by $2^{\mathtt{DIV}+1}$ \\
+\bottomrule
+\end{tabularx}\par}

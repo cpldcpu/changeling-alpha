@@ -1,0 +1,14 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
+# Area estimate with yosys for the SG13CMOS5L library. Replace the path of the liberty files
+# (IHP-Open-PDK: ihp-sg13cmos5l/libs.ref/sg13cmos5l_stdcell/lib) and run from src/rsoc8: yosys -q -l syn.log syn/syn_top.ys
+read_liberty -lib <path to the IHP liberty files>/sg13cmos5l_stdcell_typ_1p20V_25C.lib
+read_verilog -lib syn/sram_bb.v
+read_verilog -DIHP_CELLS rtl/rcore8d.v rtl/rdual.v rtl/rlinecells.v rtl/rlcports.v rtl/revents.v rtl/rtimers.v rtl/rclock.v rtl/rhost.v rtl/rpe_top.v rtl/rpe_osc_stub.v
+hierarchy -check -top rpe_chip
+synth -top rpe_chip -flatten
+dfflibmap -liberty <path to the IHP liberty files>/sg13cmos5l_stdcell_slow_1p08V_125C.lib
+abc -liberty <path to the IHP liberty files>/sg13cmos5l_stdcell_slow_1p08V_125C.lib
+opt_clean
+check
+stat -liberty <path to the IHP liberty files>/sg13cmos5l_stdcell_typ_1p20V_25C.lib

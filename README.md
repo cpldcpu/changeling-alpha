@@ -1,42 +1,63 @@
-![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
+![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/regression/badge.svg)
 
-# Tiny Tapeout Verilog Project Template
+# Changeling-alpha
 
-- [Read the documentation for project](docs/info.md)
+<!-- TEMPLATE. Headings and placeholders only. The introduction is written by Tim S. B. -->
 
-## What is Tiny Tapeout?
+## Introduction
 
-Tiny Tapeout is an educational project that aims to make it easier and cheaper than ever to get your digital and analog designs manufactured on a real chip.
+<!-- TODO (Tim): introduction for the competition. -->
 
-To learn more and get started, visit https://tinytapeout.com.
+## What the chip is
 
-## Set up your Verilog project
+<!-- TODO: five lines. Two 8-bit RISC cores, line cells, memories, host link, clock. Block diagram. -->
 
-1. Add your Verilog files to the `src` folder.
-2. Edit the [info.yaml](info.yaml) and update information about your project, paying special attention to the `source_files` and `top_module` properties. If you are upgrading an existing Tiny Tapeout project, check out our [online info.yaml migration tool](https://tinytapeout.github.io/tt-yaml-upgrade-tool/).
-3. Edit [docs/info.md](docs/info.md) and add a description of your project.
-4. Adapt the testbench to your design. See [test/README.md](test/README.md) for more information.
+## Protocols
 
-The GitHub action will automatically build the ASIC files using [LibreLane](https://www.zerotoasiccourse.com/terminology/librelane/).
+<!-- TODO: table protocol / roles / rates / how verified / status. Source: datasheet and verification report. -->
 
-## Enable GitHub actions to build the results page
+## Toolchain and example programs
 
-- [Enabling GitHub Pages](https://tinytapeout.com/faq/#my-github-action-is-failing-on-the-pages-part)
+<!-- TODO: compiler and options, header file, how to build and load, list of the examples in src/rsoc8/fw/examples. -->
 
-## Resources
+## Verification
 
-- [FAQ](https://tinytapeout.com/faq/)
-- [Digital design lessons](https://tinytapeout.com/digital_design/)
-- [Learn how semiconductors work](https://tinytapeout.com/siliwiz/)
-- [Join the community](https://tinytapeout.com/discord)
-- [Build your design locally](https://www.tinytapeout.com/guides/local-hardening/)
+<!-- TODO: summary of methods and results with a link to the verification report. -->
 
-## What next?
+## How AI tools were used
 
-- [Submit your design to the next shuttle](https://app.tinytapeout.com/).
-- Edit [this README](README.md) and explain your design, how it works, and how to test it.
-- Share your project on your social network of choice:
-  - LinkedIn [#tinytapeout](https://www.linkedin.com/search/results/content/?keywords=%23tinytapeout) [@TinyTapeout](https://www.linkedin.com/company/100708654/)
-  - Mastodon [#tinytapeout](https://chaos.social/tags/tinytapeout) [@matthewvenn](https://chaos.social/@matthewvenn)
-  - X (formerly Twitter) [#tinytapeout](https://twitter.com/hashtag/tinytapeout) [@tinytapeout](https://twitter.com/tinytapeout)
-  - Bluesky [@tinytapeout.com](https://bsky.app/profile/tinytapeout.com)
+<!-- TODO: required by the competition rules. -->
+
+## Documentation
+
+| Document | Content |
+|---|---|
+| [Changeling-alpha datasheet](src/rsoc8/doc/pdf/rpe_datasheet.pdf) | user documentation: blocks, instruction set, registers, examples |
+| [Verification report](src/rsoc8/doc/pdf/rpe_verification.pdf) | methods, results, location of every test |
+| [Architecture specification](src/rsoc8/doc/pdf/rpe_spec.pdf) | rules, design decisions, review history |
+| [Tiny Tapeout project page](docs/info.md) | short description, how to test, external hardware |
+
+## Repository map
+
+| Path | Content |
+|---|---|
+| `src/rsoc8/` | the design, independent of the Tiny Tapeout flow: RTL, testbenches, models, tests, firmware, documents. See [src/rsoc8/README.md](src/rsoc8/README.md) |
+| `src/tt_um_cpldcpu_changeling_alpha.v`, `src/sram_bb.v`, `src/rpe_clk_analog_bb.v`, `src/timing.sdc`, `src/config.json`, `src/pdn_cfg.tcl` | Tiny Tapeout top module, SRAM blackbox, flow configuration with the three SRAM macros |
+| `librelane_plugin_sram_pdn.py`, `odb_stripes.py` | power connection of the SRAM macros, from the Tiny Tapeout CMOS5L SRAM example |
+| `info.yaml`, `docs/info.md` | Tiny Tapeout project data and project page |
+| `test/` | cocotb tests through the pins, for RTL and gate-level simulation |
+| `analog/` | clock macro `rpe_clk_analog` (ring oscillator, relaxation oscillator): schematics, layout generator, simulation results, [report](analog/report/analog_clock_report.pdf); status in [analog/HANDOVER.md](analog/HANDOVER.md) |
+| `HANDOVER.md` | [state of the repository and of the hardening](HANDOVER.md), run history, open issues, local flow |
+| `.github/workflows/` | Tiny Tapeout flow (gds, precheck, gate-level test, docs, fpga), `regression` and `doc` |
+
+## Status and known limitations
+
+<!-- TODO: state of GDS and precheck, timing, what is not implemented, what is not verified. -->
+
+## Licence and credits
+
+Apache-2.0, see [LICENSE](LICENSE). The SRAM integration (`src/pdn_cfg.tcl`, `librelane_plugin_sram_pdn.py`,
+`odb_stripes.py` and the SRAM section of `src/config.json`) is taken from the Tiny Tapeout example
+[ttcodebot/ttihp-cmos5l-sram-example](https://github.com/ttcodebot/ttihp-cmos5l-sram-example), which is adapted
+from Ken Pettit's CMOS5L SRAM design. The behavioural SRAM models are from the IHP Open PDK. Files from other projects and the notices for
+the compiled firmware images are listed in [NOTICE](NOTICE). Source files of this project carry an SPDX tag.

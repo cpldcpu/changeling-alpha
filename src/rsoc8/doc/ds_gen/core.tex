@@ -1,0 +1,18 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x3C} & \reg{CCP} & W & -- & Signature for protected writes. One per core \\
+\texttt{0x3D} & \reg{SPL} & R/W & \texttt{0x00} & Stack pointer, low byte. One per core \\
+\texttt{0x3E} & \reg{SPH} & R/W & \texttt{0x00} & Stack pointer, bits 11 to 8. One per core \\
+\texttt{0x3F} & \reg{SREG} & R/W & \texttt{0x00} & Status flags. One per core \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{SREG} & \texttt{0x3F} & \texttt{I} & \texttt{T} & \texttt{H} & \texttt{S} & \texttt{V} & \texttt{N} & \texttt{Z} & \texttt{C} \\ \hline
+\end{tabular}\par}

@@ -1,0 +1,39 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x2A} & \reg{CRCIN}, \reg{CRCST} & R/W & \texttt{0x00} & Write: feeds one byte to the CRC unit. Read: status of the CRC unit, bit 7 \reg{EQF}, bit 6 \reg{EQ}, bit 5 \reg{BUSY} \\
+\texttt{0x3F40} & \reg{CRCCTL} & R/W & \texttt{0x00} & Enable, shift direction, bit source, owner \\
+\texttt{0x3F41} & \reg{CRCLEN} & R/W & \texttt{0x00} & Width of the CRC minus one \\
+\texttt{0x3F42--45} & \reg{CRCPOLY0..3} & R/W & \texttt{0x00} & Polynomial, low byte first \\
+\texttt{0x3F46--49} & \reg{CRCVAL0..3} & R/W & \texttt{0x00} & CRC value, low byte first \\
+\texttt{0x3F4A--4D} & \reg{CRCREF0..3} & R/W & \texttt{0x00} & Reference value, low byte first \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{CRCCTL} & \texttt{0x3F40} & \texttt{EN} & \texttt{RIGHT} & \multicolumn{3}{c|}{\texttt{CSRC}} & \textcolor{black!45}{--} & \texttt{BUSY} & \texttt{OWNER} \\ \hline
+\texttt{CRCLEN} & \texttt{0x3F41} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{5}{c|}{\texttt{width minus one}} \\ \hline
+\texttt{CRCPOLY0..3} & \texttt{0x3F42-45} & \multicolumn{8}{c|}{\texttt{polynomial, 32 bits}} \\ \hline
+\texttt{CRCVAL0..3} & \texttt{0x3F46-49} & \multicolumn{8}{c|}{\texttt{CRC value, 32 bits, R/W}} \\ \hline
+\texttt{CRCREF0..3} & \texttt{0x3F4A-4D} & \multicolumn{8}{c|}{\texttt{reference value, 32 bits}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Field & Meaning \\
+\midrule
+\reg{CRCCTL.EN}, \reg{RIGHT} & CRC unit enabled; shift direction: 0 towards the high bit, 1 towards the low bit \\
+\reg{CRCCTL.CSRC} & Bit source: 0 \reg{CRCIN}, 1 received bits of receive cell 0, 2 transmitted bits of transmit cell 0, 3 receive cell 1, 4 transmit cell 1. Stuffed bits are not included \\
+\reg{CRCREF} & Value that \reg{CRCVAL} is compared with, for example the residual of a correct frame \\
+\reg{CRCST.EQ} & \reg{CRCVAL} is equal to \reg{CRCREF} now. With left shift the low \reg{LEN}+1 bits are compared \\
+\reg{CRCST.EQF} & The same comparison at the last frame boundary: the last bit of a frame of the selected receive cell, or the last step of a byte written to \reg{CRCIN} \\
+\reg{CRCCTL.BUSY} & Read only. 1 while a byte written to \reg{CRCIN} is being processed, which takes the four clock cycles after the write \\
+\reg{CRCCTL.OWNER} & Core that uses the unit. The other core reads zero and its writes are ignored \\
+\bottomrule
+\end{tabularx}\par}

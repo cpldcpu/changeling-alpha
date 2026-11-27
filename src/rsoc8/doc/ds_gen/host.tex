@@ -1,0 +1,35 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x0C} & \reg{MBSTAT} & R & \texttt{0x40} & Mailbox status \\
+\texttt{0x0D} & \reg{MBDATA} & R/W & -- & Mailbox data: read from host, write to host \\
+\texttt{0x3F52} & \reg{DBGSEL} & R/W & \texttt{0x00} & Debug pin enable and signal selection \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{MBSTAT} & \texttt{0x0C} & \texttt{RXF} & \texttt{TXE} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{DBGSEL} & \texttt{0x3F52} & \texttt{EN} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{SEL}} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Register & Bits & Meaning \\
+\midrule
+\reg{MBSTAT} & \reg{RXF}, \reg{TXE} & A byte from the host is waiting; the host has taken the last byte written \\
+\reg{DBGSEL} & \reg{EN}, \reg{SEL} & Enables the debug pin and selects its signal: 0 and 1 sample point of receive cell 0 and 1, 2 and 3 transmitted bit of transmit cell 0 and 1, 4 and 5 accepted edge of receive cell 0 and 1, 6 and 7 reference event of receive cell 0 and 1, 8 and 9 clock enable of core 0 and 1, 10 a core is held by the bus arbiter, 11 peripheral clock enable, 12 core clock enable, 13 trim measurement waiting or running, 14 valid measurement, 15 output of the relaxation oscillator after the synchroniser. The pin shows the signal one clock cycle later \\
+\bottomrule
+\end{tabularx}\par}

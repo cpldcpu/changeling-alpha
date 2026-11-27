@@ -1,0 +1,36 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\begin{tikzpicture}[x=1mm,y=1mm,
+  b/.style={blk,font=\scriptsize,inner sep=2pt,minimum height=14mm,minimum width=70mm,text width=66mm},
+  ev/.style={ar,dashed}]
+  % left lane: trigger and timing
+  \node[b,fill=fillD,minimum width=34mm,text width=31mm,minimum height=16mm] (cp) at (17,150) {\textbf{Clock pin} \reg{CSEL}\\ \reg{TRIG} = 1: the edge opposite to \reg{EDGE} advances the cell};
+  \node[b,fill=fillC,minimum width=34mm,text width=31mm,minimum height=16mm] (rc) at (53,150) {\textbf{From the receive cell}\\ bit and strobe (\reg{TRIG} = 2); \reg{SRC} = 1 sends the received bit};
+  \node[b,fill=fillB,minimum height=24mm] (tr) at (35,120) {\textbf{Trigger select} \reg{TRIG}\\ when the next symbol is taken and a frame starts: 0 expiry of the timer, 1 edge on the clock pin (\reg{CPHA} skips the first), 2 strobe of the receive cell};
+  \node[b,fill=fillB,minimum height=22mm] (tm) at (35,88) {\textbf{Timer T}, 8 bit, prescaler \reg{PRE}\\ B at the start and at each expiry; \reg{TWOPH}: two periods per bit, phase bit; compare mode: thresholds A and C};
+  \node[b,fill=fillC,minimum height=16mm] (tmid) at (35,62) {\textbf{To the receive cell of the pair}\\ middle of each bit (sample point for \reg{TRIG} = 2)};
+  \node[b,fill=fillC,minimum height=16mm] (stat) at (35,40) {\textbf{Status register} \reg{LTnSTAT}\\ TXE, BUSY; \reg{LCEVM} selects the bits that set the event flag \reg{LTn}};
+  \node[b,fill=fillC,minimum height=16mm] (crc) at (35,18) {\textbf{To the CRC unit}\\ data bits with a strobe; no framing or stuffed bits};
+  % right lane: data path
+  \node[b,fill=fillD,minimum height=16mm] (fb) at (125,150) {\textbf{Frame buffer}, one frame\\ write \reg{LTnDATA}; a write while full is ignored; TXE};
+  \node[b,fill=fillA,minimum height=28mm] (sq) at (125,120) {\textbf{Frame shift register, bit sequence}\\ \reg{LSBF}, \reg{LEN}+1 bits; start and stop bit (\reg{SS}); stuffing (\reg{LIM}, \reg{RMODE}); next frame without a gap; end of packet (\reg{EOP}): two bit periods};
+  \node[b,fill=fillA,minimum height=26mm] (en) at (125,86) {\textbf{Encoder}\\ bit = \reg{LCENC}[4 data + 2 phase + previous output]; or compare mode (\reg{CMP}): high for A (one) or C (zero) of B time units};
+  \node[b,fill=fillD,minimum height=28mm] (os) at (125,52) {\textbf{Output stage}\\ true output; second output: complement or bit clock (\reg{NFN}, \reg{CPOL}, \reg{CPHA}); both low for \reg{LOW2} and for the end of packet; \reg{IDLE} level; not driven while the chip select is inactive};
+  \node[b,fill=fillD,minimum height=18mm] (pm) at (125,22) {\textbf{Pin multiplexer} (outside the cell)\\ \reg{OUTSEL}, \reg{NSEL}; enable \reg{OEM}; open drain \reg{ODE}};
+  % arrows
+  \draw[ar] (17,162) -- (cp.north) node[pos=0.3,right,lbl]{synchronised pin};
+  \draw[ar] (cp.south) -- (cp.south |- tr.north);
+  \draw[ar] (rc.south) -- (rc.south |- tr.north);
+  \draw[ar] (tm.north) -- (tm.north |- tr.south) node[pos=0.5,right,lbl]{expiry};
+  \draw[ar] (tr.east) -- (sq.west |- tr.east) node[pos=0.5,above,lbl]{next symbol};
+  \draw[ar] (tm.east) -- (en.west |- tm.east) node[pos=0.5,above,lbl,align=center]{phase,\\ time};
+  \draw[ar] (tm.south) -- (tmid.north) node[midway,right,lbl]{middle of bit};
+  \draw[ar] (fb) -- (sq) node[midway,right,lbl]{frame};
+  \draw[ar] (sq) -- (en) node[midway,right,lbl]{bit};
+  \draw[ar] (en) -- (os) node[midway,right,lbl]{level};
+  \draw[ar] (os) -- (pm) node[midway,right,lbl]{true, second};
+  \draw[ar] (pm.south) -- ++(0,-8) node[below,lbl]{pins \texttt{uio[7:0]}};
+  \draw[ar] (125,162) -- (fb.north) node[pos=0.3,right,lbl]{register bus};
+  \draw[ev] ($(sq.west)+(0,-8)$) -| (87.5,18) -- (crc.east);
+  \node[lbl,anchor=east] at (86,21.5) {bit, strobe};
+\end{tikzpicture}

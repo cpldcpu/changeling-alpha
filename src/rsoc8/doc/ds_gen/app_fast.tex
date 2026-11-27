@@ -1,0 +1,47 @@
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lllllL@{}}
+\toprule
+Addr. & Name & Access & Reset & Per core & Function \\
+\midrule
+\texttt{0x00} & \reg{PINR} & R & -- & & Bidirectional port: synchronised pin levels \\
+\texttt{0x01} & \reg{DDR} & R/W & \texttt{0x00} & & Bidirectional port: direction, 1 = output \\
+\texttt{0x02} & \reg{PORT} & R/W & \texttt{0x00} & & Bidirectional port: output value \\
+\texttt{0x03} & \reg{PINB} & R & -- & & Input pins: synchronised levels of all eight \\
+\texttt{0x04} & \reg{PORTC} & R/W & \texttt{0x00} & & Output pins \\
+\texttt{0x05} & \reg{LOCK} & R/W & \texttt{0x00} & view & Four locks for mutual exclusion between the cores \\
+\texttt{0x06} & \reg{IFRL} & W1C & \texttt{0x00} & bit 7 & Event flags, low byte \\
+\texttt{0x07} & \reg{IFRH} & mixed & \texttt{0x00} & bits 3:0 & Event flags, high byte \\
+\texttt{0x08} & \reg{LR0STAT} & mixed & \texttt{0x00} & owner & Receive cell 0: status \\
+\texttt{0x09} & \reg{LR0DATA} & R & -- & owner & Receive cell 0: oldest received frame; reading removes it \\
+\texttt{0x0A} & \reg{LT0STAT} & R & \texttt{0x40} & owner & Transmit cell 0: status \\
+\texttt{0x0B} & \reg{LT0DATA} & W & -- & owner & Transmit cell 0: frame to transmit \\
+\texttt{0x0C} & \reg{MBSTAT} & R & \texttt{0x40} & & Mailbox status \\
+\texttt{0x0D} & \reg{MBDATA} & R/W & -- & & Mailbox data: read from host, write to host \\
+\texttt{0x0E} & \reg{CORECTL} & R/W & \texttt{0x01} & bit 7 & Core enable, core state, number of the reading core \\
+\texttt{0x0F} & \reg{CLKSTAT} & R & -- & & Clock status \\
+\midrule
+\texttt{0x10} & \reg{LR1STAT} & mixed & \texttt{0x00} & owner & Receive cell 1: status \\
+\texttt{0x11} & \reg{LR1DATA} & R & -- & owner & Receive cell 1: oldest received frame \\
+\texttt{0x12} & \reg{LT1STAT} & R & \texttt{0x40} & owner & Transmit cell 1: status \\
+\texttt{0x13} & \reg{LT1DATA} & W & -- & owner & Transmit cell 1: frame to transmit \\
+\texttt{0x20} & \reg{WAITL} & R/W & \texttt{0x00} & yes & Wait mask, low byte. Writing it starts the wait \\
+\texttt{0x21} & \reg{WAITH} & R/W & \texttt{0x00} & yes & Wait mask, high byte \\
+\texttt{0x22} & \reg{IERL} & R/W & \texttt{0x00} & yes & Interrupt enable, low byte \\
+\texttt{0x23} & \reg{IERH} & R/W & \texttt{0x00} & yes & Interrupt enable, high byte \\
+\texttt{0x24} & \reg{DLYL} & R/W & \texttt{0x00} & write & Read: shared time base, low byte. Write: wake-up time of the core, low byte; sets the time and clears \reg{DLY} \\
+\texttt{0x25} & \reg{DLYH} & R/W & \texttt{0x00} & write & Read: time base, high byte. Write: wake-up time, high byte \\
+\texttt{0x26} & \reg{TCNTL} & R/W & \texttt{0x00} & & 16-bit timer count, low byte \\
+\texttt{0x27} & \reg{TCNTH} & R/W & \texttt{0x00} & & 16-bit timer count, high byte \\
+\texttt{0x28} & \reg{ICRL} & R & \texttt{0x00} & & Capture value, low byte \\
+\texttt{0x29} & \reg{ICRH} & R & \texttt{0x00} & & Capture value, high byte \\
+\texttt{0x2A} & \reg{CRCIN}, \reg{CRCST} & R/W & \texttt{0x00} & & Write: feeds one byte to the CRC unit. Read: status of the CRC unit, bit 7 \reg{EQF}, bit 6 \reg{EQ}, bit 5 \reg{BUSY} \\
+\midrule
+\texttt{0x3C} & \reg{CCP} & W & -- & yes & Signature for protected writes \\
+\texttt{0x3D} & \reg{SPL} & R/W & \texttt{0x00} & yes & Stack pointer, low byte \\
+\texttt{0x3E} & \reg{SPH} & R/W & \texttt{0x00} & yes & Stack pointer, bits 11 to 8 \\
+\texttt{0x3F} & \reg{SREG} & R/W & \texttt{0x00} & yes & Status flags \\
+\bottomrule
+\end{tabularx}
+\caption{Fast I/O tier. Addresses \texttt{0x00} to \texttt{0x1F} are bit-addressable. Addresses not listed are reserved. 35 of 64 are used.}
+\end{table}

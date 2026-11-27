@@ -1,0 +1,27 @@
+Changeling-alpha
+Copyright (c) 2026 Tim S. B. (GitHub: cpldcpu)
+
+Licensed under the Apache License, Version 2.0 (file LICENSE).
+
+Parts of the RTL, the tests, the scripts and the documents were written with AI assistance (Claude, Anthropic),
+under the direction of the copyright holder. The README describes the use of AI.
+
+This repository contains files from other projects:
+
+- Tiny Tapeout Verilog template for IHP (Tiny Tapeout, Apache-2.0):
+  .github/workflows/docs.yaml, fpga.yaml, gds.yaml, test.yaml; .devcontainer/; test/Makefile and test/tb.v
+  (both modified); info.yaml and docs/info.md (filled in).
+- Tiny Tapeout SRAM example (https://github.com/ttcodebot/ttihp-cmos5l-sram-example), Apache-2.0:
+  src/sram_bb.v, src/pdn_cfg.tcl (LibreLane contributors, Efabless Corporation), librelane_plugin_sram_pdn.py,
+  odb_stripes.py (Ken Pettit, https://github.com/kdp1965/ihp-um-janestreet-prism; modified here, see the file).
+- IHP Open PDK (https://github.com/IHP-GmbH/IHP-Open-PDK), Apache-2.0, Copyright IHP PDK Authors:
+  the behavioural SRAM models in src/rsoc8/tb/ihp/ and test/sram_model/. The hardened layout and the layout of
+  the clock macro in analog/ contain cells and devices of this PDK.
+
+Compiled firmware images (test/fw/uart_echo.hex, and the images that the test scripts build) contain the
+start-up code of the C library avr-libc (crtattiny40.o), which is distributed under the BSD-3-Clause licence.
+Its copyright notice, conditions and disclaimer are in LICENSES/avr-libc-copyright.txt.
+
+The images also contain routines of the GCC runtime library (libgcc), which is distributed under the GNU
+General Public License version 3 with the GCC Runtime Library Exception. The exception permits distributing
+the compiled images under other terms.

@@ -1,0 +1,11 @@
+random lockstep
+seeds 0..99: 0 mismatching, 317440 instruction starts compared, 81 runs with both cores
+dual: RTL equals model True, results True, wake-ups 3, interrupts 1, steals 0, refetches 1
+exact timing: RTL equals model True/True, core 1 identical with busy and with waiting core 0: True (604 instructions; core 0 held in 420 cycles of the busy run, core 1 in 0: True)
+stress, arbitration mode 0: RTL equals model True, both loops finished True, instructions 7933 + 7924, collisions 3599
+stress, arbitration mode 1: RTL equals model True, both loops finished True, instructions 8833 + 7137, collisions 3373
+stress, arbitration mode 2: RTL equals model True, both loops finished True, instructions 7147 + 8824, collisions 3372
+C test part 1 on core 0: ..........EXIT 0 cycles 148540
+C test part 2 on core 0: .EXIT 0 cycles 26606
+C test part 3 on core 0: .............EXIT 0 cycles 34545
+C test part 4 on core 0: ...EXIT 0 cycles 358

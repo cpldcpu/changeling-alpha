@@ -11,3 +11,33 @@ test/sim_build
 test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
+
+# rsoc8: generated files
+src/rsoc8/build
+src/rsoc8/blocks/*/build
+__pycache__/
+*.vvp
+# LaTeX
+src/rsoc8/doc/*.aux
+src/rsoc8/doc/*.log
+src/rsoc8/doc/*.out
+src/rsoc8/doc/*.toc
+src/rsoc8/doc/*.fls
+src/rsoc8/doc/*.fdb_latexmk
+src/rsoc8/doc/*.pdf
+runs/
+tt/
+venv/
+
+# analog: extracted/build/LaTeX temp files
+analog/*.ext
+analog/*_extracted.cir
+analog/build/
+analog/*/build/
+analog/report/*.aux
+analog/report/*.log
+analog/report/*.out
+analog/report/*.fls
+analog/report/*.fdb_latexmk
+analog/report/*.toc
+src/rsoc8/formal/build

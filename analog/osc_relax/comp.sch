@@ -1,0 +1,131 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {}
+V {}
+S {}
+E {}
+T {Low-Power PMOS-Input Continuous-Time Comparator (~1 uA total, out = inp > inn)} 0 -340 0 0 0.35 0.35 {layer=3}
+N -120 -280 1200 -280 {lab=VDD}
+N -120 280 1200 280 {lab=VSS}
+N -120 -160 -60 -160 {lab=en}
+N 310 -210 310 -280 {lab=VDD}
+N 310 -180 310 -210 {lab=VDD}
+N 230 -180 270 -180 {}
+N 310 -150 310 -120 {lab=ntail}
+N 180 -120 440 -120 {lab=ntail}
+N 180 -120 180 -70 {lab=ntail}
+N 440 -120 440 -70 {lab=ntail}
+N 180 -40 175 -40 {lab=VDD}
+N 175 -40 175 -85 {lab=VDD}
+N 175 -85 60 -85 {lab=VDD}
+N 60 -85 60 -280 {lab=VDD}
+N 440 -40 445 -40 {lab=VDD}
+N 445 -40 445 -85 {lab=VDD}
+N 445 -85 560 -85 {lab=VDD}
+N 560 -85 560 -280 {lab=VDD}
+N 220 -40 250 -40 {}
+N 370 -40 400 -40 {}
+N 180 -10 180 110 {lab=n_mir}
+N 440 -10 440 110 {lab=n_stg1}
+N 180 170 180 280 {lab=VSS}
+N 440 170 440 280 {lab=VSS}
+N 180 140 180 170 {lab=VSS}
+N 440 140 440 170 {lab=VSS}
+N 180 60 310 60 {lab=n_mir}
+N 310 60 310 140 {lab=n_mir}
+N 220 140 400 140 {lab=n_mir}
+N 720 -170 720 -280 {lab=VDD}
+N 720 -140 720 -170 {lab=VDD}
+N 640 -140 680 -140 {}
+N 720 170 720 280 {lab=VSS}
+N 720 140 720 170 {lab=VSS}
+N 440 40 680 40 {lab=n_stg1}
+N 680 40 680 140 {lab=n_stg1}
+N 720 -110 720 110 {lab=n_stg2}
+N 960 -170 960 -280 {lab=VDD}
+N 960 -140 960 -170 {lab=VDD}
+N 880 -140 920 -140 {}
+N 960 -110 960 0 {lab=n_stg2}
+N 960 0 720 0 {lab=n_stg2}
+N 720 0 1040 0 {lab=n_stg2}
+N 1120 0 1200 0 {lab=out}
+C {devices/title.sym} 40 380 0 0 {name=title1
+author=changeling-alpha}
+C {devices/iopin.sym} -120 -280 0 0 {name=p1
+lab=VDD}
+C {devices/iopin.sym} -120 280 0 0 {name=p2
+lab=VSS}
+C {devices/ipin.sym} -120 -160 0 0 {name=p3
+lab=en}
+C {devices/ipin.sym} -120 -80 0 0 {name=p4
+lab=vpbias}
+C {devices/ipin.sym} -120 40 0 0 {name=p5
+lab=inp}
+C {devices/ipin.sym} -120 120 0 0 {name=p6
+lab=inn}
+C {devices/lab_pin.sym} -60 -160 0 1 {name=l7
+lab=en}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 290 -180 0 0 {name=MP_TAIL
+w=1.0u
+l=4.0u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 200 -40 0 1 {name=MP_INP
+w=2.0u
+l=1.0u
+ng=1
+m=2
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 420 -40 0 0 {name=MP_INN
+w=2.0u
+l=1.0u
+ng=1
+m=2
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_nmos.sym} 200 140 0 1 {name=MN_L1
+w=0.5u
+l=2.0u
+ng=1
+m=1
+model=sg13_lv_nmos}
+C {sg13cmos5l_pr/sg13_lv_nmos.sym} 420 140 0 0 {name=MN_L2
+w=0.5u
+l=2.0u
+ng=1
+m=1
+model=sg13_lv_nmos}
+C {devices/lab_pin.sym} 230 -180 0 0 {name=l8
+lab=vpbias}
+C {devices/lab_pin.sym} 250 -40 0 1 {name=l9
+lab=inp}
+C {devices/lab_pin.sym} 370 -40 0 0 {name=l10
+lab=inn}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 700 -140 0 0 {name=MP_G2
+w=1.0u
+l=4.0u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_nmos.sym} 700 140 0 0 {name=MN_G2
+w=1.0u
+l=1.0u
+ng=1
+m=1
+model=sg13_lv_nmos}
+C {devices/lab_pin.sym} 640 -140 0 0 {name=l11
+lab=vpbias}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 940 -140 0 0 {name=MP_OFF
+w=0.5u
+l=0.5u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 880 -140 0 0 {name=l12
+lab=en}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 1080 0 0 0 {name=XINV_OUT
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/opin.sym} 1200 0 0 0 {name=p13
+lab=out}

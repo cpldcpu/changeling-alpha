@@ -1,0 +1,37 @@
+{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\toprule
+Address & Name & Access & Reset & Function \\
+\midrule
+\texttt{0x06} & \reg{IFRL} & W1C & \texttt{0x00} & Event flags, low byte. Per core: bit 7 \\
+\texttt{0x07} & \reg{IFRH} & mixed & \texttt{0x00} & Event flags, high byte. Per core: bits 3:0 \\
+\texttt{0x22} & \reg{IERL} & R/W & \texttt{0x00} & Interrupt enable, low byte. One per core \\
+\texttt{0x23} & \reg{IERH} & R/W & \texttt{0x00} & Interrupt enable, high byte. One per core \\
+\texttt{0x20} & \reg{WAITL} & R/W & \texttt{0x00} & Wait mask, low byte. Writing it starts the wait. One per core \\
+\texttt{0x21} & \reg{WAITH} & R/W & \texttt{0x00} & Wait mask, high byte. One per core \\
+\texttt{0x24} & \reg{DLYL} & R/W & \texttt{0x00} & Read: shared time base, low byte. Write: wake-up time of the core, low byte; sets the time and clears \reg{DLY}. The written value is per core \\
+\texttt{0x25} & \reg{DLYH} & R/W & \texttt{0x00} & Read: time base, high byte. Write: wake-up time, high byte. The written value is per core \\
+\bottomrule
+\end{tabularx}\par}
+
+\vspace{4pt}
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{IFRL} & \texttt{0x06} & \texttt{DLY} & \texttt{TRIM} & \texttt{MBX} & \texttt{OVF} & \texttt{OCB} & \texttt{OCA} & \texttt{CAPT} & \texttt{PC} \\ \hline
+\texttt{IFRH} & \texttt{0x07} & \texttt{SW3} & \texttt{SW2} & \texttt{SW1} & \texttt{SW0} & \texttt{LT1} & \texttt{LR1} & \texttt{LT0} & \texttt{LR0} \\ \hline
+\end{tabular}\par}
+
+\vspace{4pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Register & Bits & Meaning \\
+\midrule
+\reg{IFRL} & \reg{PC}, \reg{CAPT}, \reg{OCA}, \reg{OCB}, \reg{OVF} & Pin change, timer capture, compare A, compare B, overflow. Latched, W1C. \\
+ & \reg{MBX} & The mailbox holds a byte from the host. Level, follows \reg{MBSTAT.RXF} \\
+ & \reg{TRIM} & The trim counter completed a measurement inside the window. Latched, W1C \\
+ & \reg{DLY} & The time base reached the reading core's wake-up time. Cleared by writing a new wake-up time \\
+\reg{IFRH} & \reg{LR0}, \reg{LT0}, \reg{LR1}, \reg{LT1} & A status bit selected in \reg{LCEVM} is set in receive cell 0, transmit cell 0, receive cell 1 or transmit cell 1. Level. Only the owner core of the pair sees the flag \\
+ & \reg{SW0} to \reg{SW3} & Software flags, shared by both cores. R/W; set with SBI, cleared with CBI \\
+\bottomrule
+\end{tabularx}\par}

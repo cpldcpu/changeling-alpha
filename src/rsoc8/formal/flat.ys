@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+# SPDX-License-Identifier: Apache-2.0
+# Flattened netlist of rdual with both cores; every flip-flop becomes `always @(posedge clk) reg <= expr;`.
+# Run from src/rsoc8/formal/build with RTL as the directory of the RTL (see run.sh).
+hierarchy -top rdual
+proc
+flatten
+memory_map
+async2sync
+dffunmap
+opt_clean
+write_verilog -noattr rdual_flat.v

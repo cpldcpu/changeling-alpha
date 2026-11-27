@@ -1,0 +1,29 @@
+# Project xschemrc for changeling-alpha analog blocks (ihp-sg13cmos5l)
+
+set _script_dir [file normalize [file dirname [info script]]]
+
+if {![info exists env(PDK_ROOT)] || $env(PDK_ROOT) eq ""} {
+    set env(PDK_ROOT) "/home/tim/.ciel/ciel/ihp-sg13/versions/89d42ee6d2fd9b50b86a1aada6fee6673c3e6008"
+}
+if {![info exists env(PDK)] || $env(PDK) eq ""} {
+    set env(PDK) "ihp-sg13cmos5l"
+}
+
+source "$env(PDK_ROOT)/$env(PDK)/libs.tech/xschem/xschemrc"
+
+# Add analog design directories so hierarchical symbols resolve cleanly
+foreach sub {"" "bias" "osc_ring_std" "osc_ring_cc" "osc_relax" "clk_macro"} {
+    set p [file normalize [file join $_script_dir $sub]]
+    if {[file isdirectory $p]} {
+        append XSCHEM_LIBRARY_PATH ":${p}"
+    }
+}
+
+# Netlist standard cells as primitives referencing sg13cmos5l_stdcell.spice
+# (with exact foundry ad/as/pd/ps) rather than flattening schematic copies.
+set stdcell_view "empty"
+set stdcell_sym_type "primitive"
+
+# Ensure tcleval sees PDK_ROOT/PDK consistently
+set ::PDK_ROOT $env(PDK_ROOT)
+set ::PDK $env(PDK)

@@ -1,0 +1,147 @@
+VERSION 5.7 ;
+BUSBITCHARS "[]" ;
+DIVIDERCHAR "/" ;
+MACRO rpe_clk_analog
+  CLASS BLOCK ;
+  FOREIGN rpe_clk_analog 0.000 0.000 ;
+  ORIGIN 0.000 0.000 ;
+  SIZE 171.500 BY 137.000 ;
+  SYMMETRY X Y R90 ;
+  PIN VDD
+    DIRECTION INOUT ;
+    USE POWER ;
+    PORT
+      LAYER Metal4 ;
+        RECT 21.740 0.000 23.840 137.000 ;
+        RECT 66.700 0.000 68.800 137.000 ;
+        RECT 111.660 0.000 113.760 137.000 ;
+        RECT 156.620 0.000 158.720 137.000 ;
+    END
+  END VDD
+  PIN VSS
+    DIRECTION INOUT ;
+    USE GROUND ;
+    PORT
+      LAYER Metal4 ;
+        RECT 27.360 0.000 29.460 137.000 ;
+        RECT 72.320 0.000 74.420 137.000 ;
+        RECT 117.280 0.000 119.380 137.000 ;
+        RECT 162.240 0.000 164.340 137.000 ;
+    END
+  END VSS
+  PIN trim0
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 14.820 5.600 15.180 ;
+    END
+  END trim0
+  PIN trim1
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 15.480 5.600 15.840 ;
+    END
+  END trim1
+  PIN trim2
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 16.140 5.600 16.500 ;
+    END
+  END trim2
+  PIN trim3
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 16.800 5.600 17.160 ;
+    END
+  END trim3
+  PIN trim4
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 17.460 5.600 17.820 ;
+    END
+  END trim4
+  PIN trim5
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 27.220 5.600 27.580 ;
+    END
+  END trim5
+  PIN trim6
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 27.880 5.600 28.240 ;
+    END
+  END trim6
+  PIN trim7
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 28.540 5.600 28.900 ;
+    END
+  END trim7
+  PIN en_ring
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 5.320 5.600 5.680 ;
+    END
+  END en_ring
+  PIN en_relax
+    DIRECTION INPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 0.000 6.120 5.600 6.480 ;
+    END
+  END en_relax
+  PIN clk
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 165.900 22.320 171.500 22.680 ;
+    END
+  END clk
+  PIN clk_slow
+    DIRECTION OUTPUT ;
+    USE SIGNAL ;
+    PORT
+      LAYER Metal3 ;
+        RECT 165.900 116.940 171.500 117.300 ;
+    END
+  END clk_slow
+  OBS
+    LAYER Metal1 ;
+      RECT 0.000 0.000 171.500 137.000 ;
+    LAYER Metal2 ;
+      RECT 0.000 0.000 171.500 137.000 ;
+    LAYER Metal3 ;
+      RECT 5.800 0.000 165.700 137.000 ;
+    LAYER Metal4 ;
+      RECT 0.000 0.000 21.500 137.000 ;
+      RECT 24.080 0.000 27.120 137.000 ;
+      RECT 29.700 0.000 66.460 137.000 ;
+      RECT 69.040 0.000 72.080 137.000 ;
+      RECT 74.660 0.000 111.420 137.000 ;
+      RECT 114.000 0.000 117.040 137.000 ;
+      RECT 119.620 0.000 156.380 137.000 ;
+      RECT 158.960 0.000 162.000 137.000 ;
+      RECT 164.580 0.000 171.500 137.000 ;
+  END
+END rpe_clk_analog
+END LIBRARY

@@ -1,0 +1,665 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {}
+V {}
+S {}
+E {}
+T {8-bit Segmented PMOS Current DAC (3b Therm + 5b Binary + Pedestal, I_lsb=62.5 nA)} 0 -400 0 0 0.35 0.35 {layer=3}
+N -120 -340 2820 -340 {lab=VDD}
+N -120 1360 2820 1360 {lab=VSS}
+N -120 -140 40 -140 {lab=vnbias}
+N 80 -140 80 -110 {lab=VSS}
+N 80 -110 80 -90 {lab=VSS}
+N 80 -290 80 -340 {lab=VDD}
+N 80 -260 80 -290 {lab=VDD}
+N 80 -230 80 -170 {lab=vpdac}
+N 80 -200 20 -200 {lab=vpdac}
+N 20 -200 20 -260 {lab=vpdac}
+N 20 -260 40 -260 {lab=vpdac}
+N 200 -200 200 -185 {lab=vpdac}
+N 320 -290 320 -340 {lab=VDD}
+N 320 -260 320 -290 {lab=VDD}
+N 240 -260 280 -260 {}
+N 80 -200 320 -200 {lab=vpdac}
+N 320 -230 320 -200 {lab=vpdac}
+N -20 -10 20 -10 {}
+N 100 -10 140 -10 {}
+N -20 85 20 85 {}
+N 100 85 140 85 {}
+N -20 180 20 180 {}
+N 100 180 140 180 {}
+N -20 275 20 275 {}
+N 100 275 140 275 {}
+N -20 370 20 370 {}
+N 100 370 140 370 {}
+N -20 465 20 465 {}
+N 100 465 140 465 {}
+N -20 560 20 560 {}
+N 100 560 140 560 {}
+N 240 540 280 540 {}
+N 240 580 280 580 {}
+N 400 560 540 560 {lab=t5_b}
+N 460 560 460 540 {lab=t5_b}
+N 720 580 760 580 {}
+N 880 560 920 560 {}
+N 620 560 660 560 {lab=ab}
+N 660 560 660 540 {lab=ab}
+N 660 540 760 540 {lab=ab}
+N 710 540 710 522 {lab=ab}
+N 240 635 280 635 {}
+N 240 675 280 675 {}
+N 400 655 540 655 {lab=bc_n}
+N 460 655 460 635 {lab=bc_n}
+N 720 635 760 635 {}
+N 880 655 920 655 {}
+N 620 655 660 655 {lab=bc}
+N 660 655 660 675 {lab=bc}
+N 660 675 760 675 {lab=bc}
+N 710 675 710 693 {lab=bc}
+N 240 730 280 730 {}
+N 240 770 280 770 {}
+N 400 750 540 750 {lab=borc_n}
+N 460 750 460 730 {lab=borc_n}
+N 720 730 760 730 {}
+N 880 750 920 750 {}
+N 620 750 660 750 {lab=borc}
+N 660 750 660 770 {lab=borc}
+N 660 770 760 770 {lab=borc}
+N 710 770 710 788 {lab=borc}
+N 240 825 280 825 {}
+N 240 865 280 865 {}
+N 400 845 440 845 {}
+N 720 825 760 825 {}
+N 880 845 920 845 {}
+N 660 770 660 865 {lab=borc}
+N 660 865 760 865 {lab=borc}
+N 1100 1240 2820 1240 {lab=ictrl}
+N 1120 30 1120 50 {lab=VDD}
+N 1120 80 1120 50 {lab=VDD}
+N 1040 80 1080 80 {}
+N 1120 110 1120 170 {lab=d_PED}
+N 1120 200 1126 200 {lab=VDD}
+N 1126 200 1126 155 {lab=VDD}
+N 1126 155 1160 155 {lab=VDD}
+N 1040 200 1080 200 {}
+N 1120 230 1120 250 {lab=ictrl}
+N 1380 30 1380 50 {lab=VDD}
+N 1380 80 1380 50 {lab=VDD}
+N 1300 80 1340 80 {}
+N 1380 110 1380 170 {lab=d_B0}
+N 1380 200 1386 200 {lab=VDD}
+N 1386 200 1386 155 {lab=VDD}
+N 1386 155 1420 155 {lab=VDD}
+N 1300 200 1340 200 {}
+N 1380 230 1380 250 {lab=ictrl}
+N 1640 30 1640 50 {lab=VDD}
+N 1640 80 1640 50 {lab=VDD}
+N 1560 80 1600 80 {}
+N 1640 110 1640 170 {lab=d_B1}
+N 1640 200 1646 200 {lab=VDD}
+N 1646 200 1646 155 {lab=VDD}
+N 1646 155 1680 155 {lab=VDD}
+N 1560 200 1600 200 {}
+N 1640 230 1640 250 {lab=ictrl}
+N 1900 30 1900 50 {lab=VDD}
+N 1900 80 1900 50 {lab=VDD}
+N 1820 80 1860 80 {}
+N 1900 110 1900 170 {lab=d_B2}
+N 1900 200 1906 200 {lab=VDD}
+N 1906 200 1906 155 {lab=VDD}
+N 1906 155 1940 155 {lab=VDD}
+N 1820 200 1860 200 {}
+N 1900 230 1900 250 {lab=ictrl}
+N 2160 30 2160 50 {lab=VDD}
+N 2160 80 2160 50 {lab=VDD}
+N 2080 80 2120 80 {}
+N 2160 110 2160 170 {lab=d_B3}
+N 2160 200 2166 200 {lab=VDD}
+N 2166 200 2166 155 {lab=VDD}
+N 2166 155 2200 155 {lab=VDD}
+N 2080 200 2120 200 {}
+N 2160 230 2160 250 {lab=ictrl}
+N 2420 30 2420 50 {lab=VDD}
+N 2420 80 2420 50 {lab=VDD}
+N 2340 80 2380 80 {}
+N 2420 110 2420 170 {lab=d_B4}
+N 2420 200 2426 200 {lab=VDD}
+N 2426 200 2426 155 {lab=VDD}
+N 2426 155 2460 155 {lab=VDD}
+N 2340 200 2380 200 {}
+N 2420 230 2420 250 {lab=ictrl}
+N 2680 30 2680 50 {lab=VDD}
+N 2680 80 2680 50 {lab=VDD}
+N 2600 80 2640 80 {}
+N 2680 110 2680 170 {lab=d_T0}
+N 2680 200 2686 200 {lab=VDD}
+N 2686 200 2686 155 {lab=VDD}
+N 2686 155 2720 155 {lab=VDD}
+N 2600 200 2640 200 {}
+N 2680 230 2680 250 {lab=ictrl}
+N 1120 910 1120 930 {lab=VDD}
+N 1120 960 1120 930 {lab=VDD}
+N 1040 960 1080 960 {}
+N 1120 990 1120 1050 {lab=d_T1}
+N 1120 1080 1126 1080 {lab=VDD}
+N 1126 1080 1126 1035 {lab=VDD}
+N 1126 1035 1160 1035 {lab=VDD}
+N 1040 1080 1080 1080 {}
+N 1120 1110 1120 1240 {lab=ictrl}
+N 1380 910 1380 930 {lab=VDD}
+N 1380 960 1380 930 {lab=VDD}
+N 1300 960 1340 960 {}
+N 1380 990 1380 1050 {lab=d_T2}
+N 1380 1080 1386 1080 {lab=VDD}
+N 1386 1080 1386 1035 {lab=VDD}
+N 1386 1035 1420 1035 {lab=VDD}
+N 1300 1080 1340 1080 {}
+N 1380 1110 1380 1240 {lab=ictrl}
+N 1640 910 1640 930 {lab=VDD}
+N 1640 960 1640 930 {lab=VDD}
+N 1560 960 1600 960 {}
+N 1640 990 1640 1050 {lab=d_T3}
+N 1640 1080 1646 1080 {lab=VDD}
+N 1646 1080 1646 1035 {lab=VDD}
+N 1646 1035 1680 1035 {lab=VDD}
+N 1560 1080 1600 1080 {}
+N 1640 1110 1640 1240 {lab=ictrl}
+N 1900 910 1900 930 {lab=VDD}
+N 1900 960 1900 930 {lab=VDD}
+N 1820 960 1860 960 {}
+N 1900 990 1900 1050 {lab=d_T4}
+N 1900 1080 1906 1080 {lab=VDD}
+N 1906 1080 1906 1035 {lab=VDD}
+N 1906 1035 1940 1035 {lab=VDD}
+N 1820 1080 1860 1080 {}
+N 1900 1110 1900 1240 {lab=ictrl}
+N 2160 910 2160 930 {lab=VDD}
+N 2160 960 2160 930 {lab=VDD}
+N 2080 960 2120 960 {}
+N 2160 990 2160 1050 {lab=d_T5}
+N 2160 1080 2166 1080 {lab=VDD}
+N 2166 1080 2166 1035 {lab=VDD}
+N 2166 1035 2200 1035 {lab=VDD}
+N 2080 1080 2120 1080 {}
+N 2160 1110 2160 1240 {lab=ictrl}
+N 2420 910 2420 930 {lab=VDD}
+N 2420 960 2420 930 {lab=VDD}
+N 2340 960 2380 960 {}
+N 2420 990 2420 1050 {lab=d_T6}
+N 2420 1080 2426 1080 {lab=VDD}
+N 2426 1080 2426 1035 {lab=VDD}
+N 2426 1035 2460 1035 {lab=VDD}
+N 2340 1080 2380 1080 {}
+N 2420 1110 2420 1240 {lab=ictrl}
+C {devices/title.sym} 0 1540 0 0 {name=title1
+author=changeling-alpha}
+C {devices/iopin.sym} -120 -340 0 0 {name=p1
+lab=VDD}
+C {devices/iopin.sym} -120 1360 0 0 {name=p2
+lab=VSS}
+C {devices/ipin.sym} -120 -240 0 0 {name=p3
+lab=en}
+C {devices/ipin.sym} -120 -140 0 0 {name=p4
+lab=vnbias}
+C {devices/ipin.sym} -120 40 0 0 {name=p5
+lab=trim7}
+C {devices/ipin.sym} -120 100 0 0 {name=p6
+lab=trim6}
+C {devices/ipin.sym} -120 160 0 0 {name=p7
+lab=trim5}
+C {devices/ipin.sym} -120 220 0 0 {name=p8
+lab=trim4}
+C {devices/ipin.sym} -120 280 0 0 {name=p9
+lab=trim3}
+C {devices/ipin.sym} -120 340 0 0 {name=p10
+lab=trim2}
+C {devices/ipin.sym} -120 400 0 0 {name=p11
+lab=trim1}
+C {devices/ipin.sym} -120 460 0 0 {name=p12
+lab=trim0}
+C {sg13cmos5l_pr/sg13_lv_nmos.sym} 60 -140 0 0 {name=MN_DIV
+w=0.3u
+l=4.0u
+ng=1
+m=1
+model=sg13_lv_nmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 60 -260 0 0 {name=MP_IN
+w=1.5u
+l=4.0u
+ng=1
+m=2
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 300 -260 0 0 {name=MP_DAC_OFF
+w=0.5u
+l=0.5u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 80 -90 0 0 {name=l13
+lab=VSS}
+C {devices/lab_pin.sym} 200 -185 0 1 {name=l14
+lab=vpdac}
+C {devices/lab_pin.sym} 240 -260 0 0 {name=l15
+lab=en}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 -10 0 0 {name=XINV_EN
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 -10 0 0 {name=l16
+lab=en}
+C {devices/lab_pin.sym} 140 -10 0 1 {name=l17
+lab=enb}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 85 0 0 {name=XINV_B0
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 85 0 0 {name=l18
+lab=trim0}
+C {devices/lab_pin.sym} 140 85 0 1 {name=l19
+lab=b0_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 180 0 0 {name=XINV_B1
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 180 0 0 {name=l20
+lab=trim1}
+C {devices/lab_pin.sym} 140 180 0 1 {name=l21
+lab=b1_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 275 0 0 {name=XINV_B2
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 275 0 0 {name=l22
+lab=trim2}
+C {devices/lab_pin.sym} 140 275 0 1 {name=l23
+lab=b2_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 370 0 0 {name=XINV_B3
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 370 0 0 {name=l24
+lab=trim3}
+C {devices/lab_pin.sym} 140 370 0 1 {name=l25
+lab=b3_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 465 0 0 {name=XINV_B4
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 465 0 0 {name=l26
+lab=trim4}
+C {devices/lab_pin.sym} 140 465 0 1 {name=l27
+lab=b4_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 60 560 0 0 {name=XINV_A
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} -20 560 0 0 {name=l28
+lab=trim7}
+C {devices/lab_pin.sym} 140 560 0 1 {name=l29
+lab=t3_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_nand2_2.sym} 340 560 0 0 {name=XN_AB
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 240 540 0 0 {name=l30
+lab=trim7}
+C {devices/lab_pin.sym} 240 580 0 0 {name=l31
+lab=trim6}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 580 560 0 0 {name=XI_AB
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 460 540 0 1 {name=l32
+lab=t5_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_nand2_2.sym} 820 560 0 0 {name=XN_ABC
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 720 580 0 0 {name=l33
+lab=trim5}
+C {devices/lab_pin.sym} 920 560 0 1 {name=l34
+lab=t6_b}
+C {devices/lab_pin.sym} 710 522 0 0 {name=l35
+lab=ab}
+C {sg13cmos5l_stdcells/sg13cmos5l_nand2_2.sym} 340 655 0 0 {name=XN_BC
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 240 635 0 0 {name=l36
+lab=trim6}
+C {devices/lab_pin.sym} 240 675 0 0 {name=l37
+lab=trim5}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 580 655 0 0 {name=XI_BC
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 460 635 0 1 {name=l38
+lab=bc_n}
+C {sg13cmos5l_stdcells/sg13cmos5l_nor2_1.sym} 820 655 0 0 {name=XNO_T2
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 720 635 0 0 {name=l39
+lab=trim7}
+C {devices/lab_pin.sym} 920 655 0 1 {name=l40
+lab=t2_b}
+C {devices/lab_pin.sym} 710 693 0 0 {name=l41
+lab=bc}
+C {sg13cmos5l_stdcells/sg13cmos5l_nor2_1.sym} 340 750 0 0 {name=XNO_BORC
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 240 730 0 0 {name=l42
+lab=trim6}
+C {devices/lab_pin.sym} 240 770 0 0 {name=l43
+lab=trim5}
+C {sg13cmos5l_stdcells/sg13cmos5l_inv_1.sym} 580 750 0 0 {name=XI_BORC
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 460 730 0 1 {name=l44
+lab=borc_n}
+C {sg13cmos5l_stdcells/sg13cmos5l_nand2_2.sym} 820 750 0 0 {name=XN_T4
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 720 730 0 0 {name=l45
+lab=trim7}
+C {devices/lab_pin.sym} 920 750 0 1 {name=l46
+lab=t4_b}
+C {devices/lab_pin.sym} 710 788 0 1 {name=l47
+lab=borc}
+C {sg13cmos5l_stdcells/sg13cmos5l_nor2_1.sym} 340 845 0 0 {name=XNO_T1
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 240 825 0 0 {name=l48
+lab=trim7}
+C {devices/lab_pin.sym} 240 865 0 0 {name=l49
+lab=trim6}
+C {devices/lab_pin.sym} 440 845 0 1 {name=l50
+lab=t1_b}
+C {sg13cmos5l_stdcells/sg13cmos5l_nor2_1.sym} 820 845 0 0 {name=XNO_T0
+VDD=VDD
+VSS=VSS
+prefix=sg13cmos5l_}
+C {devices/lab_pin.sym} 720 825 0 0 {name=l51
+lab=trim7}
+C {devices/lab_pin.sym} 920 845 0 1 {name=l52
+lab=t0_b}
+C {devices/opin.sym} 2820 1240 0 0 {name=p53
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1100 80 0 0 {name=MPC_PED
+w=0.5u
+l=4.0u
+ng=1
+m=48
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1100 200 0 0 {name=MPS_PED
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1120 30 0 0 {name=l54
+lab=VDD}
+C {devices/lab_pin.sym} 1040 80 0 0 {name=l55
+lab=vpdac}
+C {devices/lab_pin.sym} 1160 155 0 1 {name=l56
+lab=VDD}
+C {devices/lab_pin.sym} 1040 200 0 0 {name=l57
+lab=enb}
+C {devices/lab_pin.sym} 1120 250 0 0 {name=l58
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1360 80 0 0 {name=MPC_B0
+w=0.5u
+l=4.0u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1360 200 0 0 {name=MPS_B0
+w=1.0u
+l=0.2u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1380 30 0 0 {name=l59
+lab=VDD}
+C {devices/lab_pin.sym} 1300 80 0 0 {name=l60
+lab=vpdac}
+C {devices/lab_pin.sym} 1420 155 0 1 {name=l61
+lab=VDD}
+C {devices/lab_pin.sym} 1300 200 0 0 {name=l62
+lab=b0_b}
+C {devices/lab_pin.sym} 1380 250 0 0 {name=l63
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1620 80 0 0 {name=MPC_B1
+w=0.5u
+l=4.0u
+ng=1
+m=2
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1620 200 0 0 {name=MPS_B1
+w=1.0u
+l=0.2u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1640 30 0 0 {name=l64
+lab=VDD}
+C {devices/lab_pin.sym} 1560 80 0 0 {name=l65
+lab=vpdac}
+C {devices/lab_pin.sym} 1680 155 0 1 {name=l66
+lab=VDD}
+C {devices/lab_pin.sym} 1560 200 0 0 {name=l67
+lab=b1_b}
+C {devices/lab_pin.sym} 1640 250 0 0 {name=l68
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1880 80 0 0 {name=MPC_B2
+w=0.5u
+l=4.0u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1880 200 0 0 {name=MPS_B2
+w=1.0u
+l=0.2u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1900 30 0 0 {name=l69
+lab=VDD}
+C {devices/lab_pin.sym} 1820 80 0 0 {name=l70
+lab=vpdac}
+C {devices/lab_pin.sym} 1940 155 0 1 {name=l71
+lab=VDD}
+C {devices/lab_pin.sym} 1820 200 0 0 {name=l72
+lab=b2_b}
+C {devices/lab_pin.sym} 1900 250 0 0 {name=l73
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2140 80 0 0 {name=MPC_B3
+w=0.5u
+l=4.0u
+ng=1
+m=8
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2140 200 0 0 {name=MPS_B3
+w=1.0u
+l=0.2u
+ng=1
+m=1
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 2160 30 0 0 {name=l74
+lab=VDD}
+C {devices/lab_pin.sym} 2080 80 0 0 {name=l75
+lab=vpdac}
+C {devices/lab_pin.sym} 2200 155 0 1 {name=l76
+lab=VDD}
+C {devices/lab_pin.sym} 2080 200 0 0 {name=l77
+lab=b3_b}
+C {devices/lab_pin.sym} 2160 250 0 0 {name=l78
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2400 80 0 0 {name=MPC_B4
+w=0.5u
+l=4.0u
+ng=1
+m=16
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2400 200 0 0 {name=MPS_B4
+w=1.0u
+l=0.2u
+ng=1
+m=2
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 2420 30 0 0 {name=l79
+lab=VDD}
+C {devices/lab_pin.sym} 2340 80 0 0 {name=l80
+lab=vpdac}
+C {devices/lab_pin.sym} 2460 155 0 1 {name=l81
+lab=VDD}
+C {devices/lab_pin.sym} 2340 200 0 0 {name=l82
+lab=b4_b}
+C {devices/lab_pin.sym} 2420 250 0 0 {name=l83
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2660 80 0 0 {name=MPC_T0
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2660 200 0 0 {name=MPS_T0
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 2680 30 0 0 {name=l84
+lab=VDD}
+C {devices/lab_pin.sym} 2600 80 0 0 {name=l85
+lab=vpdac}
+C {devices/lab_pin.sym} 2720 155 0 1 {name=l86
+lab=VDD}
+C {devices/lab_pin.sym} 2600 200 0 0 {name=l87
+lab=t0_b}
+C {devices/lab_pin.sym} 2680 250 0 0 {name=l88
+lab=ictrl}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1100 960 0 0 {name=MPC_T1
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1100 1080 0 0 {name=MPS_T1
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1120 910 0 0 {name=l89
+lab=VDD}
+C {devices/lab_pin.sym} 1040 960 0 0 {name=l90
+lab=vpdac}
+C {devices/lab_pin.sym} 1160 1035 0 1 {name=l91
+lab=VDD}
+C {devices/lab_pin.sym} 1040 1080 0 0 {name=l92
+lab=t1_b}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1360 960 0 0 {name=MPC_T2
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1360 1080 0 0 {name=MPS_T2
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1380 910 0 0 {name=l93
+lab=VDD}
+C {devices/lab_pin.sym} 1300 960 0 0 {name=l94
+lab=vpdac}
+C {devices/lab_pin.sym} 1420 1035 0 1 {name=l95
+lab=VDD}
+C {devices/lab_pin.sym} 1300 1080 0 0 {name=l96
+lab=t2_b}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1620 960 0 0 {name=MPC_T3
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1620 1080 0 0 {name=MPS_T3
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1640 910 0 0 {name=l97
+lab=VDD}
+C {devices/lab_pin.sym} 1560 960 0 0 {name=l98
+lab=vpdac}
+C {devices/lab_pin.sym} 1680 1035 0 1 {name=l99
+lab=VDD}
+C {devices/lab_pin.sym} 1560 1080 0 0 {name=l100
+lab=t3_b}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1880 960 0 0 {name=MPC_T4
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 1880 1080 0 0 {name=MPS_T4
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 1900 910 0 0 {name=l101
+lab=VDD}
+C {devices/lab_pin.sym} 1820 960 0 0 {name=l102
+lab=vpdac}
+C {devices/lab_pin.sym} 1940 1035 0 1 {name=l103
+lab=VDD}
+C {devices/lab_pin.sym} 1820 1080 0 0 {name=l104
+lab=t4_b}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2140 960 0 0 {name=MPC_T5
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2140 1080 0 0 {name=MPS_T5
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 2160 910 0 0 {name=l105
+lab=VDD}
+C {devices/lab_pin.sym} 2080 960 0 0 {name=l106
+lab=vpdac}
+C {devices/lab_pin.sym} 2200 1035 0 1 {name=l107
+lab=VDD}
+C {devices/lab_pin.sym} 2080 1080 0 0 {name=l108
+lab=t5_b}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2400 960 0 0 {name=MPC_T6
+w=0.5u
+l=4.0u
+ng=1
+m=32
+model=sg13_lv_pmos}
+C {sg13cmos5l_pr/sg13_lv_pmos.sym} 2400 1080 0 0 {name=MPS_T6
+w=1.0u
+l=0.2u
+ng=1
+m=4
+model=sg13_lv_pmos}
+C {devices/lab_pin.sym} 2420 910 0 0 {name=l109
+lab=VDD}
+C {devices/lab_pin.sym} 2340 960 0 0 {name=l110
+lab=vpdac}
+C {devices/lab_pin.sym} 2460 1035 0 1 {name=l111
+lab=VDD}
+C {devices/lab_pin.sym} 2340 1080 0 0 {name=l112
+lab=t6_b}

@@ -1,0 +1,19 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\begin{tabularx}{\linewidth}{@{}l l L l L@{}}
+\toprule
+ & \multicolumn{2}{l}{Transmit cell} & \multicolumn{2}{l}{Receive cell} \\
+\midrule
+\texttt{LCCTRL} & \texttt{0xA0} & enabled; transmitter on & \texttt{0xC0} & enabled; receiver on \\
+\texttt{LCPIN} & \texttt{0x01} & pins always driven & \texttt{0x00} & input pin 0 \\
+\texttt{LCOUT} & \texttt{0x10} & true output on pin 0 &  &  \\
+\texttt{LCTIM} & \texttt{0x00} & next bit from the timer & \texttt{0xB0} & falling edge; accepted only while waiting; wait after each frame \\
+\texttt{LCA} &  &  & \texttt{12} & 12 time units from the edge to the first sample \\
+\texttt{LCB} & \texttt{8} & 8 time units per bit & \texttt{8} & 8 time units between samples, and idle timeout \\
+\texttt{LCDEC} &  &  & \texttt{0xF0} & level \\
+\texttt{LCENC} & \texttt{0xF0} & NRZ &  &  \\
+\texttt{LCSH} & \texttt{0xF1} & 8 bits; LSB first; start and stop bit & \texttt{0xF0} & 8 bits; LSB first \\
+\texttt{LCRUN} & \texttt{0x04} & idle level high &  &  \\
+\texttt{LCEVM} &  &  & \texttt{0x80} & event flag on \texttt{RXF} \\
+\bottomrule
+\end{tabularx}

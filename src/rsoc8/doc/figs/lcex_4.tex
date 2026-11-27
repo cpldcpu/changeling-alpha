@@ -1,0 +1,19 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\begin{tabularx}{\linewidth}{@{}l l L l L@{}}
+\toprule
+ & \multicolumn{2}{l}{Transmit cell} & \multicolumn{2}{l}{Receive cell} \\
+\midrule
+\texttt{LCCTRL} & \texttt{0xA0} & enabled; transmitter on & \texttt{0xD0} & enabled; receiver on; time unit half a clock cycle \\
+\texttt{LCPIN} & \texttt{0x02} & pins driven while busy & \texttt{0x10} & input pin 0; inverted \\
+\texttt{LCOUT} & \texttt{0x10} & true output on pin 0 &  &  \\
+\texttt{LCTIM} & \texttt{0x04} & next bit from the timer; two periods per bit & \texttt{0xE8} & both edges; accepted only while waiting; wait after each sample \\
+\texttt{LCA} &  &  & \texttt{9} & 9 time units from the edge to the first sample \\
+\texttt{LCB} & \texttt{3} & 3 time units per period & \texttt{24} & 24 time units between samples, and idle timeout \\
+\texttt{LCDEC} &  &  & \texttt{0xF0} & level \\
+\texttt{LCENC} & \texttt{0xC3} & Manchester &  &  \\
+\texttt{LCSH} & \texttt{0xF0} & 8 bits; LSB first & \texttt{0xF2} & 8 bits; LSB first; search for the match pattern \\
+\texttt{LCMATCH} &  &  & \texttt{0xD5} & pattern \\
+\texttt{LCEVM} &  &  & \texttt{0x80} & event flag on \texttt{RXF} \\
+\bottomrule
+\end{tabularx}

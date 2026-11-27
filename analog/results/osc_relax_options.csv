@@ -1,0 +1,5 @@
+option,M,ichg_nom,freq_tt_kHz,vdd_sens_pct_per_V,temp_drift_-40_to_125C_pct,leak_125C,est_passive_area
+cmomf_M10,10,~50 nA,111.115,+12.00,-4.99,0.000 nA,~2730 um2 (1800 R + 930 C)
+cmomf_M1,1,~500 nA,110.869,+14.56,-5.52,0.000 nA,~11100 um2 (1800 R + 9300 C)
+hv_moscap_M10,10,~50 nA,97.236,+9.99,-4.92,0.000 nA,~2050 um2 (1800 R + 250 C)
+hv_moscap_M1,1,~500 nA,96.296,+12.51,-3.98,0.000 nA,~4300 um2 (1800 R + 2500 C)

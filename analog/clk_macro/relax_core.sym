@@ -1,0 +1,32 @@
+v {xschem version=3.4.4 file_version=1.2}
+G {}
+K {type=subcircuit
+format="@name @@VDD @@VSS @@en @@vpbias @@vnbias @@clk_slow @symname"
+template="name=X1"}
+V {}
+S {}
+E {}
+L 4 -100 -80 100 -80 {}
+L 4 100 -80 100 80 {}
+L 4 100 80 -100 80 {}
+L 4 -100 80 -100 -80 {}
+T {relax_core} 100 -95 0 1 0.25 0.25 {}
+T {@name} -100 -95 0 0 0.22 0.22 {}
+L 4 -120 -40 -100 -40 {}
+B 5 -122.5 -42.5 -117.5 -37.5 {name=en dir=in}
+T {en} -94 -45 0 0 0.18 0.18 {}
+L 4 -120 0 -100 0 {}
+B 5 -122.5 -2.5 -117.5 2.5 {name=vpbias dir=in}
+T {vpbias} -94 -5 0 0 0.18 0.18 {}
+L 4 -120 40 -100 40 {}
+B 5 -122.5 37.5 -117.5 42.5 {name=vnbias dir=in}
+T {vnbias} -94 35 0 0 0.18 0.18 {}
+L 4 100 0 120 0 {}
+B 5 117.5 -2.5 122.5 2.5 {name=clk_slow dir=out}
+T {clk_slow} 94 -5 0 1 0.18 0.18 {}
+L 4 0 -100 0 -80 {}
+B 5 -2.5 -102.5 2.5 -97.5 {name=VDD dir=inout}
+T {VDD} 4 -68 0 0 0.16 0.16 {}
+L 4 0 80 0 100 {}
+B 5 -2.5 97.5 2.5 102.5 {name=VSS dir=inout}
+T {VSS} 4 74 0 0 0.16 0.16 {}

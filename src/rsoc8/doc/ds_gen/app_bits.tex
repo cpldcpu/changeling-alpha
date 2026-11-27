@@ -1,0 +1,54 @@
+\paragraph{Fast I/O registers.}
+
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{LOCK} & \texttt{0x05} & \texttt{OTH3} & \texttt{OTH2} & \texttt{OTH1} & \texttt{OTH0} & \texttt{LK3} & \texttt{LK2} & \texttt{LK1} & \texttt{LK0} \\ \hline
+\texttt{IFRL} & \texttt{0x06} & \texttt{DLY} & \texttt{TRIM} & \texttt{MBX} & \texttt{OVF} & \texttt{OCB} & \texttt{OCA} & \texttt{CAPT} & \texttt{PC} \\ \hline
+\texttt{IFRH} & \texttt{0x07} & \texttt{SW3} & \texttt{SW2} & \texttt{SW1} & \texttt{SW0} & \texttt{LT1} & \texttt{LR1} & \texttt{LT0} & \texttt{LR0} \\ \hline
+\texttt{LRnSTAT} & \texttt{0x08, 0x10} & \texttt{RXF} & \texttt{FERR} & \texttt{EOP} & \texttt{IDLE} & \texttt{MATCH} & \texttt{OVR} & \texttt{STUFF} & \texttt{BOTHL} \\ \hline
+\texttt{LTnSTAT} & \texttt{0x0A, 0x12} & \textcolor{black!45}{--} & \texttt{TXE} & \texttt{BUSY} & \multicolumn{5}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{MBSTAT} & \texttt{0x0C} & \texttt{RXF} & \texttt{TXE} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{CORECTL} & \texttt{0x0E} & \texttt{ID} & \textcolor{black!45}{--} & \texttt{WAIT1} & \texttt{WAIT0} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{EN1} & \texttt{EN0} \\ \hline
+\texttt{CLKSTAT} & \texttt{0x0F} & \texttt{STRAP} & \textcolor{black!45}{--} & \texttt{MVALID} & \texttt{MDONE} & \texttt{TRIMD} & \texttt{EXTP} & \texttt{OSCRUN} & \texttt{SRC} \\ \hline
+\texttt{SREG} & \texttt{0x3F} & \texttt{I} & \texttt{T} & \texttt{H} & \texttt{S} & \texttt{V} & \texttt{N} & \texttt{Z} & \texttt{C} \\ \hline
+\texttt{PINB} & \texttt{0x03} & \texttt{IN7} & \texttt{IN6} & \texttt{IN5} & \texttt{REF} & \texttt{STRAP} & \texttt{HMOSI} & \texttt{HCS} & \texttt{HSCK} \\ \hline
+\texttt{PORTC} & \texttt{0x04} & \texttt{OUT7} & \texttt{OUT6} & \texttt{OUT5} & \texttt{OUT4} & \texttt{OUT3} & \texttt{DBG} & \texttt{CKO} & \textcolor{black!45}{--} \\ \hline
+\end{tabular}\par}
+
+\paragraph{Configuration page} (addresses are offsets from \texttt{0x3F00}).
+
+{\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\hline
+\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{CLKCTL} & \texttt{0x20} & \texttt{RELAXEN} & \texttt{REFCELL} & \multicolumn{2}{c|}{\texttt{REFSEL}} & \texttt{TRIMD} & \texttt{LOOP} & \texttt{OSCEN} & \texttt{SRC} \\ \hline
+\texttt{OSCTRIM} & \texttt{0x21} & \multicolumn{8}{c|}{\texttt{trim value}} \\ \hline
+\texttt{CLKCDIV} & \texttt{0x22} & \multicolumn{8}{c|}{\texttt{CDIV}} \\ \hline
+\texttt{CLKPDIV} & \texttt{0x23} & \multicolumn{8}{c|}{\texttt{PDIV}} \\ \hline
+\texttt{TRINT} & \texttt{0x24} & \texttt{MEAS} & \multicolumn{7}{c|}{\texttt{INT}} \\ \hline
+\texttt{TRCNTL/H} & \texttt{0x25/26} & \multicolumn{8}{c|}{\texttt{count, 16 bits, read only}} \\ \hline
+\texttt{TRTGTL/H} & \texttt{0x27/28} & \multicolumn{8}{c|}{\texttt{target, 16 bits}} \\ \hline
+\texttt{TRWIN} & \texttt{0x29} & \multicolumn{8}{c|}{\texttt{window}} \\ \hline
+\texttt{CLKOUT} & \texttt{0x2A} & \texttt{EN} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{DIV}} \\ \hline
+\texttt{TCR} & \texttt{0x30} & \texttt{RUN} & \texttt{CTC} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{PS}} \\ \hline
+\texttt{TCAP} & \texttt{0x31} & \texttt{CEDGE} & \multicolumn{2}{c|}{\texttt{CSRC}} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{CPIN}} \\ \hline
+\texttt{OCRAL/H} & \texttt{0x32/33} & \multicolumn{8}{c|}{\texttt{compare A, 16 bits}} \\ \hline
+\texttt{OCRBL/H} & \texttt{0x34/35} & \multicolumn{8}{c|}{\texttt{compare B, 16 bits}} \\ \hline
+\texttt{PWMC} & \texttt{0x38} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PPS}} & \textcolor{black!45}{--} & \texttt{PEN2} & \texttt{PEN1} & \texttt{PEN0} \\ \hline
+\texttt{PWMTOP} & \texttt{0x39} & \multicolumn{8}{c|}{\texttt{period minus one}} \\ \hline
+\texttt{PWM0..2} & \texttt{0x3A-3C} & \multicolumn{8}{c|}{\texttt{duty}} \\ \hline
+\texttt{CRCCTL} & \texttt{0x40} & \texttt{EN} & \texttt{RIGHT} & \multicolumn{3}{c|}{\texttt{CSRC}} & \textcolor{black!45}{--} & \texttt{BUSY} & \texttt{OWNER} \\ \hline
+\texttt{CRCLEN} & \texttt{0x41} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{5}{c|}{\texttt{width minus one}} \\ \hline
+\texttt{CRCPOLY0..3} & \texttt{0x42-45} & \multicolumn{8}{c|}{\texttt{polynomial, 32 bits}} \\ \hline
+\texttt{CRCVAL0..3} & \texttt{0x46-49} & \multicolumn{8}{c|}{\texttt{CRC value, 32 bits, R/W}} \\ \hline
+\texttt{CRCREF0..3} & \texttt{0x4A-4D} & \multicolumn{8}{c|}{\texttt{reference value, 32 bits}} \\ \hline
+\texttt{ARB} & \texttt{0x50} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{MODE}} \\ \hline
+\texttt{LCOWN} & \texttt{0x51} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \texttt{OWN1} & \texttt{OWN0} \\ \hline
+\texttt{DBGSEL} & \texttt{0x52} & \texttt{EN} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{SEL}} \\ \hline
+\texttt{ODE} & \texttt{0x53} & \multicolumn{8}{c|}{\texttt{open-drain enable per pin}} \\ \hline
+\texttt{PCMSK} & \texttt{0x54} & \multicolumn{8}{c|}{\texttt{pin-change mask per pin}} \\ \hline
+\texttt{PMCR} & \texttt{0x58} & \texttt{LOCK} & \multicolumn{5}{c|}{\textcolor{black!45}{--}} & \texttt{XWE} & \texttt{PWE} \\ \hline
+\texttt{PMLIM} & \texttt{0x59} & \multicolumn{8}{c|}{\texttt{limit}} \\ \hline
+\end{tabular}\par}

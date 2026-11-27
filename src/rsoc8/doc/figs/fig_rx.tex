@@ -1,0 +1,51 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\begin{tikzpicture}[x=1mm,y=1mm,
+  b/.style={blk,font=\scriptsize,inner sep=2pt,minimum height=14mm,minimum width=70mm,text width=66mm},
+  ev/.style={ar,dashed}]
+  % left lane: input path and timing
+  \node[b,fill=fillD] (sy) at (35,140) {\textbf{Pin synchronisers} (outside the cell)\\ two stages; rising-edge sample, and falling-edge sample for \reg{UNIT} = 1};
+  \node[b,fill=fillD] (ps) at (35,118) {\textbf{Pin select, inversion}\\ data pin \reg{INSEL} with \reg{INV}; clock pin \reg{CSEL} if \reg{CEN}};
+  \node[b,fill=fillD] (fl) at (35,96) {\textbf{Glitch filter} \reg{FILT}\\ off, two equal samples or majority of three; one filter for the data input x, one for the clock input xc};
+  \node[b,fill=fillD,minimum height=20mm] (ed) at (35,72) {\textbf{Edge detector, edge acceptance}\\ edge of xc if \reg{CEN}, else of x; \reg{EDGE}: rising, falling, both. Accepted if EN, RXEN, chip select active, no both-low, and \reg{ACC} = 0 or the receiver waits};
+  \node[b,fill=fillB,minimum width=21mm,text width=18mm,minimum height=18mm] (pre) at (11,46) {\textbf{Prescaler}\\ \reg{PRE}, \reg{UNIT}};
+  \node[b,fill=fillB,minimum width=45mm,text width=42mm,minimum height=18mm] (tm) at (47.5,46) {\textbf{Timer T}, 8 bit, and phase\\ A at an accepted edge, B at each expiry; \reg{TWOPH}, \reg{CPHA}; \reg{STOP}; idle timeout};
+  \node[b,fill=fillC,minimum height=17mm] (st) at (35,20) {\textbf{Status register} \reg{LRnSTAT}\\ RXF, EOP, IDLE, MATCH, OVR, STUFF, BOTHL; \reg{LCEVM} selects the bits that set the event flag \reg{LRn}};
+  \node[b,fill=fillC] (pl) at (35,-2) {\textbf{To the transmit cell of the pair}\\ every kept bit with a strobe (\reg{TRIG} = 2, \reg{SRC} = 1)};
+  \node[b,fill=fillC] (cr) at (35,-22) {\textbf{To the CRC unit}\\ kept bits behind the match pattern, strobe, end of frame};
+  % right lane: decoding
+  \node[b,fill=fillD] (bl) at (125,96) {\textbf{Both-low detector} \reg{BLEN}\\ x and xc both low: \reg{BOTHL}, sets \reg{EOP}, resets the receiver};
+  \node[b,fill=fillC,minimum height=20mm] (o1) at (125,72) {\textbf{Events to other blocks}\\ accepted edge: timer capture, debug pin. Reference event \reg{REF}: trim counter, timer capture};
+  \node[b,fill=fillA,minimum height=26mm] (dc) at (125,44) {\textbf{Sample point select, decode table}\\ sample point from the timer expiry (\reg{TRIG} = 0), the accepted pin edge (1) or the middle of the bit sent by the transmit cell of the pair (2).\\ bit = \reg{LCDEC}[4 level + 2 previous + phase]};
+  \node[b,fill=fillA] (rl) at (125,20) {\textbf{Run-length counter} \reg{LIM}, \reg{RMODE}\\ a stuffed bit is dropped; a wrong stuffed bit sets \reg{STUFF}};
+  \node[b,fill=fillA,minimum height=18mm] (sh) at (125,-2) {\textbf{Shift window}, 8 bits, \reg{LSBF}\\ match search: \reg{MEN}, \reg{LCMATCH}, sets \reg{MATCH}. Bit counter against \reg{LEN}: frame complete};
+  \node[b,fill=fillD] (hr) at (125,-22) {\textbf{Holding register}, two frames\\ a third frame is dropped and sets \reg{OVR}};
+  % arrows, left lane
+  \draw[ar] (35,152) -- (sy.north) node[pos=0.3,right,lbl]{pins \texttt{uio[7:0]}};
+  \draw[ar] (sy) -- (ps) node[midway,right,lbl]{8 pins};
+  \draw[ar] (ps) -- (fl) node[midway,right,lbl]{data, clock};
+  \draw[ar] (fl) -- (ed) node[midway,right,lbl]{x, xc};
+  \draw[ar] (35,62) -- (35,55) node[pos=0.5,right,lbl]{accepted edge};
+  \draw[ar] (pre) -- (tm) node[midway,above,lbl]{};
+  \draw[ar] (22,37) -- (22,28.5) node[midway,right,lbl]{idle};
+  % cross links
+  \draw[ar] (fl.east) -- (bl.west);
+  \node[lbl] at (81,99) {x, xc};
+  \draw[ar] (73,96) -- (73,50) -- ($(dc.west)+(0,6)$);
+  \fill (73,96) circle (0.5);
+  \node[lbl,anchor=west] at (74.5,84) {level x};
+  \draw[ev] (ed.east) -- (o1.west);
+  \node[lbl,anchor=west] at (74.5,76) {accepted\\ edge};
+  \draw[ev] (bl.south) -- (o1.north) node[midway,right,lbl]{start of both-low};
+  \draw[ar] (70,40) -- (90,40);
+  \node[lbl] at (80,36.5) {sample point};
+  % arrows, right lane
+  \draw[ar] (dc) -- (rl) node[midway,right,lbl]{bit};
+  \draw[ar] (rl) -- (sh) node[midway,right,lbl]{kept bit};
+  \draw[ar] (sh.south) -- (hr.north) node[midway,right,lbl]{frame};
+  \draw[ar] (sh.west) -- (pl.east);
+  \node[lbl] at (80,1) {bit, strobe};
+  \draw[ar] ($(sh.west)+(0,-5)$) -| (82,-22) -- (cr.east);
+  \node[lbl,anchor=east] at (81.5,-12) {bit, strobe};
+  \draw[ar] (hr.south) -- ++(0,-7) node[below,lbl]{\reg{LRnDATA}: read removes the oldest frame};
+\end{tikzpicture}
