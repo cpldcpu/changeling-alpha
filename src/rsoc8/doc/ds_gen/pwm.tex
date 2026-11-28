@@ -1,30 +1,31 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
-\toprule
-Address & Name & Access & Reset & Function \\
-\midrule
-\texttt{0x3F38} & \reg{PWMC} & R/W & \texttt{0x00} & Channel enables and prescaler \\
-\texttt{0x3F39} & \reg{PWMTOP} & R/W & \texttt{0x00} & Period minus one \\
-\texttt{0x3F3A} & \reg{PWM0} & R/W & \texttt{0x00} & High time of channel 0 \\
-\texttt{0x3F3B} & \reg{PWM1} & R/W & \texttt{0x00} & High time of channel 1 \\
-\texttt{0x3F3C} & \reg{PWM2} & R/W & \texttt{0x00} & High time of channel 2 \\
-\bottomrule
-\end{tabularx}\par}
-
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PWMC}{0x3F38}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{PWMC} & \texttt{0x3F38} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PPS}} & \textcolor{black!45}{--} & \texttt{PEN2} & \texttt{PEN1} & \texttt{PEN0} \\ \hline
-\texttt{PWMTOP} & \texttt{0x3F39} & \multicolumn{8}{c|}{\texttt{period minus one}} \\ \hline
-\texttt{PWM0..2} & \texttt{0x3F3A-3C} & \multicolumn{8}{c|}{\texttt{duty}} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PPS}} & \textcolor{black!45}{--} & \texttt{PEN2} & \texttt{PEN1} & \texttt{PEN0} \\ \hline
 \end{tabular}\par}
-
-\vspace{4pt}
-{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Field & Meaning \\
+Bits & Field & Description \\
 \midrule
-\reg{PEN0} to \reg{PEN2}, \reg{PPS} & PWM channel enables; prescaler $2^{\mathtt{PPS}}$ on the peripheral clock \\
+\texttt{6:4} & \reg{PPS} & PWM prescaler: divides the peripheral clock by $2^{\mathtt{PPS}}$ (1 to 128) \\
+\texttt{2:0} & \reg{PEN2..PEN0} & Channel enables for PWM0, PWM1, PWM2 on dedicated outputs \reg{OUT5}, \reg{OUT6}, \reg{OUT7} \\
 \bottomrule
 \end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PWMTOP}{0x3F39}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent Common period minus one: shared counter wraps from \reg{PWMTOP} to 0 (period = $\mathtt{PWMTOP}+1$ ticks)\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PWM0..PWM2}{0x3F3A--3C}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent High time of channels 0 to 2 in timer ticks (output is high while counter $<$ \reg{PWMn})\par}
+\end{minipage}\par

@@ -1,18 +1,56 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{CCP}{0x3C}{W, per core}{--}
+\vspace{2pt}
+{\small\noindent Signature for protected writes: writing \texttt{0xD8} allows a core to write a protected register within the next four instructions\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{SPL}{0x3D}{R/W, per core}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent Stack pointer, low byte (bits 7 to 0)\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{SPH}{0x3E}{R/W, per core}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{SP[11:8]}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Address & Name & Access & Reset & Function \\
+Bits & Field & Description \\
 \midrule
-\texttt{0x3C} & \reg{CCP} & W & -- & Signature for protected writes. One per core \\
-\texttt{0x3D} & \reg{SPL} & R/W & \texttt{0x00} & Stack pointer, low byte. One per core \\
-\texttt{0x3E} & \reg{SPH} & R/W & \texttt{0x00} & Stack pointer, bits 11 to 8. One per core \\
-\texttt{0x3F} & \reg{SREG} & R/W & \texttt{0x00} & Status flags. One per core \\
+\texttt{3:0} & \reg{SPH} & Stack pointer, high bits (bits 11 to 8) \\
 \bottomrule
 \end{tabularx}\par}
+\end{minipage}\par
 
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{SREG}{0x3F}{R/W, per core}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{SREG} & \texttt{0x3F} & \texttt{I} & \texttt{T} & \texttt{H} & \texttt{S} & \texttt{V} & \texttt{N} & \texttt{Z} & \texttt{C} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{I} & \texttt{T} & \texttt{H} & \texttt{S} & \texttt{V} & \texttt{N} & \texttt{Z} & \texttt{C} \\ \hline
 \end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7} & \reg{I} & Global interrupt enable (set by \texttt{SEI}/\texttt{RETI}, cleared on interrupt entry or \texttt{CLI}) \\
+\texttt{6} & \reg{T} & Bit copy storage (used by \texttt{BST} and \texttt{BLD}) \\
+\texttt{5} & \reg{H} & Half-carry flag \\
+\texttt{4} & \reg{S} & Sign flag ($N \oplus V$) \\
+\texttt{3} & \reg{V} & Two's complement overflow flag \\
+\texttt{2} & \reg{N} & Negative flag \\
+\texttt{1} & \reg{Z} & Zero flag \\
+\texttt{0} & \reg{C} & Carry flag \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par

@@ -9,7 +9,7 @@
 #                             echo of four characters
 #
 # The complete regression (firmware tests against protocol models, block tests against Python models)
-# is in src/rsoc8/tests and src/rsoc8/blocks; see src/rsoc8/README.md.
+# is in test/tests and test/blocks; see test/README.md.
 
 import os
 import cocotb

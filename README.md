@@ -33,7 +33,7 @@
 | Document | Content |
 |---|---|
 | [Changeling-alpha datasheet](src/rsoc8/doc/pdf/rpe_datasheet.pdf) | user documentation: blocks, instruction set, registers, examples |
-| [Verification report](src/rsoc8/doc/pdf/rpe_verification.pdf) | methods, results, location of every test |
+| [Verification report](test/report/rpe_verification.pdf) | methods, results, location of every test |
 | [Architecture specification](src/rsoc8/doc/pdf/rpe_spec.pdf) | rules, design decisions, review history |
 | [Tiny Tapeout project page](docs/info.md) | short description, how to test, external hardware |
 
@@ -41,11 +41,11 @@
 
 | Path | Content |
 |---|---|
-| `src/rsoc8/` | the design, independent of the Tiny Tapeout flow: RTL, testbenches, models, tests, firmware, documents. See [src/rsoc8/README.md](src/rsoc8/README.md) |
+| `src/rsoc8/` | the design: RTL (`rtl/`), firmware, headers and examples (`fw/`), area synthesis script (`syn/`), specification and datasheet (`doc/`). See [src/rsoc8/README.md](src/rsoc8/README.md) |
 | `src/tt_um_cpldcpu_changeling_alpha.v`, `src/sram_bb.v`, `src/rpe_clk_analog_bb.v`, `src/timing.sdc`, `src/config.json`, `src/pdn_cfg.tcl` | Tiny Tapeout top module, SRAM blackbox, flow configuration with the three SRAM macros |
 | `librelane_plugin_sram_pdn.py`, `odb_stripes.py` | power connection of the SRAM macros, from the Tiny Tapeout CMOS5L SRAM example |
 | `info.yaml`, `docs/info.md` | Tiny Tapeout project data and project page |
-| `test/` | cocotb tests through the pins, for RTL and gate-level simulation |
+| `test/` | verification suites (`tests/`, `tb/`, `model/`, `blocks/`, `formal/`), cocotb tests through the pins (`test.py`), [verification report](test/report/rpe_verification.pdf) and [plan](test/report/verification_plan.md). See [test/README.md](test/README.md) |
 | `analog/` | clock macro `rpe_clk_analog` (ring oscillator, relaxation oscillator): schematics, layout generator, simulation results, [report](analog/report/analog_clock_report.pdf); status in [analog/HANDOVER.md](analog/HANDOVER.md) |
 | `HANDOVER.md` | [state of the repository and of the hardening](HANDOVER.md), run history, open issues, local flow |
 | `.github/workflows/` | Tiny Tapeout flow (gds, precheck, gate-level test, docs, fpga), `regression` and `doc` |

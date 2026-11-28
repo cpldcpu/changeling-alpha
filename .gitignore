@@ -12,9 +12,11 @@ test/__pycache__/
 test/results.xml
 test/gate_level_netlist.v
 
-# rsoc8: generated files
+# test & rsoc8: generated files
 src/rsoc8/build
-src/rsoc8/blocks/*/build
+test/build
+test/blocks/*/build
+test/formal/build
 __pycache__/
 *.vvp
 # LaTeX
@@ -25,6 +27,12 @@ src/rsoc8/doc/*.toc
 src/rsoc8/doc/*.fls
 src/rsoc8/doc/*.fdb_latexmk
 src/rsoc8/doc/*.pdf
+test/report/*.aux
+test/report/*.log
+test/report/*.out
+test/report/*.toc
+test/report/*.fls
+test/report/*.fdb_latexmk
 runs/
 tt/
 venv/
@@ -40,4 +48,3 @@ analog/report/*.out
 analog/report/*.fls
 analog/report/*.fdb_latexmk
 analog/report/*.toc
-src/rsoc8/formal/build

@@ -23,7 +23,7 @@ Documentation:
 | Document | Content |
 |---|---|
 | [Changeling-alpha datasheet](https://github.com/cpldcpu/changeling-alpha/blob/main/src/rsoc8/doc/pdf/rpe_datasheet.pdf) | blocks, memory map, instruction set with cycle counts, registers, configuration examples with timing diagrams, code examples |
-| [Verification report](https://github.com/cpldcpu/changeling-alpha/blob/main/src/rsoc8/doc/pdf/rpe_verification.pdf) | methods, results, faults found, location of every test, known gaps |
+| [Verification report](https://github.com/cpldcpu/changeling-alpha/blob/main/test/report/rpe_verification.pdf) | methods, results, faults found, location of every test, known gaps |
 | [Architecture specification](https://github.com/cpldcpu/changeling-alpha/blob/main/src/rsoc8/doc/pdf/rpe_spec.pdf) | rules of every block, design decisions, review history |
 | [Analog clock macro report](https://github.com/cpldcpu/changeling-alpha/blob/main/analog/report/analog_clock_report.pdf) | ring oscillator and relaxation oscillator: circuits, layout, simulation after extraction, DRC and LVS |
 

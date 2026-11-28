@@ -1,22 +1,55 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PINR, DDR, PORT}{0x00, 0x01, 0x02}{R / R/W}{-- / \texttt{0x00}}
+\vspace{2pt}
+{\small\noindent Bit $k$ corresponds to bidirectional pin $k$. \reg{PINR}: synchronised pin input levels (R). \reg{DDR}: direction, 1 = output. \reg{PORT}: output value (when not overridden by a line cell or PWM)\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PINB}{0x03}{R}{--}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{IN7} & \texttt{IN6} & \texttt{IN5} & \texttt{REF} & \texttt{STRAP} & \texttt{HMOSI} & \texttt{HCS} & \texttt{HSCK} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Address & Name & Access & Reset & Function \\
+Bits & Field & Description \\
 \midrule
-\texttt{0x00} & \reg{PINR} & R & -- & Bidirectional port: synchronised pin levels \\
-\texttt{0x01} & \reg{DDR} & R/W & \texttt{0x00} & Bidirectional port: direction, 1 = output \\
-\texttt{0x02} & \reg{PORT} & R/W & \texttt{0x00} & Bidirectional port: output value \\
-\texttt{0x03} & \reg{PINB} & R & -- & Input pins: synchronised levels of all eight \\
-\texttt{0x04} & \reg{PORTC} & R/W & \texttt{0x00} & Output pins \\
-\texttt{0x3F53} & \reg{ODE} & R/W & \texttt{0x00} & Open-drain enable per pin of the bidirectional port \\
-\texttt{0x3F54} & \reg{PCMSK} & R/W & \texttt{0x00} & Pin-change mask per pin of the bidirectional port \\
+\texttt{7:5} & \reg{IN7..IN5} & Synchronised levels of dedicated input pins \texttt{ui\_in[7:5]} \\
+\texttt{4} & \reg{REF} & Reference clock input pin (\texttt{ui\_in[4]}) \\
+\texttt{3} & \reg{STRAP} & Clock source strap input pin (\texttt{ui\_in[3]}) \\
+\texttt{2:0} & \reg{HMOSI, HCS, HSCK} & Host link data in, chip select and clock pins (\texttt{ui\_in[2:0]}) \\
 \bottomrule
 \end{tabularx}\par}
+\end{minipage}\par
 
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{PORTC}{0x04}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{PINB} & \texttt{0x03} & \texttt{IN7} & \texttt{IN6} & \texttt{IN5} & \texttt{REF} & \texttt{STRAP} & \texttt{HMOSI} & \texttt{HCS} & \texttt{HSCK} \\ \hline
-\texttt{PORTC} & \texttt{0x04} & \texttt{OUT7} & \texttt{OUT6} & \texttt{OUT5} & \texttt{OUT4} & \texttt{OUT3} & \texttt{DBG} & \texttt{CKO} & \textcolor{black!45}{--} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{OUT7} & \texttt{OUT6} & \texttt{OUT5} & \texttt{OUT4} & \texttt{OUT3} & \texttt{DBG} & \texttt{CKO} & \textcolor{black!45}{--} \\ \hline
 \end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:3} & \reg{OUT7..OUT3} & Dedicated output pins \texttt{uo\_out[7:3]} (overridden when PWM is enabled on \texttt{OUT5..7}) \\
+\texttt{2} & \reg{DBG} & Debug pin \texttt{uo\_out[2]} when \reg{DBGSEL.EN} = 0 \\
+\texttt{1} & \reg{CKO} & Clock output pin \texttt{uo\_out[1]} when \reg{CLKOUT.EN} = 0 \\
+\texttt{0} & \textcolor{black!45}{--} & Reserved (driven by host link MISO \texttt{uo\_out[0]}) \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{ODE, PCMSK}{0x3F53, 0x3F54}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent \reg{ODE}: open-drain enable per pin (bit $k=1$: driven low only, high releases the pin). \reg{PCMSK}: pin-change mask (edges on unmasked pins set \reg{IFRL.PC})\par}
+\end{minipage}\par

@@ -16,15 +16,15 @@ package before the move into this repository; partly superseded by this file).
   (fast corner). No DRC, LVS, antenna, slew or capacitance violation.
 - The cores run at half the system clock (reset value of the core divider). Timing depends on a two-cycle
   exception that is not yet verified at gate level with delays (section 6).
-- Specification (draft 0.37), datasheet (revision 0.4) and verification report (issue 3) describe this state.
+- Specification (draft 0.37), datasheet (revision 0.4) and verification report (issue 4) describe this state.
 
 ## 2. What passes
 
 | Item | State |
 |---|---|
-| Base regression (`sh src/rsoc8/tests/ci.sh`: line cells, two cores, models, firmware) | passes, output equal to `tests/expected/` |
+| Base regression (`sh test/tests/ci.sh`: line cells, two cores, models, firmware) | passes, output equal to `tests/expected/` |
 | Host link test (halt, memory access, step, inject, break) | passes at core dividers 1, 2 and 3 |
-| Formal check of the two-cycle exception (`sh src/rsoc8/formal/run.sh`, needs Yosys) | passes, nothing waived; four inserted faults are detected |
+| Formal check of the two-cycle exception (`sh test/formal/run.sh`, needs Yosys) | passes, nothing waived; four inserted faults are detected |
 | Clocking block test (`tb/tb_clk.v`), with single measurement and loop against the relaxation oscillator | passes; three inserted faults are detected |
 | cocotb tests through the pins (`test/`): load through the host link and UART echo; internal oscillators | pass on RTL and on the gate-level netlist |
 | Document build (specification, datasheet, verification report) | passes |
@@ -110,7 +110,7 @@ draft 0.36". In short:
 Implementation:
 
 1. The two-cycle exception is proved on the RTL of the two-core block for core dividers 2 to 4
-   (`src/rsoc8/formal/`). The proof found two violations (status for the host link, time-out counter of the
+   (`test/formal/`). The proof found two violations (status for the host link, time-out counter of the
    injection); both are corrected in `rdual.v`, and run 45905736124 confirms timing with them. Not covered by
    the proof: the routed netlist (gate-level simulation with delays), `rhost.v`, `rclock.v`, the core reset,
    dividers above 4.
@@ -137,12 +137,12 @@ Clocking:
 8. There is no sleep state on the slow clock in the digital part.
 
 Other open points: line cell functions C1 to C6 are specified and not implemented; the verification plan
-(`src/rsoc8/doc/verification_plan.md`) is not started; the introduction and the TODO sections of
+(`test/report/verification_plan.md`) is not started; the introduction and the TODO sections of
 `README.md` are empty on purpose.
 
 ## 7. Documents
 
-Specification draft 0.37, datasheet revision 0.4 and verification report issue 3 in `src/rsoc8/doc/pdf/`
+Specification draft 0.37 and datasheet revision 0.4 in `src/rsoc8/doc/pdf/`, and verification report issue 4 in `test/report/rpe_verification.pdf`
 describe the RTL of this commit. The analog report is `analog/report/analog_clock_report.pdf`.
 
 ## 8. Local hardening

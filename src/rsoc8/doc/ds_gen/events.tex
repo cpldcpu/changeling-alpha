@@ -1,37 +1,52 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
-\toprule
-Address & Name & Access & Reset & Function \\
-\midrule
-\texttt{0x06} & \reg{IFRL} & W1C & \texttt{0x00} & Event flags, low byte. Per core: bit 7 \\
-\texttt{0x07} & \reg{IFRH} & mixed & \texttt{0x00} & Event flags, high byte. Per core: bits 3:0 \\
-\texttt{0x22} & \reg{IERL} & R/W & \texttt{0x00} & Interrupt enable, low byte. One per core \\
-\texttt{0x23} & \reg{IERH} & R/W & \texttt{0x00} & Interrupt enable, high byte. One per core \\
-\texttt{0x20} & \reg{WAITL} & R/W & \texttt{0x00} & Wait mask, low byte. Writing it starts the wait. One per core \\
-\texttt{0x21} & \reg{WAITH} & R/W & \texttt{0x00} & Wait mask, high byte. One per core \\
-\texttt{0x24} & \reg{DLYL} & R/W & \texttt{0x00} & Read: shared time base, low byte. Write: wake-up time of the core, low byte; sets the time and clears \reg{DLY}. The written value is per core \\
-\texttt{0x25} & \reg{DLYH} & R/W & \texttt{0x00} & Read: time base, high byte. Write: wake-up time, high byte. The written value is per core \\
-\bottomrule
-\end{tabularx}\par}
-
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{IFRL (and IERL, WAITL)}{0x06 (0x22, 0x20)}{W1C / R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{IFRL} & \texttt{0x06} & \texttt{DLY} & \texttt{TRIM} & \texttt{MBX} & \texttt{OVF} & \texttt{OCB} & \texttt{OCA} & \texttt{CAPT} & \texttt{PC} \\ \hline
-\texttt{IFRH} & \texttt{0x07} & \texttt{SW3} & \texttt{SW2} & \texttt{SW1} & \texttt{SW0} & \texttt{LT1} & \texttt{LR1} & \texttt{LT0} & \texttt{LR0} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{DLY} & \texttt{TRIM} & \texttt{MBX} & \texttt{OVF} & \texttt{OCB} & \texttt{OCA} & \texttt{CAPT} & \texttt{PC} \\ \hline
 \end{tabular}\par}
-
-\vspace{4pt}
+\vspace{2pt}
 {\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Register & Bits & Meaning \\
+Bits & Field & Description \\
 \midrule
-\reg{IFRL} & \reg{PC}, \reg{CAPT}, \reg{OCA}, \reg{OCB}, \reg{OVF} & Pin change, timer capture, compare A, compare B, overflow. Latched, W1C. \\
- & \reg{MBX} & The mailbox holds a byte from the host. Level, follows \reg{MBSTAT.RXF} \\
- & \reg{TRIM} & The trim counter completed a measurement inside the window. Latched, W1C \\
- & \reg{DLY} & The time base reached the reading core's wake-up time. Cleared by writing a new wake-up time \\
-\reg{IFRH} & \reg{LR0}, \reg{LT0}, \reg{LR1}, \reg{LT1} & A status bit selected in \reg{LCEVM} is set in receive cell 0, transmit cell 0, receive cell 1 or transmit cell 1. Level. Only the owner core of the pair sees the flag \\
- & \reg{SW0} to \reg{SW3} & Software flags, shared by both cores. R/W; set with SBI, cleared with CBI \\
+\texttt{7} & \reg{DLY} & Shared time base reached the reading core's wake-up time (per core). Cleared by writing a new wake-up time to \reg{DLYL/H} \\
+\texttt{6} & \reg{TRIM} & Trim counter completed a measurement inside the target window. Latched, W1C \\
+\texttt{5} & \reg{MBX} & Host mailbox holds an unread byte from the host. Level, follows \reg{MBSTAT.RXF} \\
+\texttt{4} & \reg{OVF} & 16-bit timer overflow. Latched, W1C \\
+\texttt{3:2} & \reg{OCB, OCA} & 16-bit timer compare B and compare A match. Latched, W1C \\
+\texttt{1} & \reg{CAPT} & 16-bit timer input capture. Latched, W1C \\
+\texttt{0} & \reg{PC} & Pin change on an unmasked bidirectional pin (\reg{PCMSK}). Latched, W1C \\
 \bottomrule
 \end{tabularx}\par}
+\noindent{\footnotesize\reg{IERL} (\texttt{0x22}) enables interrupts and \reg{WAITL} (\texttt{0x20}) sets the wait mask for the same bit positions (one register per core); writing \reg{WAITL} starts the wait.}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{IFRH (and IERH, WAITH)}{0x07 (0x23, 0x21)}{mixed / R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{SW3} & \texttt{SW2} & \texttt{SW1} & \texttt{SW0} & \texttt{LT1} & \texttt{LR1} & \texttt{LT0} & \texttt{LR0} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:4} & \reg{SW3..SW0} & Software flags shared by both cores (R/W; set with \texttt{SBI}, cleared with \texttt{CBI}) \\
+\texttt{3:0} & \reg{LT1..LR0} & Line-cell event flags (a status bit selected in \reg{LCEVM} is set). Level; visible only to the pair's owner core (\reg{LCOWN}) \\
+\bottomrule
+\end{tabularx}\par}
+\noindent{\footnotesize\reg{IERH} (\texttt{0x23}) and \reg{WAITH} (\texttt{0x21}) use the same bit positions per core.}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{DLYL, DLYH}{0x24, 0x25}{R / W (per core)}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent Read returns the shared 16-bit free-running peripheral time base. Write sets this core's wake-up time and clears \reg{IFRL.DLY}\par}
+\end{minipage}\par

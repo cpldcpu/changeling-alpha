@@ -2,12 +2,12 @@
 # SPDX-License-Identifier: Apache-2.0
 name: regression
 
-# Regression of the portable tree src/rsoc8 (not part of the Tiny Tapeout template):
-# block suites against their models and the firmware tests of the whole chip.
+# Regression of the rsoc8 verification suites (blocks against models and whole-chip firmware tests).
 on:
   push:
     paths:
       - 'src/**'
+      - 'test/**'
       - '.github/workflows/regression.yaml'
   workflow_dispatch:
 
@@ -25,11 +25,11 @@ jobs:
 
       - name: Run the suites
         shell: bash
-        run: sh src/rsoc8/tests/ci.sh
+        run: sh test/tests/ci.sh
 
       - name: Upload logs
         if: success() || failure()
         uses: actions/upload-artifact@v7
         with:
           name: regression-logs
-          path: src/rsoc8/build/ci/*.txt
+          path: test/build/ci/*.txt

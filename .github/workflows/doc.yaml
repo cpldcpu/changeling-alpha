@@ -2,12 +2,13 @@
 # SPDX-License-Identifier: Apache-2.0
 name: doc
 
-# Builds the three LaTeX documents of src/rsoc8/doc (specification, datasheet, verification report) and
+# Builds the specification and datasheet in src/rsoc8/doc and the verification report in test/report, and
 # uploads the PDFs as an artifact. The Tiny Tapeout project page is built by the workflow "docs".
 on:
   push:
     paths:
       - 'src/rsoc8/doc/**'
+      - 'test/report/rpe_verification.tex'
       - '.github/workflows/doc.yaml'
   workflow_dispatch:
 
@@ -27,8 +28,8 @@ jobs:
       - name: Build the documents
         shell: bash
         run: |
-          cd src/rsoc8/doc
-          latexmk -pdf -interaction=nonstopmode -halt-on-error rpe_spec.tex rpe_datasheet.tex rpe_verification.tex
+          (cd src/rsoc8/doc && latexmk -pdf -interaction=nonstopmode -halt-on-error rpe_spec.tex rpe_datasheet.tex)
+          (cd test/report && latexmk -pdf -interaction=nonstopmode -halt-on-error rpe_verification.tex)
 
       - name: Upload PDFs
         uses: actions/upload-artifact@v7
@@ -37,4 +38,4 @@ jobs:
           path: |
             src/rsoc8/doc/rpe_spec.pdf
             src/rsoc8/doc/rpe_datasheet.pdf
-            src/rsoc8/doc/rpe_verification.pdf
+            test/report/rpe_verification.pdf

@@ -1,35 +1,45 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
-\toprule
-Address & Name & Access & Reset & Function \\
-\midrule
-\texttt{0x0C} & \reg{MBSTAT} & R & \texttt{0x40} & Mailbox status \\
-\texttt{0x0D} & \reg{MBDATA} & R/W & -- & Mailbox data: read from host, write to host \\
-\texttt{0x3F52} & \reg{DBGSEL} & R/W & \texttt{0x00} & Debug pin enable and signal selection \\
-\bottomrule
-\end{tabularx}\par}
-
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{MBSTAT}{0x0C}{R}{\texttt{0x40}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{MBSTAT} & \texttt{0x0C} & \texttt{RXF} & \texttt{TXE} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{RXF} & \texttt{TXE} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} \\ \hline
 \end{tabular}\par}
-
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
-\hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{DBGSEL} & \texttt{0x3F52} & \texttt{EN} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{SEL}} \\ \hline
-\end{tabular}\par}
-
-\vspace{4pt}
+\vspace{2pt}
 {\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Register & Bits & Meaning \\
+Bits & Field & Description \\
 \midrule
-\reg{MBSTAT} & \reg{RXF}, \reg{TXE} & A byte from the host is waiting; the host has taken the last byte written \\
-\reg{DBGSEL} & \reg{EN}, \reg{SEL} & Enables the debug pin and selects its signal: 0 and 1 sample point of receive cell 0 and 1, 2 and 3 transmitted bit of transmit cell 0 and 1, 4 and 5 accepted edge of receive cell 0 and 1, 6 and 7 reference event of receive cell 0 and 1, 8 and 9 clock enable of core 0 and 1, 10 a core is held by the bus arbiter, 11 peripheral clock enable, 12 core clock enable, 13 trim measurement waiting or running, 14 valid measurement, 15 output of the relaxation oscillator after the synchroniser. The pin shows the signal one clock cycle later \\
+\texttt{7} & \reg{RXF} & 1 while an unread byte from the host is waiting in \reg{MBDATA} \\
+\texttt{6} & \reg{TXE} & 1 when the outgoing mailbox is empty (host has read the last byte written by a core) \\
 \bottomrule
 \end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{MBDATA}{0x0D}{R/W}{--}
+\vspace{2pt}
+{\small\noindent Read: receives a byte written by the host (clears \reg{RXF}). Write: sends a byte to the host (clears \reg{TXE})\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{DBGSEL}{0x3F52}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{EN} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{SEL}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7} & \reg{EN} & Enables routing the selected internal debug signal to pin \reg{DBG} (\texttt{uo\_out[2]}, one clock cycle latency) \\
+\texttt{3:0} & \reg{SEL} & Debug signal: 0/1 sample point R0/R1, 2/3 TX bit T0/T1, 4/5 accepted edge R0/R1, 6/7 ref event R0/R1, 8/9 core 0/1 enable, 10 \texttt{bus\_hold}, 11 peripheral CKE, 12 core CKE, 13 trim measurement active, 14 valid measurement, 15 synchronised relaxation oscillator \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par

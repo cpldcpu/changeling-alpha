@@ -1,0 +1,430 @@
+% SPDX-FileCopyrightText: (c) 2026 Tim S. B. (GitHub: cpldcpu)
+% SPDX-License-Identifier: Apache-2.0
+\documentclass[10pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=24mm]{geometry}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[section]{placeins}
+\usepackage{float}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{ink}{HTML}{1F2933}
+\definecolor{accent}{HTML}{1D5C8A}
+\definecolor{fillA}{HTML}{E6EEF5}
+\color{ink}
+
+\setlist{itemsep=1pt,topsep=3pt,leftmargin=1.4em}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\captionsetup{font=small,labelfont=bf,skip=6pt}
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{14pt}{4pt}
+\titlespacing*{\subsection}{0pt}{9pt}{2pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\small rcore8 protocol emulator: verification report}
+\fancyhead[R]{\small Issue 4, for specification draft 0.37}
+\fancyfoot[C]{\small\thepage}
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\est}{\textsuperscript{e}}
+\newcommand{\reg}[1]{\texttt{#1}}
+\setcounter{tocdepth}{1}
+
+\begin{document}
+
+\begin{center}
+{\LARGE\bfseries\color{accent} rcore8 protocol emulator}\\[4pt]
+{\large Verification report}\\[8pt]
+Tim S.\ B.\ (GitHub: cpldcpu)\\[2pt]
+{\small Issue 4, 27 November 2026, for specification draft 0.37 and the repository \texttt{cpldcpu/changeling-alpha}, branch \texttt{integration}.}
+\end{center}
+
+\vspace{2pt}
+\noindent\fcolorbox{accent}{fillA}{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\small
+\textbf{Summary.} All digital blocks exist as RTL and are verified against cycle-accurate Python behavioral
+models, directed testbenches, and top-level firmware in C and assembly driving independent protocol models
+(UART, SPI, I2C, WS2812, USB low-speed, and 10BASE-T). A Yosys SAT formal proof confirms the two-cycle
+timing exception on the two-core block across all 551 checks without waivers. Physical hardening (IHP
+\texttt{ihp-sg13cmos5l}, LibreLane 3.1.0.dev4, run 45905736124) closes static timing at 60\,MHz across all
+three corners with clean DRC, LVS, antenna, and Tiny Tapeout precheck, and pin-level \texttt{cocotb} tests
+pass on both RTL and the routed gate-level netlist. The custom clock macro \texttt{rpe\_clk\_analog} passes
+standalone and integrated KLayout DRC, strict-port LVS, PDN-aligned PEX simulation, and 40-seed post-layout
+Monte Carlo mismatch analysis. Not yet verified: gate-level simulation with SDF timing delays, system
+protocol suites on the internal ring oscillator at 60\,MHz, physical tests against real link partners or on
+silicon, and the unimplemented draft~18.5 changes (C1--C6).}}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLl@{}}
+\toprule
+Domain & Evidence & Status \\
+\midrule
+Digital blocks \& models & Cycle-accurate models + directed TBs (\texttt{linecells}, \texttt{dual}, 5 blocks, \texttt{tim\_test}) & Pass \\
+Protocol system suites & UART (67), SPI/I2C (99), 10BASE-T, WS2812, USB HID, I2C-to-USB, \texttt{waitirq} (2\,376) & Pass \\
+Pin-level \texttt{cocotb} & Host load + UART echo, internal ring + relax clock on RTL and routed netlist & Pass \\
+Formal exception proof & Yosys SAT on flattened \texttt{rdual} + \texttt{rcore8d} (BMC 8, ind 3; 551 checks; 4/4 faults) & Pass \\
+Physical sign-off & 60\,MHz STA ($+2.76$/$+5.62$/$+5.36$\,ns setup, $+0.15$\,ns hold), DRC, LVS, precheck & Pass \\
+Analog clock macro & PDN-aligned PEX (3 corners), 40-seed MC mismatch, DRC, strict-port LVS & Pass \\
+\bottomrule
+\end{tabularx}
+\caption{Verification status at a glance.}
+\end{table}
+
+{\small\tableofcontents}
+
+\section{Scope, method, and environment}
+
+\subsection{Scope}
+
+This report covers the complete design in \texttt{cpldcpu/changeling-alpha}: digital RTL (\texttt{src/rsoc8/rtl/}),
+Tiny Tapeout integration (\texttt{src/}), the custom analog clock macro (\texttt{analog/}), and all verification
+suites (\texttt{test/}). The specification (\texttt{src/rsoc8/doc/pdf/rpe\_spec.pdf}) defines the expected
+behaviour; rule numbers in this report match the specification. Historical references to the three earlier
+packages map as: \texttt{rsys} $\to$ \texttt{test/}, \texttt{rdual} $\to$ \texttt{test/blocks/dual/}, and
+\texttt{linecells} $\to$ \texttt{test/blocks/linecells/}.
+
+\subsection{Methods}
+
+\begin{itemize}
+\item \textbf{Behavioral models.} Cycle-accurate Python models derived from the specification rules generate
+directed and multi-seed random stimuli; Verilog testbenches drive the RTL and scripts compare every cycle or
+frame against the model (cores/two-core block, line cells, timer/PWM/CRC, event flags/time base, locks/wait/arbiter,
+clock control, program protection, host link).
+\item \textbf{Second-round independent models.} Eight verification tasks were executed independently from the
+specification with strict rules against changing RTL to match a test; their findings were reviewed and integrated.
+\item \textbf{Firmware against independent protocol models.} C and assembly programs compiled for \texttt{attiny40}
+run on the full chip against Verilog protocol models written solely from protocol standards (UART, SPI master/slave,
+I2C master/slave, I2C sensor, WS2812 checker, USB low-speed host, Ethernet endpoint).
+\item \textbf{Pin-level \texttt{cocotb} verification.} \texttt{test/test.py} stimulates only the Tiny Tapeout chip
+pins and runs identically on RTL (\texttt{test.yaml}) and on the routed gate-level netlist (\texttt{gl\_test}).
+\item \textbf{Formal proof.} \texttt{test/formal/} uses Yosys SAT bounded model checking and induction to prove
+the two-cycle timing exception constraints in \texttt{src/timing.sdc} on the two-core RTL.
+\item \textbf{Physical \& analog verification.} LibreLane/OpenROAD performs post-extraction STA, DRC, LVS, and
+antenna checks; KLayout, Magic, ngspice, and Netgen verify standalone and Tiny Tapeout DRC, strict-port LVS,
+PDN-aligned PEX corners, and post-layout Monte Carlo mismatch for \texttt{rpe\_clk\_analog}.
+\item \textbf{Fault insertion.} Single deliberate mutations are injected into temporary RTL copies, firmware,
+or protocol models across both simulation and formal checks to prove the tests are able to fail.
+\end{itemize}
+
+\textbf{Limits of the methods.} First-round block models for the cores, line cells, and timer/PWM/CRC shared the
+same author as the RTL, mitigated by the independent second-round models and independent protocol models. All RTL
+and \texttt{cocotb} gate-level simulations run without SDF gate delays (both-edge sampling and the two-cycle paths
+are checked structurally/formally rather than via delayed SDF sim). The formal proof covers \texttt{rdual.v} +
+\texttt{rcore8d.v} under assumptions taken by inspection from \texttt{rhost.v} and \texttt{rclock.v}. In analog Monte
+Carlo simulation, IHP PDK's \texttt{cap\_cmomf} mismatch flag resolves to the nominal model (capacitor mismatch unmodeled).
+
+\subsection{Environment and simulation models}
+
+\begin{itemize}
+\item \textbf{Digital simulation \& build:} Icarus Verilog (\texttt{iverilog -g2005} / \texttt{-g2012}), Python~3,
+\texttt{cocotb}, \texttt{gcc-avr} (7.3.0) with \texttt{avr-libc} targeting \texttt{attiny40}.
+\item \textbf{Formal \& physical:} Yosys (\texttt{yowasp-yosys} 0.55+/0.71 SAT), LibreLane 3.1.0.dev4 / OpenROAD /
+KLayout 0.30.12 on \texttt{ihp-sg13cmos5l}.
+\item \textbf{Analog:} Magic PEX, ngspice, Netgen strict-port LVS.
+\item \textbf{Macro \& clock models:} Foundry behavioral Verilog model of
+\path{RM_IHPSG13_1P_1024x16_c2_bm_bist} (\texttt{test/sram\_model/} and \texttt{test/tb/ihp/}); system
+testbench external clock at 10\,ns period (cycles map to 16.67\,ns at 60\,MHz); \path{test/tb/osc_model.v}
+(15\,MHz, 0.5\,\% trim step, jitter-free); \path{test/rpe_clk_analog_model.v} (60.02\,MHz ring at
+\texttt{trim=201}, $\sim$0.212\,MHz/LSB, 98.60\,kHz relaxation oscillator matching post-PEX typical corner).
+\end{itemize}
+
+\section{Digital block verification}\label{sec:blocks}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLL@{}}
+\toprule
+Block & Tests & Result \\
+\midrule
+Cores \& two-core block & Random programs on both cores vs.\ cycle model: 360 seeds of 4\,000 cycles (core dividers 1, 2, 3); directed locks, flags, waits; exact timing; compiled C tests. 2nd round: $31\times 31$ instruction matrix in every cycle, 3 arbiter settings; cross-core code memory; interrupt during wait; 300 more seeds & 0 mismatches in 1.16M instruction starts; 2nd round $5\,766 + 270 + 2\,376$ runs, 0 failing \\
+Line cells & 48 protocol cases vs.\ model (20 for draft 0.36 parity/9th-bit); 27 directed bus-condition / edge-count / \texttt{ESTR} checks (\texttt{tb\_lc2.v}); 28 earlier protocol cases (3--20\,\% offset); 600 RX + 600 TX random configs; SPI pair loop; forwarding; overrun & All equal to model; 0 errors \\
+Pins, sync, events & Firmware tests 1--3; synchroniser order with random pin edges (\texttt{tb\_sync.v}); 2nd-round \texttt{events.py} model (100 seeds, 420\,000 cycles) & Pass; 0 mismatches \\
+Timer, PWM, CRC & \texttt{timers.py} model vs.\ RTL (300 seeds, 3\,000 cycles); CRC known-answer tests across 7 polynomials; CRC on all line-cell strobes; firmware test 6 & 0 mismatches; matches reference CRCs \\
+Clocking & Directed TB (\texttt{tb\_clk.v}) with two unrelated clocks: strap start, 60 random switches, shortest phase, dividers, trim measurement, window, loop, line-cell ref, relaxation ref; 2nd-round \texttt{clkctl.py} (100 seeds, 600\,000 cycles) & Pass; shortest phase 8\,333\,ps; 0 mismatches \\
+Host link \& protection & Random halts/reads/injections (100 seeds); 1- \& 2-image SPI load; status, mailbox, halt, step, inject, break (\texttt{fwh}); firmware test 8; 2nd-round \texttt{host.py} \& \texttt{prot.py} (100 seeds each) & Pass; 0 mismatches \\
+Top-level RTL integration & All firmware tests (1--17) on \texttt{rpe\_chip}; firmware test 9 on \texttt{osc\_model.v} with strap low/high & Matches block behaviour; trim loop settles within 0.5\,\% \\
+\bottomrule
+\end{tabularx}
+\caption{Block-level verification summary.}
+\end{table}
+
+\subsection{Line-cell extensions (\texttt{LCX} and \texttt{LCEC}, draft 0.36)}
+
+With \texttt{LCX=0} and \texttt{LCEC=0}, the full legacy line-cell suite, base regression, UART suite, and
+SPI/I2C suite pass identically. For the added features:
+\begin{itemize}
+\item \textbf{Additional frame bit (rules N1--N4 in \texttt{linecell.py}):} 20 UART cases (even parity, odd parity,
+9th data bit; $-3$, $0$, $+4\,\%$ clock offset; inverted parity triggering \texttt{FERR}; strobe checks) and 400 random
+RX/TX configs (60\,\% with \texttt{PAR}$\neq 0$) show 0 differences.
+\item \textbf{Bus conditions, edge count, \texttt{ESTR} (\texttt{tb\_lc2.v}):} Start/stop/repeated start, flag clearing,
+coincident clock/data edges, \texttt{EC} clearing by clock, and \texttt{ESTR}=0/1 while SCL is high all show 0 errors.
+\item \textbf{Top-level UART parity/9-bit/2-stop (\texttt{fwu\_par.c} vs.\ \texttt{uart\_model.v}):} Passes at 60 and
+8 cycles/bit, 16 back-to-back frames at $\pm 3\,\%$, 9th-bit pass-through, and two stop bits (one-stop firmware fails
+this check as expected).
+\item \textbf{Top-level I2C slave (\texttt{fw20\_i2cs9.c} vs.\ \texttt{fw18\_i2cs.c}):} All transfers pass at 100 and
+400\,kHz (dividers 1 and 2); SDA changes $\ge 72$ cycles before SCL rise at 400\,kHz. \texttt{ESTR} extends late-write
+tolerance from $n=4$ (\texttt{fw18}) to $n=12$ (\texttt{fw20}, each unit $\approx 8$ cycles); fastest passing SCL
+periods (write / 1B read / 3B read / restart) are 32/56/56/56 cycles for \texttt{fw18} and 48/48/70/56 cycles for
+\texttt{fw20}.
+\end{itemize}
+
+\subsection{Clocking and divider updates (draft 0.37)}
+
+Default core divider after reset is 2 (\texttt{CLKCDIV=1}). Host link operations (halt, memory/register access, step,
+inject, break) pass at core dividers 1, 2, and 3; firmware tests 1--6 pass at divider 2 (test 3 exits 110 as expected
+because one halved core cannot serve 10BASE-T full duplex). Part 15 of \texttt{tb\_clk.v} tests the relaxation
+oscillator reference (\texttt{RELAXEN}, \texttt{REFSEL=3}): disabled measurement blocked, 4-period capture within 1.5
+counts of expected, closed-loop trim settling (158 to 170), and tracking a $+5\,\%$ reference within 1\,\%.
+\texttt{clkctl.py} passes all 100 random seeds with 0 mismatches.
+
+\section{Protocol and system-level verification}\label{sec:protocols}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lLL@{}}
+\toprule
+Protocol & Top-level tests & Result and operating limits \\
+\midrule
+UART & Core-to-core (tests 1, 2); echo vs.\ \texttt{uart\_model.v}, offset sweeps, framing/glitch, parity, 9th bit, 2 stop bits, overrun, host-mailbox \& WS2812 bridges & 67 checks pass (0 failures). Tolerance $\pm 5.3\,\%$ at $\ge 16$ cycles/bit; down to 2 cycles/bit at 0 error. Stop/start-level check uses 2nd cell \\
+SPI & Chip-to-chip (test 11); independent master/slave models in modes 0--3, CS timing, late TX byte, aborted transfers & Pass. Master down to 8 cycles/bit; slave data out $\ge 12$, data in $\ge 2$ cycles/bit. No hardware underrun flag \\
+I2C & Firmware master vs.\ LC slave (test 12); independent models: clock stretching, NACK, stuck-bus 9-pulse recovery, time-out, multi-master arbitration (\texttt{fw19\_arb}) & Pass. Slave passes 100 \& 400\,kHz at core dividers 1--2; ack valid 71--72 cycles before SCL rise at 400\,kHz \\
+WS2812 & Controller \& LED forwarding (test 10); timing checker over 100 LEDs, forwarding with $\pm 10\,\%$ bit error & Pass. 24/48 high times in 75-cycle period; gap-free up to divider 16; forwarding preserves period \\
+USB low-speed & On-chip host/device (test 13); \texttt{usb\_host.v}: full enumeration, faults, HID class requests, EP0 robustness (tests 15, 16); osc model at 1\,ms SOF: $-20$ to $+18\,\%$ init error, drift, steps, suspend (test 17) & Pass at 60/30/15\,MHz core clock (fails at 10\,MHz). On 15\,MHz osc model, holds within 0.62\,\% after lock; recovers in 4 frames from $-3\,\%$ step \\
+10BASE-T & TX/RX (tests 3, 4, 5), CRC check (test 14); \texttt{eth\_model.v}: ARP/ping over 27 scenarios up to 1\,518\,B, tolerance \& duty sweeps, link pulses & Pass at core dividers 1--3. Receive tolerance $-16.4$ to $+49.7\,\%$. Firmware idle pulse workaround (single-ended); no link pulses \\
+Concurrent protocols & Dual-core pairs (\texttt{stress\_t1..t4.py}): UART+SPI, UART+I2C, SPI slave+WS2812 + PWM/timer/host load & 0 data errors; matches single-protocol rate limits except when partner core busy-polls shared bus \\
+I2C sensor $\to$ USB & \texttt{tb/i2c\_sensor.v} with IRQ line: core 1 reads I2C, core 0 serves USB HID reports (test 16), ext clock \& osc & Pass; every sample delivered or counted as dropped \\
+\bottomrule
+\end{tabularx}
+\caption{Protocol-level verification. Test numbers match the specification.}
+\end{table}
+
+\textbf{Tiny Tapeout pin-level tests (\texttt{test/test.py}).} Two \texttt{cocotb} tests stimulate only the
+chip-boundary pins (\texttt{ui\_in}, \texttt{uo\_out}, \texttt{uio}, \texttt{clk}, \texttt{rst\_n}):
+\path{test_load_and_uart_echo} loads \path{test/fw/uart_echo.hex} over the SPI host link, verifies status
+and readback during core reset, starts core 0, and verifies 1\,Mbit/s UART echo; \path{test_internal_osc_and_relax}
+exercises \path{rpe_clk_analog_model.v} by routing \texttt{clk\_slow} to debug pin \texttt{uo\_out[2]},
+enabling the ring oscillator at \texttt{OSCTRIM=155}, switching \texttt{CLKCTL.SRC} to internal ring and back to
+external clock while checking \texttt{CLKSTAT}. Both pass identically on RTL and gate-level netlists.
+
+\section{Formal verification (two-cycle timing exception)}\label{sec:formal}
+
+\texttt{src/timing.sdc} grants two clock cycles (33.3\,ns at 60\,MHz) to paths starting from the three SRAM macros
+or from 62 control/state flip-flops (\texttt{state} and \texttt{ir} of both cores; \texttt{jst}, \texttt{jmode},
+\texttt{jcore}, \texttt{jword} of the host injection sequencer; 32 registers such as \texttt{dq}, \texttt{tx\_next},
+and \texttt{tx\_hold} remain single-cycle). To verify soundness, \texttt{test/formal/} flattens \texttt{rdual.v} +
+\texttt{rcore8d.v} (\texttt{flat.ys}), builds a dual-evaluation MITER wrapper (\texttt{gen\_exc.py}) substituting
+free symbolic values after a start-point update, and runs Yosys SAT (\texttt{run\_exc.py}) for bounded depth~8 from
+reset and 3-step unbounded induction across four targets:
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lrrL@{}}
+\toprule
+Case & Checks & Violated / Waived & Target covered \\
+\midrule
+\texttt{S} & 139 & 0 / 0 & P1/P2 across all 62 start flip-flops + helper invariants (I2--I5) \\
+\texttt{cm0} & 138 & 0 / 0 & P3 on code memory 0 read output after access \\
+\texttt{cm1} & 138 & 0 / 0 & P3 on code memory 1 read output after access \\
+\texttt{dm} & 136 & 0 / 0 & P3 on data memory read output (single-cycle \texttt{dq}/\texttt{h\_rdata} excepted) \\
+\midrule
+Total & 551 & 0 / 0 & \texttt{BMC=8}, \texttt{IND=3} pass under \texttt{test/formal/run.sh} \\
+\bottomrule
+\end{tabularx}
+\caption{Two-cycle exception formal proof summary (\texttt{test/formal/}).}
+\end{table}
+
+\textbf{Assumptions and boundaries.} The proof assumes: (1) core clock enable active at most 1 of every 2 cycles and at
+least 1 of every 4 (core dividers 2--4; divider 1 violates the exception by construction), (2) no asynchronous core
+reset during operation, (3) \texttt{h\_acc} only when \texttt{h\_quiet} held in the prior cycle and \texttt{inj\_cmd}
+only when core halted/enabled/idle, and (4) host events spaced $\ge 8$ clock cycles apart without coincidence.
+These interface properties hold by inspection of \texttt{rhost.v} and \texttt{rclock.v} but are not formally
+checked on those modules or on the post-synthesis netlist. \texttt{test/formal/faults.sh} injects 4 RTL faults
+(including pre-0.37 un-gated restore read and injection sequencer) and detects all 4.
+
+\section{Physical implementation and gate-level verification}\label{sec:phys}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Item & Measured result (run 45905736124, commit \texttt{cca98f4}) \\
+\midrule
+Process \& flow & IHP \texttt{ihp-sg13cmos5l} (\texttt{sg13cmos5l\_stdcell}); LibreLane 3.1.0.dev4; routing Metal2--Metal4 \\
+Die, area \& macros & 8$\times$4 Tiny Tapeout tiles ($1724.16 \times 710.64\,\mu$m, core $1.208\,\mathrm{mm}^2$); 28\,251 standard cells ($409\,044\,\mu\mathrm{m}^2$); 3$\times$ \path{RM_IHPSG13_1P_1024x16_c2_bm_bist} + \path{rpe_clk_analog} \\
+Post-extraction STA & Target 60\,MHz (16.67\,ns) with \texttt{src/timing.sdc}. Setup slack: $+2.76$\,ns slow (1.08\,V, $125\,^\circ$C), $+5.62$\,ns typical, $+5.36$\,ns fast; hold slack $+0.15$\,ns (fast) \\
+Layout sign-off & 0 DRC, 0 LVS (macros black-boxed), 0 antenna, 0 slew/cap violations; Tiny Tapeout precheck pass \\
+Gate-level simulation & \texttt{gl\_test} (\texttt{test/test.py}): \path{test_load_and_uart_echo} \& \path{test_internal_osc_and_relax} pass on routed \path{gate_level_netlist.v} (zero-delay functional sim; SRAM outputs and AVR registers pre-seeded over host link to avoid 4-state X-pessimism) \\
+\bottomrule
+\end{tabularx}
+\caption{Physical hardening and gate-level verification summary.}
+\end{table}
+
+\section{Analog clock macro verification (\texttt{rpe\_clk\_analog})}\label{sec:analog}
+
+Standalone and Tiny Tapeout layout, extraction, and Monte Carlo checks are recorded in \texttt{analog/results/} and
+\texttt{analog/report/analog\_clock\_report.pdf} (synced at commit \texttt{e0792db}):
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Check & Result \\
+\midrule
+Layout DRC & \texttt{rpe\_clk\_analog.gds} ($171.5 \times 137.0\,\mu$m): KLayout \texttt{main} and \texttt{main antenna} DRC pass (0 violations). Integrated \texttt{rpe\_clk\_analog\_tt.gds}: KLayout \texttt{main} DRC passes (0 violations; forbidden marker layers 51/0, 99/40, 160/0 absent) \\
+Strict-port LVS & Netgen LVS matches schematic vs.\ extracted layout with strict pin matching \\
+PDN-aligned PEX corners & Extracted with 3\,642 capacitors (1\,419.56\,fF) across \texttt{tt} (1.20\,V, $25\,^\circ$C) / \texttt{ss} (1.08\,V, $125\,^\circ$C) / \texttt{ff} (1.32\,V, $-40\,^\circ$C): ring at boot \texttt{trim=128} is $44.5 / 44.5 / 49.5$\,MHz; nominal \texttt{trim=201} is $60.0 / 57.7 / 68.4$\,MHz ($72.2\,\mu$A at \texttt{tt}); max \texttt{trim=255} is $70.5 / 65.8 / 81.7$\,MHz; relaxation oscillator is $98.6 / 83.6 / 115.4$\,kHz ($4.2\,\mu$A at \texttt{tt}, $5.4\,\mu$A at \texttt{ff}); standby leakage $6.1 / 68.7 / 8.4$\,nA \\
+40-seed post-layout MC & Seeds 1001--1040 at \texttt{tt} (\texttt{mm\_ok=1} on 59 active, \texttt{rppd}, and \texttt{SVaricap} instances; \texttt{cap\_cmomf} mismatch unmodeled by PDK): boot \texttt{trim=128} $43.68 \pm 3.73$\,MHz (max $53.87\,\mathrm{MHz} \le 60$\,MHz); \texttt{trim=201} $58.92 \pm 4.71$\,MHz; carry step $191 \to 192$ is $+0.183 \pm 0.083$\,MHz (40/40 monotonic); \texttt{sleep\_relax} $97.60 \pm 5.62$\,kHz \\
+\bottomrule
+\end{tabularx}
+\caption{Analog clock macro verification (\texttt{analog/results/}).}
+\end{table}
+
+\section{Fault insertion and RTL bugs found}\label{sec:faults}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}Lrrl@{}}
+\toprule
+Campaign & Inserted & Detected & Remark \\
+\midrule
+Two-core block, 1st round & 8 & 6 & Remaining 2 act only when host halts a core \\
+Line cells (core suite) & 13 & 13 & \\
+Line cells, draft 0.36 (\texttt{LCX}/\texttt{LCEC}) & 10 & 10 & RX strobe detected after adding dedicated check \\
+Line cells, SPI/I2C RTL (\texttt{spii2c.sh}) & 2 & 2 & \texttt{o\_drive} CS gating; CPHA first-bit advance \\
+Pins and event flags & 10 & 10 & \\
+Timer, PWM, CRC & 22 & 22 & Two caught after adding targeted checks \\
+Clocking & 20 & 20 & \\
+Clocking, draft 0.37 relaxation ref & 3 & 3 & \texttt{REFSEL=3}, slow-clock sync, \texttt{RELAXEN} stuck \\
+Host link, protection, host port, sequencer & 32 & 32 & Nine caught after adding checks/extending seeds \\
+2nd-round block models (5 blocks, \texttt{fault\_run.py}) & 104 & 104 & 103 random + 1 directed \\
+2nd-round arbitration (\texttt{arbfault.sh}, \texttt{mut\_restore}) & 17 & 17 & 16 new arbitration tests + 1 host-random \\
+Formal timing exception (\texttt{formal/faults.sh}) & 4 & 4 & Includes pre-0.37 restore read \& injection faults \\
+\midrule
+Total across all 12 campaigns & 245 & 243 & Unchecked: osc packet-end ref, WS2812 fwd, 1-core stress \\
+\bottomrule
+\end{tabularx}
+\caption{Fault insertion campaigns across RTL, testbenches, models, and formal checks.}
+\end{table}
+
+Every protocol test of the second round was additionally verified to fail on deliberate firmware or model faults
+(except the three cases noted in the Total remark above).
+
+\textbf{RTL bugs found and corrected.} Since full-chip assembly, verification caught and fixed:
+\begin{itemize}
+\item Host break-clear pulse lost while core clock was disabled; missing time-out on injection during cross-memory fetch.
+\item Missing TX end-of-packet hold (\texttt{EOP}) for USB; missing latched both-pins-low detector bit for slow cores.
+\item CRC unit counting sync/preamble bits (strobe moved behind match pattern) and comparison flag 1 cycle late vs.\ \texttt{BUSY}.
+\item Trim counter restarting on every packet end instead of ignoring close intervals; oscillator not enabled by \texttt{SRC=1} alone.
+\item Second round: continuous polling dropping mailbox reads; refused host read returning stale data; reserved bits reading back.
+\item Draft 0.37 / hardening: \texttt{rlcports.v} output register held at zero by core reset (blocked host readback before core start, caught by \texttt{cocotb}); \texttt{rdual.v} \texttt{h\_quiet}/\texttt{inj\_busy} depending on \texttt{jst} instead of dedicated \texttt{jbusy}/\texttt{jreq}, and \texttt{jto} advancing without \texttt{cke} (caught by formal proof).
+\end{itemize}
+
+\section{Known gaps and open items}\label{sec:gaps}
+
+\begin{enumerate}
+\item \textbf{Delayed gate-level simulation (SDF).} Both-edge input sampling and the two-cycle paths in
+\texttt{src/timing.sdc} are verified by static timing analysis, RTL formal proof, and zero-delay gate-level
+\texttt{cocotb} simulation, not by back-annotated SDF gate-level simulation. Interface assumptions on
+\texttt{rhost.v} and \texttt{rclock.v}, and dividers $>4$, are not formally proved.
+\item \textbf{Oscillator 60\,MHz system tests and cap mismatch.} System firmware tests on the internal oscillator
+(\texttt{fw9}, \texttt{fwusbo}, \texttt{fwsenso}) ran against the 15\,MHz model (\texttt{osc\_model.v}), not repeated
+at 60\,MHz (only pin-level \texttt{test.py} uses the 60\,MHz post-PEX model \texttt{rpe\_clk\_analog\_model.v}). Phase
+noise is unsimulated; \texttt{cap\_cmomf} mismatch is unmodeled by IHP's PDK; hardware does not clamp \texttt{OSCTRIM}
+or block \texttt{CLKCDIV=0} above 30\,MHz.
+\item \textbf{Blocks without cycle models.} Asynchronous clock switching and the injection sequencer have directed
+tests only; code-memory and host-port collisions rely on random two-core lockstep tests rather than \texttt{model/dual.py}.
+\item \textbf{Real hardware \& silicon.} No tests against physical USB hosts, Ethernet switches, or commercial
+SPI/I2C devices; external PHY/pull-ups/level-shifters lie off-chip.
+\item \textbf{Documented hardware limitations (spec \S 18.5, not implemented).} Single-cell start/stop validation,
+TX underrun status flag, differential 10BASE-T idle and link pulses, and packet-end filtering inside trim window
+(C1--C6 remain future RTL items).
+\item \textbf{Suites not rerun on final RTL.} Multi-protocol stress sweeps (\texttt{stress\_t1..t4.py}) and full
+10BASE-T duty-cycle sweeps beyond the first duty value were not re-executed after the final draft-0.37 edits.
+\item \textbf{Remaining single-case gaps.} Real USB host timing variance, \texttt{GET\_REPORT} on the oscillator during
+a frequency step, line-cell and timer interrupts during \texttt{WAIT}, one-core build, edge count outside I2C,
+additional frame bit together with bit stuffing against a protocol partner, and \texttt{FERR} concurrent with overrun.
+\end{enumerate}
+
+Planned extensions (SMT proofs for line cells, functional coverage, mutation score via \texttt{mcy}, Verilator code
+coverage, and randomized-init GL simulation) are tracked in \texttt{test/report/verification\_plan.md}.
+
+\section{Repository map, test inventory, and regression state}\label{sec:where}
+
+Generated build directories (\texttt{test/build/}, \texttt{test/blocks/*/build/}, \texttt{test/formal/build/}) and
+waveforms are ignored by git.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}lL@{}}
+\toprule
+Path & Content \\
+\midrule
+\texttt{src/rsoc8/rtl/} & Chip RTL (\texttt{rpe\_top.v}, \texttt{rcore8d.v}, \texttt{rdual.v}, \texttt{rlinecells.v}, \texttt{rlcports.v}, \texttt{revents.v}, \texttt{rtimers.v}, \texttt{rclock.v}, \texttt{rhost.v}) \\
+\texttt{src/rsoc8/fw/} & Firmware C/assembly tests, \texttt{rpe.h}, location-independent build scripts \texttt{build*.sh}, user examples \\
+\texttt{src/}, \texttt{src/rsoc8/doc/} & Tiny Tapeout top, \texttt{config.json}, \texttt{timing.sdc}; specification (\texttt{rpe\_spec.pdf}) \& datasheet (\texttt{rpe\_datasheet.pdf}) \\
+\texttt{test/} & \texttt{test.py}, \texttt{Makefile}, \texttt{tb.v}, \texttt{rpe\_clk\_analog\_model.v}, \texttt{sram\_model/}, \texttt{fw/uart\_echo.hex} \\
+\texttt{test/tb/} & System TB \texttt{tb\_sys.v}, block TBs, independent Verilog protocol models, \texttt{ihp/} SRAM model, \texttt{old/} host-bug TB \\
+\texttt{test/model/} & Cycle-accurate Python models (\texttt{timers}, \texttt{events}, \texttt{dual}, \texttt{clkctl}, \texttt{prot}, \texttt{host}) \\
+\texttt{test/tests/} & CI script \texttt{ci.sh}, regression runners, stress \& fault scripts, \texttt{expected/} reference logs \\
+\texttt{test/blocks/dual/} & Two-core block TBs, cycle models (\texttt{rmodel.py}, \texttt{rmodel\_d.py}), lockstep \& arbitration matrix \\
+\texttt{test/blocks/linecells/} & Line-cell TBs (\texttt{tb\_lc.v}, \texttt{tb\_lc2.v}), \texttt{linecell.py} model, \texttt{lc\_test.py} \\
+\texttt{test/formal/} & Yosys SAT proof (\texttt{run.sh}, \texttt{faults.sh}, \texttt{gen\_exc.py}, \texttt{run\_exc.py}, \texttt{flat.ys}) \\
+\texttt{test/report/} & This report (\texttt{rpe\_verification.tex/.pdf}) and \texttt{verification\_plan.md} \\
+\texttt{analog/} & \texttt{rpe\_clk\_analog} schematics, layout scripts, \texttt{results/} (PEX, MC, DRC, LVS), \texttt{report/} \\
+\bottomrule
+\end{tabularx}
+\caption{Repository structure.}
+\end{table}
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{0.26\linewidth}LL@{}}
+\toprule
+Suite / Test & Key sources & Entry command \\
+\midrule
+Tiny Tapeout pin tests (RTL \& GL) & \path{test.py}, \path{tb.v}, \path{rpe_clk_analog_model.v} & \texttt{make -B} / \texttt{make -B GATES=yes} \\
+CI regression (4 core suites) & \texttt{linecells}, \texttt{dual}, 5 block models, \path{run_fw.sh} & \texttt{sh} \path{test/tests/ci.sh} \\
+Firmware tests 1--17, host, timer, clk, sync & \path{src/rsoc8/fw/fw*.c}, \path{tb/tb_sys.v}, \path{tim_test.py}, \path{tb_clk.v}, \path{tb_sync.v} & \texttt{sh} \path{test/tests/run_fw.sh} \\
+Five block models vs.\ RTL (100 seeds) & \path{model/*.py}, \path{ev/dual/clkctl/prot/host_test.py} & \texttt{sh} \path{test/tests/run_models.sh} \\
+UART, parity/9-bit, mailbox \& WS2812 & \path{fwu_*.c}, \path{tb/uart_model.v}, \path{ws2812_model.v} & \texttt{sh} \path{test/tests/run_uart.sh} \\
+SPI, I2C, arbitration \& RTL faults & \path{fw15..20*.c}, \path{tb/spi_*}, \path{tb/i2c_*} & \texttt{sh} \path{test/tests/spii2c.sh} \texttt{[part]} \\
+10BASE-T ARP/ping \& tolerance sweeps & \path{fweth.c}, \path{tb/eth_model.v}, \path{eth_sweep.py} & \texttt{sh} \path{test/tests/run_eth.sh} \\
+Wait vs.\ interrupt timing sweep & \path{waitirq.py} & \texttt{sh} \path{test/tests/run_waitirq.sh} \\
+Two-protocol concurrent stress & \path{fwx_*.c}, \path{tb/stress.v} & \texttt{python3 -I} \path{test/tests/stress_t1..4.py} \\
+Two-core lockstep \& arbitration matrix & \path{blocks/dual/tests/*}, \path{rmodel_d.py} & \path{blocks/dual/tests/run_all.sh}, \path{run_arb.sh} \\
+Line-cell model \& multi-pair checks & \path{blocks/linecells/tests/lc_test.py}, \path{tb_lc2.v} & \path{blocks/linecells/tests/run_all.sh} \\
+Two-cycle timing exception proof & \path{formal/gen_exc.py}, \path{run_exc.py}, \path{flat.ys} & \texttt{sh} \path{test/formal/run.sh}, \path{faults.sh} \\
+Block \& host fault campaigns & \path{fault_run.py}, \path{mut_host.py}, \path{waitfault.sh} & run manually per block \\
+Analog PEX, DRC, LVS, MC & \path{analog/clk_macro/run_*sims.py} & \path{analog/results/*} \\
+\bottomrule
+\end{tabularx}
+\caption{Complete test inventory and entry commands.}
+\end{table}
+
+\textbf{Regression state (27 November 2026).} On draft~0.37 RTL, all suites in the table pass: CI regression matches
+\texttt{test/tests/expected/} (with \texttt{SHARED\_DATA} in \texttt{arbsweep.py} excluding the two testbench-data-sharing
+pairs for \texttt{sbisc\_tick}, giving 62/62 passing exact-timing checks); UART (67/67), SPI/I2C (99/99), \texttt{waitirq}
+(2\,376 runs, 0 failing), 10BASE-T (dividers 1--3 + 7 fault checks), \texttt{blocks/dual/tests/run\_arb.sh} (5\,766 matrix
+runs + sweeps, 0 failing), Tiny Tapeout \texttt{test.py} on RTL and routed netlist (run 45905736124), formal check
+(\texttt{test/formal/run.sh}: 551/551 checks, 0 violated, 0 waived; \texttt{faults.sh}: 4/4 detected), and post-layout
+analog macro checks (DRC/LVS, PDN-aligned PEX, 40-seed MC). Following relocation of the suites into \texttt{test/} on
+27 November 2026, local re-verification confirmed \texttt{cocotb} RTL (2/2), \texttt{blocks/linecells} (diff empty),
+\texttt{run\_models.sh} (diff empty), \texttt{blocks/dual} lockstep/directed/stress (0 mismatches; C subtest
+\texttt{ctest.c} skipped locally only for lack of \texttt{avr-libc}), \texttt{tb\_sync}, \texttt{tb\_clk},
+\texttt{tim\_test.py}, \texttt{waitirq.py} smoke (117/117), and \texttt{test/formal/run.sh} (551/551 under \texttt{yowasp-yosys}).
+Automation runs in \texttt{.github/workflows/}: \texttt{test.yaml}, \texttt{regression.yaml}, \texttt{gds.yaml}, and \texttt{doc.yaml}.
+
+\end{document}

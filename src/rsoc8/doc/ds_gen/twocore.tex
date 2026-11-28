@@ -1,32 +1,59 @@
-{\small\begin{tabularx}{\linewidth}{@{}llllL@{}}
-\toprule
-Address & Name & Access & Reset & Function \\
-\midrule
-\texttt{0x0E} & \reg{CORECTL} & R/W & \texttt{0x01} & Core enable, core state, number of the reading core. Per core: bit 7 \\
-\texttt{0x05} & \reg{LOCK} & R/W & \texttt{0x00} & Four locks for mutual exclusion between the cores. Each core has its own view \\
-\texttt{0x3F50} & \reg{ARB} & R/W, protected & \texttt{0x00} & Arbiter mode \\
-\bottomrule
-\end{tabularx}\par}
-
-\vspace{4pt}
-{\centering\footnotesize\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{CORECTL}{0x0E}{R/W (bit 7 per core)}{\texttt{0x01}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{CORECTL} & \texttt{0x0E} & \texttt{ID} & \textcolor{black!45}{--} & \texttt{WAIT1} & \texttt{WAIT0} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{EN1} & \texttt{EN0} \\ \hline
-\texttt{LOCK} & \texttt{0x05} & \texttt{OTH3} & \texttt{OTH2} & \texttt{OTH1} & \texttt{OTH0} & \texttt{LK3} & \texttt{LK2} & \texttt{LK1} & \texttt{LK0} \\ \hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{ID} & \textcolor{black!45}{--} & \texttt{WAIT1} & \texttt{WAIT0} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{EN1} & \texttt{EN0} \\ \hline
 \end{tabular}\par}
-
-\vspace{4pt}
+\vspace{2pt}
 {\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Register & Bits & Meaning \\
+Bits & Field & Description \\
 \midrule
-\reg{CORECTL} & \reg{EN0}, \reg{EN1} & Core enable. Setting a bit starts the core at word 0 of its code memory. Clearing it stops the core \\
- & \reg{WAIT0}, \reg{WAIT1} & The core is in a wait. Read only \\
- & \reg{ID} & Number of the core that reads the register. Read only \\
-\reg{LOCK} & \reg{LK0} to \reg{LK3} & Read: the reading core holds the lock. Writing a one takes the lock if it is free. Writing a zero releases it if the writing core holds it \\
- & \reg{OTH0} to \reg{OTH3} & The other core holds the lock. Read only \\
-\reg{ARB} & \reg{MODE} (bits 1, 0) & Which core gets the shared bus when both request it. 0 alternating, 1 always core 0, 2 always core 1, 3 reserved. After reset the first collision in the alternating setting goes to core 0 \\
+\texttt{7} & \reg{ID} & Number of the core that reads the register (0 or 1). Read only \\
+\texttt{5:4} & \reg{WAIT1, WAIT0} & The core is waiting (1 while executing \texttt{SLEEP}). Read only \\
+\texttt{1:0} & \reg{EN1, EN0} & Core enable. Setting a bit starts that core at word 0 of its code memory; clearing it stops the core \\
 \bottomrule
 \end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LOCK}{0x05}{R/W (per-core view)}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \texttt{OTH3} & \texttt{OTH2} & \texttt{OTH1} & \texttt{OTH0} & \texttt{LK3} & \texttt{LK2} & \texttt{LK1} & \texttt{LK0} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:4} & \reg{OTH3..OTH0} & Read only: 1 when the other core holds lock $n$ ($n=0..3$) \\
+\texttt{3:0} & \reg{LK3..LK0} & Read: 1 when the reading core holds lock $n$. Write 1 to take the lock if free; write 0 to release it if held by the writing core \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{ARB}{0x3F50}{R/W, protected}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{MODE}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{1:0} & \reg{MODE} & Bus arbitration when both cores request the shared bus: 0 alternating (first collision after reset goes to core 0), 1 always core 0, 2 always core 1, 3 reserved \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par

@@ -46,6 +46,11 @@
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcommand{\est}{\textsuperscript{e}}
 \newcommand{\reg}[1]{\texttt{#1}}
+\newcommand{\reghead}[4]{%
+  \noindent\colorbox{fillA}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{%
+    \textbf{\color{accent}\texttt{#1}}\hfill{\footnotesize Addr:\,\texttt{#2}\enspace|\enspace Access:\,#3\enspace|\enspace Reset:\,#4}%
+  }}%
+}
 
 \tikzset{
   blk/.style={draw=ink,line width=0.5pt,rounded corners=1.5pt,align=center,font=\small,inner sep=4pt,minimum height=8mm},
@@ -866,15 +871,24 @@ cell holds two frames. Writing \reg{LTnDATA} stores one frame for transmission; 
 ignored. A status bit selected in \reg{LCEVM} sets the event flag of the cell. Latched bits are cleared by writing a
 one to them. Disabling a cell clears its status and its buffers.
 
-\begin{table}[H]
-\centering\small
-\begin{tabularx}{\linewidth}{@{}lllL>{\raggedright\arraybackslash}p{34mm}@{}}
+\par\vspace{4pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LRnSTAT, LTnSTAT}{0x08/0x10 (R), 0x0A/0x12 (T)}{mixed (R), R (T)}{\texttt{0x00} (R), \texttt{0x40} (T)}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \texttt{RXF} & \texttt{FERR} & \texttt{EOP} & \texttt{IDLE} & \texttt{MATCH} & \texttt{OVR} & \texttt{STUFF} & \texttt{BOTHL} \\ \hline
+\texttt{T} & \textcolor{black!45}{--} & \texttt{TXE} & \texttt{BUSY} & \multicolumn{5}{c|}{\textcolor{black!45}{--}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}lllL>{\raggedright\arraybackslash}p{34mm}@{}}
 \toprule
 Bit & Cell & Kind & Set when & Cleared by \\
 \midrule
 \reg{RXF} (7) & R & level & at least one frame is in the holding register & reading \reg{LRnDATA} removes the oldest frame \\
 \reg{FERR} (6) & R & latched & a frame with a wrong parity bit was received (\reg{PAR} = 1 or 2) & writing 1 \\
-\reg{TXE} (6) & T & level & the frame buffer is empty; it is set again when the frame moves to the shift register & a write to \reg{LTnDATA} that is accepted \\
+\reg{TXE} (6) & T & level & the frame buffer is empty; set again when the frame moves to the shift register & a write to \reg{LTnDATA} that is accepted \\
 \reg{EOP} (5) & R & latched & both pins went low (start of both-low) & writing 1 \\
 \reg{BUSY} (5) & T & level & a frame is being sent, including the end-of-packet periods & the end of the frame \\
 \reg{IDLE} (4) & R & latched & the line became idle & writing 1 \\
@@ -883,141 +897,296 @@ Bit & Cell & Kind & Set when & Cleared by \\
 \reg{STUFF} (1) & R & latched & a stuffed bit broke the run-length rule & writing 1 \\
 \reg{BOTHL} (0) & R & level & the input pin and the clock pin are both low, with \reg{EN} = 1 & the pins leaving the state \\
 \bottomrule
-\end{tabularx}
-\caption{Status bits. The bits 7 and 4 to 0 of a transmit cell read as 0.}
-\end{table}
+\end{tabularx}\par}
+\end{minipage}\par
 
-\paragraph{Configuration registers.} The first column of the two tables gives the offset in the configuration block.
-
-\begin{table}[H]
-\centering\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCOWN}{0x3F51}{R/W, protected}{\texttt{0x02}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{LCCTRL} & \texttt{+0 R} & \texttt{EN} & \texttt{RXEN} & \textcolor{black!45}{--} & \texttt{UNIT} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
-\texttt{LCPIN} & \texttt{+1 R} & \multicolumn{3}{c|}{\texttt{INSEL}} & \texttt{INV} & \multicolumn{2}{c|}{\texttt{FILT}} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} \\ \hline
-\texttt{LCCLK} & \texttt{+3 R} & \multicolumn{3}{c|}{\texttt{CSEL}} & \texttt{CEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{CPHA} & \texttt{BLEN} \\ \hline
-\texttt{LCTIM} & \texttt{+4 R} & \multicolumn{2}{c|}{\texttt{EDGE}} & \texttt{ACC} & \multicolumn{2}{c|}{\texttt{STOP}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
-\texttt{LCA} & \texttt{+5 R} & \multicolumn{8}{c|}{\texttt{A}} \\ \hline
-\texttt{LCB} & \texttt{+6 R} & \multicolumn{8}{c|}{\texttt{B}} \\ \hline
-\texttt{LCEC} & \texttt{+7 R} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{EC}} \\ \hline
-\texttt{LCDEC} & \texttt{+8 R} & \multicolumn{8}{c|}{\texttt{decode table}} \\ \hline
-\texttt{LCSH} & \texttt{+A R} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{MEN} & \textcolor{black!45}{--} \\ \hline
-\texttt{LCMATCH} & \texttt{+B R} & \multicolumn{8}{c|}{\texttt{pattern}} \\ \hline
-\texttt{LCRUN} & \texttt{+C R} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{REF}} \\ \hline
-\texttt{LCEVM} & \texttt{+D R} & \multicolumn{8}{c|}{\texttt{mask over LRnSTAT}} \\ \hline
-\texttt{LCCS} & \texttt{+E R} & \multicolumn{3}{c|}{\texttt{SSEL}} & \texttt{SSEN} & \texttt{SSPOL} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} \\ \hline
-\texttt{LCX} & \texttt{+F R} & \texttt{X9} & \texttt{ECF} & \texttt{STA} & \texttt{STP} & \texttt{BEV} & \texttt{BCD} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
-\end{tabular}
-\caption{Receive cell: bit assignment of the configuration registers.}
-\end{table}
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \texttt{OWN1} & \texttt{OWN0} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{1:0} & \reg{OWN1}, \reg{OWN0} & Owner core of pair 1 and pair 0 (0 or 1). After reset core 0 owns pair 0 and core 1 owns pair 1 \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
 
-\begin{table}[H]
-\centering\footnotesize
-\setlength{\tabcolsep}{3pt}
-\begin{tabular}{@{}ll|*{8}{>{\centering\arraybackslash}p{12.2mm}|}@{}}
+\paragraph{Configuration registers.} Listed below in ascending offset order within each cell's configuration block (\texttt{0x3F00}, \texttt{0x3F10}, \texttt{0x3F60}, \texttt{0x3F70}); all are R/W and reset to \texttt{0x00}. Where receive (\texttt{R}) and transmit (\texttt{T}) differ at the same offset, both bit rows are shown.
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCCTRL}{+0 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
 \hline
-\rowcolor{fillA}\textbf{Register} & \textbf{Addr.} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
-\texttt{LCCTRL} & \texttt{+0 T} & \texttt{EN} & \textcolor{black!45}{--} & \texttt{TXEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
-\texttt{LCPIN} & \texttt{+1 T} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{OEM}} \\ \hline
-\texttt{LCOUT} & \texttt{+2 T} & \multicolumn{3}{c|}{\texttt{OUTSEL}} & \texttt{OUTEN} & \multicolumn{3}{c|}{\texttt{NSEL}} & \texttt{NEN} \\ \hline
-\texttt{LCCLK} & \texttt{+3 T} & \multicolumn{3}{c|}{\texttt{CSEL}} & \textcolor{black!45}{--} & \texttt{NFN} & \texttt{CPOL} & \texttt{CPHA} & \textcolor{black!45}{--} \\ \hline
-\texttt{LCTIM} & \texttt{+4 T} & \multicolumn{2}{c|}{\texttt{EDGE}} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
-\texttt{LCA} & \texttt{+5 T} & \multicolumn{8}{c|}{\texttt{A}} \\ \hline
-\texttt{LCB} & \texttt{+6 T} & \multicolumn{8}{c|}{\texttt{B}} \\ \hline
-\texttt{LCC} & \texttt{+7 T} & \multicolumn{8}{c|}{\texttt{C}} \\ \hline
-\texttt{LCENC} & \texttt{+9 T} & \multicolumn{8}{c|}{\texttt{encode table}} \\ \hline
-\texttt{LCSH} & \texttt{+A T} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \texttt{SRC} & \texttt{CMP} & \textcolor{black!45}{--} & \texttt{SS} \\ \hline
-\texttt{LCRUN} & \texttt{+C T} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \texttt{LOW2} & \texttt{IDLE} & \texttt{EOP} & \textcolor{black!45}{--} \\ \hline
-\texttt{LCEVM} & \texttt{+D T} & \multicolumn{8}{c|}{\texttt{mask over LTnSTAT}} \\ \hline
-\texttt{LCCS} & \texttt{+E T} & \multicolumn{3}{c|}{\texttt{SSEL}} & \texttt{SSEN} & \texttt{SSPOL} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} \\ \hline
-\texttt{LCX} & \texttt{+F T} & \texttt{X9} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \texttt{ESTR} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
-\end{tabular}
-\caption{Transmit cell: bit assignment of the configuration registers.}
-\end{table}
-
-\begin{table}[H]
-\centering\small
-\begin{tabularx}{\linewidth}{@{}llL@{}}
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \texttt{EN} & \texttt{RXEN} & \textcolor{black!45}{--} & \texttt{UNIT} & \textcolor{black!45}{--} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
+\texttt{T} & \texttt{EN} & \textcolor{black!45}{--} & \texttt{TXEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{3}{c|}{\texttt{PRE}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Field & Bits & Meaning \\
+Bits & Field & Description \\
 \midrule
-\reg{EN} & 1 & Cell enabled. Clearing it resets timer, bit counter, buffers and status \\
-\reg{RXEN}, \reg{TXEN} & 1 + 1 & R: receiver active; while 0 the receiver is reset and the holding register keeps its frames. T: transmitter active; clearing it ends transmission at once \\
-\reg{UNIT} & 1 & Time unit: peripheral clock, or both edges of the source clock (half a clock period) \\
-\reg{PRE} & 3 & Prescaler for the time unit: 1, 2, 4, \dots, 128 \\
-\midrule
-\reg{INSEL} & 3 & Input pin, one of the eight bidirectional pins \\
-\reg{INV} & 1 & Invert the input \\
-\reg{FILT} & 2 & Glitch filter: off, two equal samples, majority of three \\
-\reg{OEM} & 2 & Output enable: from the port direction register, always driven, driven while the cell is busy \\
-\reg{OUTSEL}, \reg{OUTEN} & 3 + 1 & Pin for the true output, and its enable \\
-\reg{NSEL}, \reg{NEN} & 3 + 1 & Pin for the second output, and its enable \\
-\reg{NFN} & 1 & Function of the second output: complement of the true output, or bit clock \\
-\reg{CSEL}, \reg{CEN} & 3 + 1 & R: separate clock pin for the edge detector, and its enable; without it the edge detector uses the input pin. T: clock pin for \reg{TRIG} = 1 \\
-\reg{CPOL}, \reg{CPHA} & 1 + 1 & Idle level of the bit clock, and the clock phase: data is sampled at the first clock edge of a bit (0) or at the second (1) \\
-\reg{BLEN} & 1 & Enables the both-low detector on the input pin and pin \reg{CSEL} \\
-\midrule
-\reg{EDGE} & 2 & Edge that is detected: none, rising, falling, both \\
-\reg{ACC} & 1 & Edge accepted always, or only while the cell is waiting \\
-\reg{STOP} & 2 & After expiry: keep running, stop after each sample, stop after a complete frame \\
-\reg{TWOPH} & 1 & One bit takes two timer periods; the phase input of the lookup tables alternates \\
-\reg{TRIG} & 2 & R: sample point from the timer, from an accepted pin edge (external clock), or from the middle of each bit of the transmit cell. T: next bit from the timer, from an edge on the clock pin, or one bit per received bit of the receive cell \\
-\reg{LCA} & 8 & Loaded into the timer on an accepted edge. In compare mode: high time for a one \\
-\reg{LCB} & 8 & Loaded on expiry: the bit or half-bit period. While waiting: timeout that sets \reg{IDLE} \\
-\reg{LCC} & 8 & In compare mode: high time for a zero \\
-\midrule
-\reg{LEN} & 3 & Frame length minus one: a frame has \reg{LEN}+1 bits, 1 to 8 \\
-\reg{LSBF} & 1 & Least significant bit first \\
-\reg{SRC} & 1 & Bit source for transmit: own frame buffer, or the receive cell's decoded bit \\
-\reg{CMP} & 1 & Transmit in compare mode (pulse width) and not through the encode table \\
-\reg{MEN} & 1 & Match enabled: the bit counter resets when the shift register equals \reg{LCMATCH} \\
-\reg{SS} & 1 & Transmit adds a start bit at the inverse idle level and a stop bit at the idle level \\
-\reg{LIM} & 3 & Run length limit, 0 switches stuffing off \\
-\reg{RMODE} & 1 & Count ones, or count equal bits \\
-\reg{LOW2} & 1 & Drive both outputs low while set \\
-\reg{EOP} & 1 & After the last bit of a frame both outputs are low for two bit periods; \reg{BUSY} stays set during that time. For timer-triggered transmission \\
-\reg{IDLE} & 1 & Output level while not transmitting \\
-\reg{REF} & 2 & Reference event for the clock loop: none, accepted edge, both pins low, both pins low after the line was idle \\
-\reg{SSEL}, \reg{SSEN}, \reg{SSPOL} & 3 + 1 + 1 & Chip select pin for slave operation, its enable and its active level \\
+\texttt{7} & \reg{EN} & Cell enabled. Clearing it resets the timer, bit counter, buffers and status \\
+\texttt{6} (R) & \reg{RXEN} & Receiver active; while 0 the receiver is held in reset and the holding register keeps its frames \\
+\texttt{5} (T) & \reg{TXEN} & Transmitter active; clearing it ends transmission at once \\
+\texttt{4} (R) & \reg{UNIT} & Time unit: 0 peripheral clock, 1 both edges of the source clock (half a clock period) \\
+\texttt{2:0} & \reg{PRE} & Prescaler for the time unit: divides by $2^{\mathtt{PRE}}$ (1, 2, 4, \dots, 128) \\
 \bottomrule
-\end{tabularx}
-\caption{Configuration fields.}
-\label{tab:fields}
-\end{table}
+\end{tabularx}\par}
+\end{minipage}\par
 
-\begin{table}[H]
-\centering\small
-\begin{tabularx}{\linewidth}{@{}llL@{}}
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCPIN}{+1 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \multicolumn{3}{c|}{\texttt{INSEL}} & \texttt{INV} & \multicolumn{2}{c|}{\texttt{FILT}} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} \\ \hline
+\texttt{T} & \multicolumn{6}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{OEM}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
 \toprule
-Field & Encoding & Values \\
+Bits & Field & Description \\
 \midrule
-\reg{UNIT} & 1 bit & 0 peripheral clock, 1 both edges of the source clock \\
-\reg{PRE} & 3 bits & Divide the time unit by $2^{\mathtt{PRE}}$ \\
-\reg{FILT} & 2 bits & 0 off, 1 two equal samples, 2 majority of three, 3 reserved \\
-\reg{OEM} & 2 bits & 0 from \reg{DDR}, 1 always driven, 2 driven while busy, 3 reserved \\
-\reg{EDGE} & 2 bits & 0 none, 1 rising, 2 falling, 3 both. In a transmit cell with \reg{TRIG} = 1: the clock edge at which the other side samples \\
-\reg{ACC} & 1 bit & 0 always, 1 only while waiting \\
-\reg{STOP} & 2 bits & 0 keep running, 1 after each sample, 2 after a complete frame, 3 reserved \\
-\reg{TRIG} & 2 bits & Receive cell: 0 timer started by an edge, 1 accepted pin edge, 2 middle of each bit of the transmit cell of the pair. Transmit cell: 0 timer, 1 edge on pin \reg{CSEL}, 2 one bit per received bit of the receive cell of the pair. 3 reserved \\
-\reg{LEN} & 3 bits & Frame length minus one \\
-\reg{PAR} & 2 bits & Additional bit after the data bits: 0 none, 1 odd parity, 2 even parity, 3 ninth data bit \reg{X9} \\
-\reg{X9} & 1 bit & R, read only: additional bit of the oldest frame. T: ninth data bit of the frame that is written next \\
-\reg{ESTR} & 1 bit & T with \reg{TRIG} = 1: 0 first bit at the write of the frame, 1 at the first shift edge after it \\
-\reg{BCD}, \reg{BEV} & 1 bit each & R: bus condition detector on; the flags of \reg{LCX} set the event flag of the cell \\
-\reg{STP}, \reg{STA}, \reg{ECF} & 1 bit each & R: stored flags for a stop condition, a start condition and the edge count; write 1 to clear; cleared while \reg{EN} = 0 \\
-\reg{EC} & 4 bits & R: 0 off; 1 to 15: number of falling data edges while the clock pin is low that sets \reg{ECF} \\
-\reg{SRC} & 1 bit & 0 own frame buffer, 1 decoded bit of the receive cell of the pair \\
-\reg{NFN} & 1 bit & 0 complement of the true output, 1 bit clock \\
-\reg{LIM} & 3 bits & Run length limit; 0 switches stuffing off \\
-\reg{RMODE} & 1 bit & 0 count ones, 1 count equal bits \\
-\reg{REF} & 2 bits & 0 none, 1 accepted edge, 2 both pins low, 3 both pins low after the line was idle \\
-\reg{SSEL}, \reg{SSEN}, \reg{SSPOL} & 3 + 1 + 1 bits & Chip select pin, its enable and its active level. While the pin is inactive the bit counter is held in reset \\
+\texttt{7:5} (R) & \reg{INSEL} & Input pin, one of the eight bidirectional pins (0 to 7) \\
+\texttt{4} (R) & \reg{INV} & Invert the sampled input \\
+\texttt{3:2} (R) & \reg{FILT} & Glitch filter: 0 off, 1 two equal samples, 2 majority of three, 3 reserved \\
+\texttt{1:0} (T) & \reg{OEM} & Output enable mode: 0 from \reg{DDR}, 1 always driven, 2 driven while busy, 3 reserved \\
 \bottomrule
-\end{tabularx}
-\caption{Encoding of the line cell fields.}
-\end{table}
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCOUT}{+2 (T only)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \multicolumn{3}{c|}{\texttt{OUTSEL}} & \texttt{OUTEN} & \multicolumn{3}{c|}{\texttt{NSEL}} & \texttt{NEN} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:5} & \reg{OUTSEL} & Bidirectional pin for the true output (0 to 7) \\
+\texttt{4} & \reg{OUTEN} & Enable driving the true output \\
+\texttt{3:1} & \reg{NSEL} & Bidirectional pin for the second output (0 to 7) \\
+\texttt{0} & \reg{NEN} & Enable driving the second output \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCCLK}{+3 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \multicolumn{3}{c|}{\texttt{CSEL}} & \texttt{CEN} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{CPHA} & \texttt{BLEN} \\ \hline
+\texttt{T} & \multicolumn{3}{c|}{\texttt{CSEL}} & \textcolor{black!45}{--} & \texttt{NFN} & \texttt{CPOL} & \texttt{CPHA} & \textcolor{black!45}{--} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:5} & \reg{CSEL} & Separate clock pin on the bidirectional port (0 to 7) \\
+\texttt{4} (R) & \reg{CEN} & Enable separate clock pin for edge detection; when 0 the edge detector uses the input pin \\
+\texttt{3} (T) & \reg{NFN} & Function of the second output: 0 complement of the true output, 1 bit clock \\
+\texttt{2} (T) & \reg{CPOL} & Idle level of the bit clock (0 or 1) \\
+\texttt{1} & \reg{CPHA} & Clock phase: data is sampled at the first clock edge of a bit (0) or at the second (1) \\
+\texttt{0} (R) & \reg{BLEN} & Enable the both-low detector on the input pin and pin \reg{CSEL} \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCTIM}{+4 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \multicolumn{2}{c|}{\texttt{EDGE}} & \texttt{ACC} & \multicolumn{2}{c|}{\texttt{STOP}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
+\texttt{T} & \multicolumn{2}{c|}{\texttt{EDGE}} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} & \texttt{TWOPH} & \multicolumn{2}{c|}{\texttt{TRIG}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:6} & \reg{EDGE} & Edge detected (or transmit clock edge with \reg{TRIG} = 1): 0 none, 1 rising, 2 falling, 3 both \\
+\texttt{5} (R) & \reg{ACC} & Edge acceptance: 0 always, 1 only while waiting \\
+\texttt{4:3} (R) & \reg{STOP} & Timer action after expiry: 0 keep running, 1 stop after each sample, 2 stop after a complete frame, 3 reserved \\
+\texttt{2} & \reg{TWOPH} & One bit takes two timer periods; the phase input of the lookup table alternates \\
+\texttt{1:0} & \reg{TRIG} & R sample trigger: 0 timer started by an edge, 1 accepted pin edge, 2 middle of each bit of the transmit cell of the pair, 3 reserved. T shift trigger: 0 timer, 1 edge on pin \reg{CSEL}, 2 one bit per received bit of the receive cell, 3 reserved \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCA, LCB}{+5, +6 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\reg{LCA} & Reload value loaded into the timer on an accepted edge. In compare mode: high time for a 1 \\
+\reg{LCB} & Reload value loaded on expiry: the bit or half-bit period. While waiting: idle timeout that sets \reg{IDLE} \\
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCEC (R) / LCC (T)}{+7 (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{LCEC (R)} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \multicolumn{4}{c|}{\texttt{EC}} \\ \hline
+\texttt{LCC (T)} & \multicolumn{8}{c|}{\texttt{C}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{3:0} (R) & \reg{EC} & Edge count threshold: 0 off; 1 to 15 sets \reg{ECF} after that many falling data edges while clock pin is low \\
+\texttt{7:0} (T) & \reg{C} & In compare mode (\reg{CMP} = 1): high time for a 0 \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCDEC (R), LCENC (T)}{+8 (R), +9 (T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}lL@{}}
+\reg{LCDEC} (R) & 8-bit decode lookup table indexed by $4\cdot\mathit{pin} + 2\cdot\mathit{prev\ sample} + \mathit{phase}$ (table below) \\
+\reg{LCENC} (T) & 8-bit encode lookup table indexed by $4\cdot\mathit{data} + 2\cdot\mathit{phase} + \mathit{prev\ output}$ (table below) \\
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCSH}{+A (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \texttt{MEN} & \textcolor{black!45}{--} \\ \hline
+\texttt{T} & \multicolumn{3}{c|}{\texttt{LEN}} & \texttt{LSBF} & \texttt{SRC} & \texttt{CMP} & \textcolor{black!45}{--} & \texttt{SS} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:5} & \reg{LEN} & Frame length minus one: a frame has \reg{LEN}+1 data bits (1 to 8) \\
+\texttt{4} & \reg{LSBF} & Bit order: 0 MSB first, 1 LSB first \\
+\texttt{3} (T) & \reg{SRC} & Transmit bit source: 0 own frame buffer, 1 decoded bit of the receive cell of the pair \\
+\texttt{2} (T) & \reg{CMP} & Compare mode: transmit pulse widths (\reg{LCA}/\reg{LCC}) instead of going through \reg{LCENC} \\
+\texttt{1} (R) & \reg{MEN} & Match enabled: bit counter resets when the shift register equals \reg{LCMATCH} \\
+\texttt{0} (T) & \reg{SS} & Start/stop framing: transmit adds a start bit at inverse idle level and a stop bit at idle level \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCMATCH}{+B (R only)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent 8-bit frame match pattern; sets \reg{MATCH} (and resets the bit counter if \reg{MEN} = 1) when matched\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCRUN}{+C (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \multicolumn{2}{c|}{\textcolor{black!45}{--}} & \multicolumn{2}{c|}{\texttt{REF}} \\ \hline
+\texttt{T} & \multicolumn{3}{c|}{\texttt{LIM}} & \texttt{RMODE} & \texttt{LOW2} & \texttt{IDLE} & \texttt{EOP} & \textcolor{black!45}{--} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:5} & \reg{LIM} & Run-length stuffing limit (1 to 7); 0 switches bit stuffing off \\
+\texttt{4} & \reg{RMODE} & Stuffing rule: 0 count ones, 1 count equal consecutive bits \\
+\texttt{3} (T) & \reg{LOW2} & Force both outputs low while set (may be changed while enabled) \\
+\texttt{2} (T) & \reg{IDLE} & Output level while not transmitting \\
+\texttt{1} (T) & \reg{EOP} & End-of-packet for timer-triggered TX: hold both outputs low for two bit periods after the last bit; \reg{BUSY} stays set \\
+\texttt{1:0} (R) & \reg{REF} & Clock-loop reference event: 0 none, 1 accepted edge, 2 both pins low, 3 both pins low after idle \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCEVM}{+D (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\small\noindent Bitwise mask over \reg{LRnSTAT}/\reg{LTnSTAT}: any unmasked 1 sets the cell's event flag in \reg{IFRH}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCCS}{+E (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\textbf{Field} & \multicolumn{3}{c|}{\texttt{SSEL}} & \texttt{SSEN} & \texttt{SSPOL} & \multicolumn{3}{c|}{\textcolor{black!45}{--}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7:5} & \reg{SSEL} & Chip-select pin on the bidirectional port (0 to 7) for slave operation \\
+\texttt{4} & \reg{SSEN} & Enable chip-select gating; while CS is inactive the bit counter is held in reset \\
+\texttt{3} & \reg{SSPOL} & Chip-select active polarity: 0 active low, 1 active high \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
+
+\par\vspace{5pt}\noindent\begin{minipage}{\linewidth}
+\reghead{LCX}{+F (R, T)}{R/W}{\texttt{0x00}}
+\vspace{2pt}
+{\centering\footnotesize\setlength{\tabcolsep}{2pt}%
+\begin{tabular}{@{}|>{\centering\arraybackslash}p{12mm}|*{8}{>{\centering\arraybackslash}p{16.9mm}|}@{}}
+\hline
+\rowcolor{fillD}\textbf{Bit} & \textbf{7} & \textbf{6} & \textbf{5} & \textbf{4} & \textbf{3} & \textbf{2} & \textbf{1} & \textbf{0} \\ \hline
+\texttt{R} & \texttt{X9} & \texttt{ECF} & \texttt{STA} & \texttt{STP} & \texttt{BEV} & \texttt{BCD} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
+\texttt{T} & \texttt{X9} & \multicolumn{4}{c|}{\textcolor{black!45}{--}} & \texttt{ESTR} & \multicolumn{2}{c|}{\texttt{PAR}} \\ \hline
+\end{tabular}\par}
+\vspace{2pt}
+{\small\begin{tabularx}{\linewidth}{@{}llL@{}}
+\toprule
+Bits & Field & Description \\
+\midrule
+\texttt{7} & \reg{X9} & R (read only): ninth data bit of the oldest frame. T: ninth data bit of the frame written next \\
+\texttt{6} (R) & \reg{ECF} & Latched edge-count flag (set by \reg{EC} falling data edges with clock low); write 1 to clear; cleared while \reg{EN} = 0 \\
+\texttt{5} (R) & \reg{STA} & Latched start-condition flag (SDA fall while SCL high); write 1 to clear; cleared while \reg{EN} = 0 \\
+\texttt{4} (R) & \reg{STP} & Latched stop-condition flag (SDA rise while SCL high); write 1 to clear; cleared while \reg{EN} = 0 \\
+\texttt{3} (R) & \reg{BEV} & Bus-condition event: \reg{STA}, \reg{STP} or \reg{ECF} set the cell's event flag in \reg{IFRH} \\
+\texttt{2} (R) & \reg{BCD} & Bus-condition detector on (SDA on input pin, SCL on \reg{CSEL}; value kept while enabled) \\
+\texttt{2} (T) & \reg{ESTR} & Shift start with \reg{TRIG} = 1: 0 first bit driven at the write to \reg{LTnDATA}, 1 at the first shift edge after it \\
+\texttt{1:0} & \reg{PAR} & Additional bit after the data bits: 0 none, 1 odd parity, 2 even parity, 3 ninth data bit \reg{X9} \\
+\bottomrule
+\end{tabularx}\par}
+\end{minipage}\par
 
 \paragraph{Lookup tables.} The decode table is indexed by $4\cdot\mathit{pin} + 2\cdot\mathit{previous\ sample} +
 \mathit{phase}$, the encode table by $4\cdot\mathit{data} + 2\cdot\mathit{phase} + \mathit{previous\ output}$.
